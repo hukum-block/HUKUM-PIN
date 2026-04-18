@@ -3,159 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HÜKÜM PİN | Güvenli Bankacılık & E-Pin</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <title>HÜKÜM BANK | Dijital Finans ve Eğlence</title>
     <style>
-        :root { --primary: #1a237e; --secondary: #0288d1; --bg: #f0f2f5; --white: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        :root { --primary: #1a237e; --secondary: #0288d1; --accent: #00e676; --bg: #f8f9fa; --white: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; color: #333; overflow-x: hidden; }
         
-        /* GİRİŞ EKRANI (MODAL) */
-        #auth-screen { position: fixed; inset: 0; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .auth-card { background: var(--white); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; width: 320px; }
-        
-        /* ANA PANEL */
-        header { background: var(--primary); color: var(--white); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; }
-        .user-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .avatar { width: 40px; height: 40px; background: var(--secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        /* GİRİŞ EKRANI */
+        #auth-overlay { position: fixed; inset: 0; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .auth-box { background: var(--white); padding: 40px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center; width: 350px; }
 
-        .dashboard { padding: 20px 5%; display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
-        
-        /* BANKA KARTI TASARIMI */
-        .bank-card { background: linear-gradient(135deg, #1a237e, #0d47a1); color: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 20px rgba(26,35,126,0.3); position: relative; overflow: hidden; }
-        .bank-card::after { content: "HÜKÜM"; position: absolute; right: -20px; bottom: -10px; font-size: 60px; opacity: 0.1; font-weight: 900; }
-        .card-label { font-size: 12px; opacity: 0.8; text-transform: uppercase; }
-        .card-balance { font-size: 32px; font-weight: bold; margin: 10px 0; }
-        
-        /* MARKET VE ÜRÜNLER */
-        .market-card { background: var(--white); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .product { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
-        .btn { padding: 10px 20px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-buy { background: var(--primary); color: white; }
-        .btn-debt { background: #e3f2fd; color: var(--secondary); margin-right: 5px; }
+        header { background: var(--primary); color: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .nav-links { display: flex; gap: 20px; font-weight: bold; font-size: 14px; }
+        .nav-links span { cursor: pointer; transition: 0.3s; }
+        .nav-links span:hover { color: var(--secondary); }
 
-        /* PROFİL SAYFASI (GİZLİ) */
-        #profile-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
-        .profile-content { background: white; padding: 30px; border-radius: 20px; width: 350px; text-align: center; }
+        .dashboard { padding: 25px 5%; display: grid; grid-template-columns: 1fr 2fr; gap: 25px; }
 
-        footer { text-align: center; padding: 20px; font-size: 12px; color: #aaa; }
+        /* BANKA KARTI */
+        .bank-card { background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%); color: white; padding: 30px; border-radius: 25px; box-shadow: 0 12px 25px rgba(26,35,126,0.2); position: relative; }
+        .balance-label { font-size: 12px; opacity: 0.8; letter-spacing: 1px; }
+        .balance-val { font-size: 38px; font-weight: bold; margin: 10px 0; }
+
+        /* MODÜLLER */
+        .module { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .module-h { color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; }
+
+        .btn { padding: 10px 20px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 13px; }
+        .btn-p { background: var(--primary); color: white; }
+        .btn-s { background: #e3f2fd; color: var(--secondary); }
+
+        /* OYUN ALANI */
+        #game-zone { display: none; text-align: center; padding: 20px; background: #eee; border-radius: 15px; margin-top: 10px; }
+
+        /* VIP KARARGAH (GİZLİ) */
+        #vip- Karargah { display: none; position: fixed; inset: 0; background: #0a0a0a; color: #00ff00; font-family: 'Consolas', monospace; z-index: 10000; padding: 40px; }
+        .admin-box { border: 1px solid #00ff00; padding: 20px; margin-bottom: 20px; }
+        .admin-input { background: black; border: 1px solid #00ff00; color: #00ff00; padding: 10px; width: 100%; margin: 10px 0; box-sizing: border-box; }
+
+        footer { text-align: center; padding: 30px; color: #bbb; font-size: 12px; }
     </style>
 </head>
 <body>
 
-<div id="auth-screen">
-    <div class="auth-card">
-        <h2 style="color: var(--primary)">HÜKÜM PİN</h2>
-        <p>Devam etmek için giriş yapın</p>
-        <input type="email" id="email" placeholder="E-posta" style="width: 90%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ddd;"><br>
-        <button class="btn btn-buy" style="width: 100%" onclick="girisYap()">Giriş Yap</button>
-        <hr>
-        <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID" data-callback="handleCredentialResponse"></div>
-        <div class="g_id_signin" data-type="standard"></div>
+<div id="auth-overlay">
+    <div class="auth-box">
+        <h2 style="color: var(--primary)">HÜKÜM BANK</h2>
+        <input type="email" id="u-mail" placeholder="E-posta Adresiniz" style="width:100%; padding:12px; margin:20px 0; border:1px solid #ddd; border-radius:10px; box-sizing:border-box;">
+        <button class="btn btn-p" style="width:100%" onclick="girisYap()">KARARGAHA GİR</button>
     </div>
 </div>
 
 <header>
-    <h2 style="margin:0">HÜKÜM <span>BANK</span></h2>
-    <div class="user-profile" onclick="profilAc()">
-        <div id="u-name">Misafir</div>
-        <div class="avatar" id="u-avatar">H</div>
+    <div style="font-size: 24px; font-weight: 900;">HÜKÜM <span style="color:var(--secondary)">BANK</span></div>
+    <div class="nav-links">
+        <span onclick="tabDeğistir('main')">ANA SAYFA</span>
+        <span onclick="tabDeğistir('tasks')">GÖREVLER</span>
+        <span onclick="tabDeğistir('games')">OYUN ALANI</span>
     </div>
 </header>
 
-<div class="dashboard">
+<div class="dashboard" id="main-view">
     <div class="bank-card">
-        <div class="card-label">Toplam Varlık</div>
-        <div class="card-balance" id="main-balance">0,00 ₺</div>
-        <div class="card-label">Kredi Borcu: <span id="main-debt">0,00 ₺</span></div>
+        <div class="balance-label">TOPLAM VARLIK</div>
+        <div class="balance-val" id="b-val">0,00 ₺</div>
+        <div style="font-size:14px">Borç: <span id="d-val" style="color:#ff8a80">0,00 ₺</span></div>
     </div>
 
-    <div class="market-card">
-        <h3 style="margin-top:0; color: var(--primary)">Dijital Mağaza</h3>
-        <div class="product">
+    <div class="module">
+        <div class="module-h">Dijital Mağaza</div>
+        <div style="display:flex; justify-content:space-between; align-items:center">
+            <div><strong>Google Play 100 TL</strong><br><small>Stok: <span id="s-count">0</span></small></div>
             <div>
-                <strong>Google Play 100 TL</strong><br>
-                <small>Stok: <span id="stok-sayi">0</span></small>
-            </div>
-            <div>
-                <button class="btn btn-debt" onclick="satinAl(100, true)">10 TL Borçla Al</button>
-                <button class="btn btn-buy" onclick="satinAl(110, false)">Peşin Al</button>
+                <button class="btn btn-s" onclick="satinAl(100, true)">Borçla Al</button>
+                <button class="btn btn-p" onclick="satinAl(110, false)">Peşin Al</button>
             </div>
         </div>
     </div>
 </div>
 
-<div id="profile-modal">
-    <div class="profile-content">
-        <h3>Kullanıcı Profili</h3>
-        <div class="avatar" style="width:80px; height:80px; font-size:30px; margin: 0 auto 15px;">H</div>
-        <p><strong id="p-mail">eymen@hukum.com</strong></p>
-        <p>İşlem Geçmişi: 0</p>
-        <button class="btn btn-buy" onclick="document.getElementById('profile-modal').style.display='none'">Kapat</button>
+<div class="dashboard" id="tasks-view" style="display:none">
+    <div class="module" style="grid-column: span 2;">
+        <div class="module-h">Günlük Para Kazanma Görevleri</div>
+        <div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between">
+            <span>Reklam İzle & Destek Ol</span>
+            <button class="btn btn-s" onclick="gorevYap(5)">5 ₺ KAZAN</button>
+        </div>
+        <div style="padding:10px; display:flex; justify-content:space-between">
+            <span>HÜKÜM Grubuna Katıl</span>
+            <button class="btn btn-s" onclick="gorevYap(10)">10 ₺ KAZAN</button>
+        </div>
     </div>
 </div>
 
+<div class="dashboard" id="games-view" style="display:none">
+    <div class="module" style="grid-column: span 2; text-align:center">
+        <div class="module-h">Eğlence Karargahı</div>
+        <p>Çok Yakında: Dinozor Yarışı ve Adam Asmaca!</p>
+        <button class="btn btn-p" onclick="alert('Eymen Paşa burayı yakında kodlayacak!')">OYUNU BAŞLAT</button>
+    </div>
+</div>
+
+<div id="vip- Karargah">
+    <h2 style="border-bottom: 2px solid #00ff00">HÜKÜM VIP KONTROL PANELİ</h2>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px">
+        <div class="admin-box">
+            <h3>BAKİYE EKLE</h3>
+            <input type="number" id="adm-b" class="admin-input" placeholder="₺ Miktar">
+            <button class="btn btn-p" style="background:#00ff00; color:black" onclick="adminBakiye()">ONAYLA</button>
+        </div>
+        <div class="admin-box">
+            <h3>STOK YÜKLE</h3>
+            <input type="text" id="adm-s" class="admin-input" placeholder="Kod Yapıştır">
+            <button class="btn btn-p" style="background:#00ff00; color:black" onclick="adminStok()">ONAYLA</button>
+        </div>
+    </div>
+    <button class="btn btn-p" style="margin-top:20px" onclick="document.getElementById('vip- Karargah').style.display='none'">PANELDEN ÇIK</button>
+</div>
+
 <footer>
-    <span onclick="adminModu()" style="cursor:pointer">© 2026 HÜKÜM PİN | Güvenli Ödeme Altyapısı</span>
+    <span onclick="vipGiris()" style="cursor:pointer">© 2026 HÜKÜM PİN | Güvenli Ödeme Altyapısı</span>
 </footer>
 
 <script>
-    let userData = JSON.parse(localStorage.getItem('hukumUser')) || { bakiye: 0, borc: 0, mail: '', giris: false };
-    let stok = JSON.parse(localStorage.getItem('hukumStok')) || [];
+    let state = JSON.parse(localStorage.getItem('h-state')) || { balance: 0, debt: 0, mail: '', loggedIn: false };
+    let inventory = JSON.parse(localStorage.getItem('h-inv')) || [];
 
     function girisYap() {
-        let mail = document.getElementById('email').value;
-        if(mail.includes('@')) {
-            userData.mail = mail;
-            userData.giris = true;
-            localStorage.setItem('hukumUser', JSON.stringify(userData));
-            ekranGuncelle();
-            document.getElementById('auth-screen').style.display = 'none';
-        } else { alert("Geçerli bir mail gir aslanım!"); }
-    }
-
-    function ekranGuncelle() {
-        document.getElementById('main-balance').innerText = userData.bakiye.toFixed(2) + " ₺";
-        document.getElementById('main-debt').innerText = userData.borc.toFixed(2) + " ₺";
-        document.getElementById('u-name').innerText = userData.mail.split('@')[0];
-        document.getElementById('p-mail').innerText = userData.mail;
-        document.getElementById('stok-sayi').innerText = stok.length;
-    }
-
-    function satinAl(fiyat, borcMu) {
-        if(stok.length === 0) return alert("Stokta mermi kalmadı!");
-        if(borcMu && userData.borc >= 30) return alert("Borç limitin doldu!");
-        
-        let gerekliPara = borcMu ? 90 : 110;
-        if(userData.bakiye >= gerekliPara) {
-            userData.bakiye -= gerekliPara;
-            if(borcMu) userData.borc += 10;
-            let kod = stok.shift();
-            alert("HÜKÜM KODUNUZ: " + kod);
-            saveAndSync();
-        } else { alert("Yetersiz bakiye!"); }
-    }
-
-    function saveAndSync() {
-        localStorage.setItem('hukumUser', JSON.stringify(userData));
-        localStorage.setItem('hukumStok', JSON.stringify(stok));
-        ekranGuncelle();
-    }
-
-    function profilAc() { document.getElementById('profile-modal').style.display = 'flex'; }
-
-    function adminModu() {
-        let pw = prompt("Komutan Şifresi:");
-        if(pw === "Aşko2026") {
-            let secim = prompt("1: Bakiye Ekle\n2: Kod Ekle");
-            if(secim == "1") userData.bakiye += parseInt(prompt("Miktar:"));
-            if(secim == "2") stok.push(prompt("Kod:"));
-            saveAndSync();
+        let m = document.getElementById('u-mail').value;
+        if(m.includes('@')) {
+            state.mail = m; state.loggedIn = true; sync();
+            document.getElementById('auth-overlay').style.display = 'none';
         }
     }
 
-    if(userData.giris) document.getElementById('auth-screen').style.display = 'none';
-    ekranGuncelle();
+    function sync() {
+        localStorage.setItem('h-state', JSON.stringify(state));
+        localStorage.setItem('h-inv', JSON.stringify(inventory));
+        document.getElementById('b-val').innerText = state.balance.toFixed(2) + " ₺";
+        document.getElementById('d-val').innerText = state.debt.toFixed(2) + " ₺";
+        document.getElementById('s-count').innerText = inventory.length;
+    }
+
+    function tabDeğistir(tab) {
+        document.getElementById('main-view').style.display = tab === 'main' ? 'grid' : 'none';
+        document.getElementById('tasks-view').style.display = tab === 'tasks' ? 'grid' : 'none';
+        document.getElementById('games-view').style.display = tab === 'games' ? 'grid' : 'none';
+    }
+
+    function gorevYap(m) { state.balance += m; sync(); alert(m + " ₺ Hesabına Yüklendi!"); }
+
+    function satinAl(f, b) {
+        if(inventory.length === 0) return alert("Stok Yok!");
+        let pay = b ? 90 : 110;
+        if(state.balance >= pay) {
+            state.balance -= pay; if(b) state.debt += 10;
+            alert("KODUNUZ: " + inventory.shift()); sync();
+        } else { alert("Yetersiz Bakiye!"); }
+    }
+
+    function vipGiris() {
+        if(prompt("VIP ŞİFRESİ:") === "Eyo_pasha15") document.getElementById('vip- Karargah').style.display = 'block';
+    }
+
+    function adminBakiye() { state.balance += parseInt(document.getElementById('adm-b').value); sync(); alert("Eklendi!"); }
+    function adminStok() { inventory.push(document.getElementById('adm-s').value); sync(); alert("Eklendi!"); }
+
+    if(state.loggedIn) document.getElementById('auth-overlay').style.display = 'none';
+    sync();
 </script>
+
 </body>
 </html>
 
