@@ -1,233 +1,225 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HÜKÜM PİN | Dijital Güç ve Finans</title>
+    <title>HÜKÜM PİN | Dijital Güç Merkezi</title>
     <style>
-        :root { --primary: #1a237e; --secondary: #0288d1; --accent: #00e676; --bg: #f4f7f6; --white: #ffffff; --admin: #050505; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; overflow-x: hidden; color: #333; }
+        :root { --primary: #1a237e; --secondary: #d32f2f; --bg: #0f172a; --card-bg: #1e293b; --white: #ffffff; --vip: #450a0a; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; color: #f1f5f9; }
 
-        /* GİRİŞ EKRANI */
+        /* GİRİŞ SİSTEMİ - DOKUNMADIK */
         #auth-overlay { position: fixed; inset: 0; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .auth-box { background: var(--white); padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); text-align: center; width: 360px; }
-        .auth-input { width: 100%; padding: 12px; margin: 10px 0; border: 1.5px solid #eee; border-radius: 12px; box-sizing: border-box; font-size: 14px; }
+        .auth-box { background: var(--white); padding: 40px; border-radius: 30px; text-align: center; width: 350px; color: #333; }
+        .auth-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
 
-        header { background: var(--primary); color: white; padding: 18px 6%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
-        .logo { font-size: 26px; font-weight: 900; letter-spacing: 1px; }
+        header { background: #1e293b; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--secondary); }
+        .logo { font-size: 24px; font-weight: 900; color: var(--white); letter-spacing: 2px; }
         .logo span { color: var(--secondary); }
-        .nav-links span { margin-left: 25px; cursor: pointer; font-weight: 600; font-size: 14px; text-transform: uppercase; transition: 0.3s; }
-        .nav-links span:hover { color: var(--secondary); }
+        .nav span { margin-left: 20px; cursor: pointer; font-weight: 600; font-size: 13px; color: #cbd5e1; transition: 0.3s; }
+        .nav span:hover { color: var(--secondary); }
 
-        .container { padding: 30px 6%; display: grid; grid-template-columns: 1fr 2fr; gap: 25px; }
+        .main-container { padding: 30px 5%; display: grid; grid-template-columns: 1fr 1.5fr; gap: 25px; }
 
-        /* BANKA KARTI */
-        .hukum-card { background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%); color: white; padding: 35px; border-radius: 25px; box-shadow: 0 15px 30px rgba(26,35,126,0.25); position: relative; overflow: hidden; }
-        .hukum-card::before { content: "HÜKÜM"; position: absolute; bottom: -10px; right: -10px; font-size: 60px; font-weight: 900; opacity: 0.1; }
-        .card-user { font-size: 12px; opacity: 0.8; letter-spacing: 1.5px; margin-bottom: 20px; }
-        .balance-val { font-size: 44px; font-weight: 700; margin: 5px 0; }
-        .debt-val { color: #ff8a80; font-weight: 600; font-size: 14px; margin-top: 10px; }
+        /* BANKA KARTI - ASİL TASARIM */
+        .bank-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(211, 47, 47, 0.3); padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
+        .chip { width: 45px; height: 35px; background: #94a3b8; border-radius: 6px; margin-bottom: 20px; opacity: 0.5; }
+        .balance-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #94a3b8; }
+        .balance-val { font-size: 42px; font-weight: 800; margin: 10px 0; color: #fff; }
+        .debt-info { color: var(--secondary); font-weight: 700; font-size: 14px; }
 
         /* MARKET VE MODÜLLER */
-        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); margin-bottom: 25px; }
-        .btn { padding: 12px 22px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.4s; font-size: 13px; }
-        .btn-p { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(26,35,126,0.3); }
-        .btn-s { background: #e3f2fd; color: var(--secondary); }
-        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .btn { padding: 12px 20px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-red { background: var(--secondary); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--secondary); color: white; }
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        /* HÜKÜM DINO OYUNU */
-        #game-area { width: 100%; height: 160px; border-bottom: 3px solid #444; position: relative; overflow: hidden; background: #fff; display: none; margin-top: 15px; border-radius: 10px; }
-        #dino { width: 45px; height: 45px; background: var(--primary); position: absolute; bottom: 0; left: 60px; border-radius: 8px; transition: bottom 0.3s; }
-        #obstacle { width: 25px; height: 35px; background: #f44336; position: absolute; bottom: 0; right: -50px; }
+        /* OYUNLAR */
+        #dino-box { width: 100%; height: 160px; background: #000; position: relative; overflow: hidden; border-radius: 10px; border: 1px solid #334155; display: none; margin-top: 15px; }
+        #dino { width: 35px; height: 35px; background: var(--secondary); position: absolute; bottom: 0; left: 50px; border-radius: 4px; }
+        #cactus { width: 20px; height: 30px; background: #fff; position: absolute; bottom: 0; right: -50px; }
 
-        /* VIP KONTROL KULESİ (ÖZEL ODA) */
-        #vip-room { display: none; position: fixed; inset: 0; background: var(--admin); color: #00ff41; font-family: 'Courier New', Courier, monospace; padding: 60px; z-index: 10000; overflow-y: auto; }
-        .terminal-header { border-bottom: 2px solid #00ff41; padding-bottom: 15px; margin-bottom: 30px; font-size: 28px; text-shadow: 0 0 10px #00ff41; }
-        .terminal-card { border: 1px solid #00ff41; padding: 25px; background: rgba(0,255,65,0.05); margin-bottom: 25px; box-shadow: inset 0 0 10px rgba(0,255,65,0.1); }
-        .t-input { background: transparent; border: 1px solid #00ff41; color: #00ff41; padding: 12px; width: 100%; margin: 15px 0; outline: none; }
+        /* VIP KARARGAH (BAŞKA BİR DÜNYA) - KIRMIZI & SİYAH */
+        #vip-portal { display: none; position: fixed; inset: 0; background: #000; color: #fff; padding: 60px; z-index: 10000; }
+        .vip-header { border-left: 5px solid var(--secondary); padding-left: 20px; margin-bottom: 40px; }
+        .vip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .vip-card { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 25px; border-radius: 15px; }
+        .vip-input { background: #111; border: 1px solid #333; color: white; padding: 12px; width: 100%; margin: 10px 0; outline: none; }
+        .vip-input:focus { border-color: var(--secondary); }
 
-        footer { text-align: center; padding: 30px; color: #aaa; font-size: 12px; border-top: 1px solid #eee; margin-top: 40px; }
-        .admin-key { cursor: pointer; transition: 0.3s; }
-        .admin-key:hover { color: var(--primary); }
+        footer { text-align: center; padding: 40px; opacity: 0.5; font-size: 12px; }
+        .secret-trigger { cursor: pointer; transition: 0.3s; }
+        .secret-trigger:hover { color: var(--secondary); }
 
-        @keyframes slide { 0% { right: -50px; } 100% { right: 100%; } }
+        @keyframes moveCactus { 0% { right: -50px; } 100% { right: 100%; } }
     </style>
 </head>
 <body onclick="jump()">
 
 <div id="auth-overlay">
     <div class="auth-box">
-        <h2 style="color:var(--primary); margin-bottom: 10px;">HÜKÜM PİN</h2>
-        <p style="color:#777; font-size:14px;">Karargaha erişim için kimlik doğrula</p>
-        <div id="choice-buttons">
-            <button class="btn btn-p" style="width:100%; margin: 15px 0;" onclick="handleLogin('google')">Google Hesabı ile Giriş</button>
-            <button class="btn btn-s" style="width:100%" onclick="showManual()">İsim & Şifre Belirle</button>
+        <h2 style="color:var(--primary)">HÜKÜM PİN</h2>
+        <div id="auth-choices">
+            <button class="btn btn-red" style="width:100%; margin-bottom:10px;" onclick="quickLogin('Google_User')">Google ile Bağlan</button>
+            <button class="btn btn-outline" style="width:100%; color:#333; border-color:#333;" onclick="document.getElementById('auth-choices').style.display='none'; document.getElementById('manual-reg').style.display='block'">İsim/Şifre Kaydı</button>
         </div>
-        <div id="manual-login" style="display:none">
-            <input type="text" id="user-in" class="auth-input" placeholder="Kod Adınız">
-            <input type="password" id="pass-in" class="auth-input" placeholder="Güvenlik Şifreniz">
-            <button class="btn btn-p" style="width:100%; margin-top: 10px;" onclick="manualLogin()">GİRİŞİ ONAYLA</button>
+        <div id="manual-reg" style="display:none">
+            <input type="text" id="reg-n" class="auth-input" placeholder="Kullanıcı Adı">
+            <input type="password" id="reg-p" class="auth-input" placeholder="Şifre">
+            <button class="btn btn-red" style="width:100%" onclick="quickLogin(document.getElementById('reg-n').value)">KAYDI TAMAMLA</button>
         </div>
     </div>
 </div>
 
 <header>
     <div class="logo">HÜKÜM <span>PİN</span></div>
-    <div class="nav-links">
-        <span onclick="switchView('cüzdan')">Cüzdan</span>
-        <span onclick="switchView('görevler')">Görevler</span>
-        <span onclick="switchView('oyun')">Oyun Alanı</span>
+    <div class="nav">
+        <span onclick="tab('main')">BANKA</span>
+        <span onclick="tab('tasks')">GÖREVLER</span>
+        <span onclick="tab('games')">EĞLENCE</span>
     </div>
 </header>
 
-<div id="view-cüzdan" class="container">
-    <div class="hukum-card">
-        <div class="card-user">KULLANICI: <span id="display-name">...</span></div>
-        <div style="font-size:12px; opacity:0.7;">MEVCUT VARLIK</div>
+<div id="tab-main" class="main-container">
+    <div class="bank-card">
+        <div class="chip"></div>
+        <div class="balance-label">HESAP SAHİBİ: <span id="u-name" style="color:#fff">...</span></div>
         <div class="balance-val" id="b-val">0,00 ₺</div>
-        <div class="debt-val" id="d-label">BORÇ DURUMU: <span id="d-val">0,00 ₺</span></div>
+        <div class="debt-info">BORÇ: <span id="d-val">0,00 ₺</span> / 30,00 ₺</div>
     </div>
     <div class="card">
-        <h3 style="color:var(--primary); margin-top:0;">Dijital Pazar</h3>
-        <div style="display:flex; justify-content:space-between; align-items:center; padding: 15px 0;">
+        <h3 style="margin-top:0">E-Pin Mağazası</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center">
+            <div><strong>Google Play 100 TL</strong><br><small style="color:#94a3b8">Kalan Stok: <span id="s-val">0</span></small></div>
             <div>
-                <strong>Google Play 100 TL</strong><br>
-                <small style="color:#888;">Stok: <span id="s-val">0</span></small>
-            </div>
-            <div>
-                <button class="btn btn-s" id="borc-btn" onclick="buy(100, true)">Borçla Al</button>
-                <button class="btn btn-p" onclick="buy(110, false)">Peşin Al</button>
+                <button class="btn btn-outline" id="borc-btn" onclick="buy(100, true)">Borçla Al</button>
+                <button class="btn btn-red" onclick="buy(110, false)">Peşin Al</button>
             </div>
         </div>
     </div>
 </div>
 
-<div id="view-görevler" class="container" style="display:none">
+<div id="tab-tasks" class="main-container" style="display:none">
     <div class="card" style="grid-column: span 2">
-        <h3>Günlük Mühimmat Görevleri</h3>
-        <div style="display:flex; justify-content:space-between; align-items:center; padding: 20px; border-bottom: 1px solid #f0f0f0;">
-            <span>Sisteme Destek Ol (3 Saniye Reklam)</span>
-            <button class="btn btn-s" onclick="doTask(10)">10 ₺ KAZAN</button>
+        <h3>Bakiye Kazandıran Görevler</h3>
+        <p style="color:#94a3b8; font-size:14px">Görevler sistem tarafından doğrulanır, lütfen bekleyin.</p>
+        <div style="padding:15px; border-bottom:1px solid #334155; display:flex; justify-content:space-between; align-items:center">
+            <span>HÜKÜM PİN Sunucusuna Katıl</span>
+            <button class="btn btn-outline" id="t-1" onclick="doTask('t-1', 15)">15 ₺ KAZAN</button>
         </div>
     </div>
 </div>
 
-<div id="view-oyun" class="container" style="display:none">
-    <div class="card" style="grid-column: span 2; text-align:center;">
+<div id="tab-games" class="main-container" style="display:none">
+    <div class="card" style="grid-column: span 2; text-align:center">
         <h3>HÜKÜM DINO</h3>
-        <p style="color:#666; font-size:14px;">Zıplamak için tıkla veya ekrana dokun!</p>
-        <div id="game-area">
-            <div id="dino"></div>
-            <div id="obstacle"></div>
-        </div>
-        <button class="btn btn-p" style="margin-top:20px;" onclick="initGame()">OYUNU BAŞLAT</button>
+        <div id="dino-box"><div id="dino"></div><div id="cactus"></div></div>
+        <button class="btn btn-red" style="margin-top:20px" onclick="startDino()">OYUNU BAŞLAT</button>
     </div>
 </div>
 
-<div id="vip-room">
-    <div class="terminal-header">HÜKÜM VIP KONTROL KULESİ // ERİŞİM SAĞLANDI</div>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
-        <div class="terminal-card">
-            <h3>BAKİYE TRANSFERİ</h3>
-            <input type="text" id="adm-user" class="t-input" placeholder="Kullanıcı Adı">
-            <input type="number" id="adm-money" class="t-input" placeholder="Eklenecek Tutar">
-            <button class="btn" style="background:#00ff41; color:black; width:100%" onclick="adminAddMoney()">ONAYLA VE GÖNDER</button>
+<div id="vip-portal">
+    <div class="vip-header">
+        <h1 style="margin:0; font-size:32px; letter-spacing:4px">VIP KONTROL MERKEZİ</h1>
+        <p style="color:var(--secondary)">Sadece Yetkili Komutan Erişimi</p>
+    </div>
+    <div class="vip-grid">
+        <div class="vip-card">
+            <h3>HESAP YÖNETİMİ</h3>
+            <p style="font-size:12px; color:#666">Kullanıcıyı bul ve bakiye mermisi gönder.</p>
+            <input type="text" id="adm-user" class="vip-input" placeholder="Hedef Kullanıcı Adı">
+            <input type="number" id="adm-amt" class="vip-input" placeholder="Miktar (₺)">
+            <button class="btn btn-red" style="width:100%" onclick="adminSend()">TRANSFERİ ONAYLA</button>
         </div>
-        <div class="terminal-card">
-            <h3>STOK YÖNETİMİ</h3>
-            <input type="text" id="adm-code" class="t-input" placeholder="Google Play Kodu">
-            <button class="btn" style="background:#00ff41; color:black; width:100%" onclick="adminAddCode()">STOĞA EKLE</button>
+        <div class="vip-card">
+            <h3>LOJİSTİK (STOK)</h3>
+            <p style="font-size:12px; color:#666">Sisteme yeni Google Play kodları tanımla.</p>
+            <input type="text" id="adm-code" class="vip-input" placeholder="Kod Giriniz">
+            <button class="btn btn-red" style="width:100%" onclick="adminStok()">STOĞA KAYDET</button>
         </div>
     </div>
-    <button class="btn btn-p" style="margin-top:40px; background:red;" onclick="closeAdmin()">KULEDEN AYRIL</button>
+    <button class="btn btn-outline" style="margin-top:40px" onclick="document.getElementById('vip-portal').style.display='none'">SİSTEMDEN ÇIK</button>
 </div>
 
 <footer>
-    <span class="admin-key" onclick="openAdmin()">© 2026 HÜKÜM PİN | Güvenli Ödeme Altyapısı</span>
+    <span class="secret-trigger" onclick="openVip()">© 2026 HÜKÜM PİN | Güvenli Ödeme Altyapısı</span>
 </footer>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('hukum_db_v5')) || { b: 0, d: 0, user: '', login: false };
-    let stok = JSON.parse(localStorage.getItem('hukum_stok_v5')) || [];
+    let db = JSON.parse(localStorage.getItem('huk_v6')) || { b: 0, d: 0, u: '', login: false };
+    let stok = JSON.parse(localStorage.getItem('huk_stok_v6')) || [];
 
-    function showManual() { document.getElementById('choice-buttons').style.display='none'; document.getElementById('manual-login').style.display='block'; }
-    
-    function handleLogin(type) {
-        db.user = type === 'google' ? "Google_Komutan" : "Hüküm_Üyesi";
-        db.login = true; save();
-        document.getElementById('auth-overlay').style.display = 'none';
+    function quickLogin(name) {
+        if(name) { db.u = name; db.login = true; update(); document.getElementById('auth-overlay').style.display='none'; }
     }
 
-    function manualLogin() {
-        let n = document.getElementById('user-in').value;
-        if(n) { db.user = n; db.login = true; save(); document.getElementById('auth-overlay').style.display = 'none'; }
-    }
-
-    function save() {
-        localStorage.setItem('hukum_db_v5', JSON.stringify(db));
-        localStorage.setItem('hukum_stok_v5', JSON.stringify(stok));
+    function update() {
+        localStorage.setItem('huk_v6', JSON.stringify(db));
+        localStorage.setItem('huk_stok_v6', JSON.stringify(stok));
         document.getElementById('b-val').innerText = db.b.toFixed(2) + " ₺";
         document.getElementById('d-val').innerText = db.d.toFixed(2) + " ₺";
+        document.getElementById('u-name').innerText = db.u;
         document.getElementById('s-val').innerText = stok.length;
-        document.getElementById('display-name').innerText = db.user;
-        
-        // BORÇ SINIRI KONTROLÜ (30 TL)
-        let bBtn = document.getElementById('borc-btn');
-        if(db.d >= 30) { bBtn.disabled = true; bBtn.style.opacity = "0.4"; bBtn.innerText = "Borç Limiti Dolu"; }
-        else { bBtn.disabled = false; bBtn.style.opacity = "1"; bBtn.innerText = "Borçla Al"; }
+
+        // BORÇ SINIRI MANTIĞI
+        const bBtn = document.getElementById('borc-btn');
+        if(db.d >= 30) { bBtn.disabled = true; bBtn.innerText = "Limit Dolu"; }
+        else { bBtn.disabled = false; bBtn.innerText = "Borçla Al"; }
     }
 
-    function switchView(v) {
-        document.getElementById('view-cüzdan').style.display = v === 'cüzdan' ? 'grid' : 'none';
-        document.getElementById('view-görevler').style.display = v === 'görevler' ? 'grid' : 'none';
-        document.getElementById('view-oyun').style.display = v === 'oyun' ? 'grid' : 'none';
+    function tab(t) {
+        document.getElementById('tab-main').style.display = t === 'main' ? 'grid' : 'none';
+        document.getElementById('tab-tasks').style.display = t === 'tasks' ? 'grid' : 'none';
+        document.getElementById('tab-games').style.display = t === 'games' ? 'grid' : 'none';
     }
 
     function buy(cost, isDebt) {
-        if(stok.length === 0) return alert("Stokta ürün bulunmuyor!");
-        let price = isDebt ? 90 : 110;
-        if(db.b >= price) {
-            db.b -= price; if(isDebt) db.d += 10;
-            alert("HÜKÜM PİN KODUNUZ: " + stok.shift()); save();
-        } else { alert("Bakiyen yetersiz komutan!"); }
+        if(stok.length === 0) return alert("Hata: Stokta ürün kalmadı!");
+        let pay = isDebt ? 90 : 110;
+        if(db.b >= pay) {
+            db.b -= pay; if(isDebt) db.d += 10;
+            alert("İŞLEM BAŞARILI! KODUNUZ: " + stok.shift()); update();
+        } else { alert("Hata: Yetersiz bakiye!"); }
     }
 
-    function doTask(m) { 
-        alert("Görev İşleniyor... Lütfen bekleyin.");
-        setTimeout(() => { db.b += m; save(); alert(m + " ₺ cüzdanınıza eklendi!"); }, 2000);
+    function doTask(id, amt) {
+        const btn = document.getElementById(id);
+        btn.disabled = true; btn.innerText = "Doğrulanıyor...";
+        setTimeout(() => {
+            db.b += amt; update();
+            btn.innerText = "TAMAMLANDI"; alert("HÜKÜM BANK: "+amt+" ₺ bakiye eklendi.");
+        }, 5000); // 5 Saniye Doğrulama Süresi
     }
 
-    // OYUN MOTORU
-    function jump() { 
-        let d = document.getElementById('dino');
-        if(!d.classList.contains('jump')) {
-            d.style.bottom = "110px";
-            setTimeout(() => { d.style.bottom = "0"; }, 300);
+    function jump() {
+        const d = document.getElementById('dino');
+        if(d.style.bottom === "0px" || !d.style.bottom) {
+            d.style.bottom = "100px";
+            setTimeout(() => { d.style.bottom = "0px"; }, 300);
         }
     }
-    function initGame() {
-        document.getElementById('game-area').style.display = 'block';
-        document.getElementById('obstacle').style.animation = "slide 1.4s infinite linear";
+
+    function startDino() {
+        document.getElementById('dino-box').style.display = 'block';
+        document.getElementById('cactus').style.animation = "moveCactus 1.5s infinite linear";
     }
 
-    // VIP KULE FONKSİYONLARI
-    function openAdmin() { 
-        if(prompt("VIP KULE ŞİFRESİ:") === "Eyo_pasha15") document.getElementById('vip-room').style.display = 'block'; 
-        else alert("YETKİSİZ GİRİŞ!");
-    }
-    function closeAdmin() { document.getElementById('vip-room').style.display = 'none'; }
-    function adminAddMoney() { 
-        let m = parseInt(document.getElementById('adm-money').value);
-        if(m) { db.b += m; save(); alert("Bakiye başarıyla transfer edildi."); }
-    }
-    function adminAddCode() { 
-        let c = document.getElementById('adm-code').value;
-        if(c) { stok.push(c); save(); alert("Kod stoğa başarıyla işlendi."); document.getElementById('adm-code').value = ""; }
+    function openVip() {
+        if(prompt("VIP ERİŞİM ŞİFRESİ:") === "Eyo_pasha15") document.getElementById('vip-portal').style.display='block';
     }
 
-    if(db.login) document.getElementById('auth-overlay').style.display = 'none';
-    save();
+    function adminSend() {
+        db.b += parseInt(document.getElementById('adm-amt').value); update(); alert("Bakiye yüklendi.");
+    }
+
+    function adminStok() {
+        stok.push(document.getElementById('adm-code').value); update(); alert("Kod eklendi.");
+    }
+
+    if(db.login) document.getElementById('auth-overlay').style.display='none';
+    update();
 </script>
 </body>
 </html>
-
