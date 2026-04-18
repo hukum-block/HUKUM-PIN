@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HÜKÜM | Dijital Karargah</title>
+    <style>
+        /* HÜKÜM SERT TASARIM */
+        body { background-color: #050505; color: #fff; font-family: 'Courier New', Courier, monospace; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .terminal { background: #000; border: 2px solid #f00; width: 90%; max-width: 450px; padding: 25px; box-shadow: 0 0 30px #f00; border-radius: 5px; position: relative; }
+        h1 { color: #f00; text-align: center; letter-spacing: 8px; margin-bottom: 5px; text-shadow: 2px 2px #330000; }
+        .status-bar { border-bottom: 1px solid #333; margin-bottom: 20px; font-size: 12px; color: #888; display: flex; justify-content: space-between; }
+        .balance-section { background: #111; border: 1px solid #222; padding: 15px; margin-bottom: 20px; text-align: center; }
+        .money { color: #0f0; font-size: 24px; font-weight: bold; }
+        .debt { color: #f00; font-size: 14px; margin-top: 5px; }
+        .market-item { border: 1px solid #333; padding: 15px; margin-bottom: 10px; border-radius: 4px; background: #0a0a0a; }
+        .btn { background: #f00; color: #fff; border: none; padding: 10px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 5px; transition: 0.3s; }
+        .btn:hover { background: #900; box-shadow: 0 0 10px #f00; }
+        .btn-alt { background: #fff; color: #000; }
+        .log-area { background: #050505; border: 1px solid #333; height: 80px; margin-top: 15px; padding: 10px; font-size: 11px; overflow-y: auto; color: #aaa; text-align: left; }
+        #admin-link { position: absolute; bottom: 5px; right: 10px; color: #111; cursor: pointer; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="terminal">
+    <div class="status-bar">
+        <span>V.10.0-HÜKÜM</span>
+        <span id="clock">19.04.2026</span>
+    </div>
+    <h1>HÜKÜM</h1>
+    <p style="text-align: center; font-size: 10px; margin-top: -10px; color: #666;">"SÖZÜMÜZ SENET, HÜKMÜMÜZ SERTTİR"</p>
+
+    <div class="balance-section">
+        BAKİYE: <span id="display-balance" class="money">0</span> TL<br>
+        <div id="display-debt" class="debt">MEVCUT BORÇ: 0 TL</div>
+    </div>
+
+    <div id="market">
+        <div class="market-item">
+            <strong>100 TL GOOGLE PLAY KODU</strong><br>
+            <button class="btn" onclick="satinAl(100, 'borc')">90 TL Kod Al (10 TL Borç Yaz)</button>
+            <button class="btn btn-alt" onclick="satinAl(110, 'normal')">110 TL Kod Al (Nakşit)</button>
+        </div>
+    </div>
+
+    <div class="log-area" id="logs">
+        > Sistem aktif...<br>
+        > Mühimmat bekleniyor...
+    </div>
+
+    <div id="admin-link" onclick="adminModu()">H</div>
+</div>
+
+<script>
+    // --- HÜKÜM SİSTEM DEĞİŞKENLERİ ---
+    let bakiye = 0;
+    let borc = 0;
+    let stok_100 = []; // Admin buradan kod yükleyecek
+
+    // --- SATIN ALMA MOTORU ---
+    function satinAl(fiyat, tip) {
+        const log = document.getElementById("logs");
+        
+        // Borç Kontrolü
+        if (tip === 'borc' && borc >= 30) {
+            log.innerHTML += "> HATA: Borç limitin (30 TL) dolmuş! Önce borcunu öde.<br>";
+            return;
+        }
+
+        // Stok Kontrolü
+        if (stok_100.length === 0) {
+            log.innerHTML += "> HATA: Mühimmat tükendi! Komutan mermi bekliyor.<br>";
+            return;
+        }
+
+        if (tip === 'borc') {
+            if (bakiye >= 90) {
+                bakiye -= 90;
+                borc += 10;
+                teslimEt("100 TL (Borçlu İşlem)");
+            } else {
+                log.innerHTML += "> HATA: Yetersiz bakiye!<br>";
+            }
+        } else {
+            if (bakiye >= 110) {
+                bakiye -= 110;
+                teslimEt("100 TL (Peşin İşlem)");
+            } else {
+                log.innerHTML += "> HATA: Yetersiz bakiye!<br>";
+            }
+        }
+        ekranGuncelle();
+    }
+
+    function teslimEt(mesaj) {
+        const kod = stok_100.shift(); // En üstteki taze kodu alır ve stoktan siler (GÜVENLİK!)
+        const log = document.getElementById("logs");
+        log.innerHTML += `> BAŞARILI: ${mesaj}<br>`;
+        alert("HÜKÜM KODUNUZ: " + kod + "\n\nKodu kopyala ve kullan. Hayırlı olsun aslanım!");
+    }
+
+    function ekranGuncelle() {
+        document.getElementById("display-balance").innerText = bakiye;
+        document.getElementById("display-debt").innerText = "MEVCUT BORÇ: " + borc + " TL";
+    }
+
+    // --- GİZLİ ADMİN KARARGAHI ---
+    function adminModu() {
+        let sifre = prompt("KOMUTAN ŞİFRESİNİ GİR:");
+        if (sifre === "Aşko2026") {
+            let islem = prompt("1: Bakiye Ekle\n2: Stok Yükle (Kod)\n3: Borç Sıfırla");
+            
+            if (islem == "1") {
+                let miktar = parseInt(prompt("Miktar:"));
+                bakiye += miktar;
+                alert("Bakiye eklendi paşam.");
+            } else if (islem == "2") {
+                let yeniKod = prompt("Google Play Kodunu Yapıştır:");
+                stok_100.push(yeniKod);
+                alert("Stok güncellendi. Mevcut mermi: " + stok_100.length);
+            } else if (islem == "3") {
+                borc = 0;
+                alert("Tüm borçlar silindi.");
+            }
+            ekranGuncelle();
+        } else {
+            alert("Hatalı şifre! Burası serserilere göre değil.");
+        }
+    }
+</script>
+
+</body>
+</html>
