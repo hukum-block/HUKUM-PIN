@@ -32,7 +32,7 @@
         .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: var(--white); }
         .logo span { color: var(--primary-blue); text-shadow: 0 0 10px var(--primary-blue); }
 
-        /* 💰 BAKİYE GÖSTERGE PANELİ (YENİ) */
+        /* 💰 BAKİYE GÖSTERGE PANELİ */
         .wallet-display {
             background: #161b22; border: 1px solid var(--gold); padding: 5px 12px;
             border-radius: 10px; display: flex; align-items: center; gap: 8px;
@@ -67,6 +67,13 @@
         .card-body { padding: 12px; }
         .card-price { color: var(--gold); font-size: 17px; font-weight: 800; margin-top: 5px; }
         .card-seller { font-size: 10px; color: var(--text-gray); display: flex; align-items: center; gap: 5px; }
+        
+        /* 🗑️ İLAN KALDIRMA BUTONU */
+        .del-btn {
+            position: absolute; top: 5px; right: 5px; background: rgba(218, 54, 51, 0.8);
+            border: none; color: white; border-radius: 50%; width: 25px; height: 25px;
+            cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 12px;
+        }
 
         /* BOTTOM NAV */
         .bottom-nav {
@@ -87,14 +94,14 @@
             background: var(--bg-card); width: 85%; max-width: 380px;
             border-radius: 25px; padding: 30px; border: 1px solid var(--primary-blue);
         }
-        input {
+        input, select, textarea {
             width: 100%; background: #0f111a; border: 1px solid #333;
             color: white; padding: 14px; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; outline: none;
         }
         input:focus { border-color: var(--primary-blue); }
         .btn-main { width: 100%; background: var(--primary-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
 
-        /* 🛡️ HÜKÜM ADMİN KARARGAHI - YENİ DÜNYA */
+        /* 🛡️ HÜKÜM ADMİN KARARGAHI */
         #admin-room {
             display: none; position: fixed; inset: 0; background: #000; z-index: 3000;
             overflow-y: auto; padding: 25px; color: #00ff00; font-family: 'Courier New', monospace;
@@ -102,7 +109,6 @@
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
         .admin-card { 
             background: #0a0a0a; border: 1px solid #00ff00; padding: 15px; border-radius: 10px;
-            box-shadow: inset 0 0 10px #00ff0033;
         }
         .terminal-box { 
             height: 120px; background: #050505; border: 1px dashed #00ff00; 
@@ -117,7 +123,7 @@
 <body>
 
 <div class="announcement">
-    <div class="announcement-text">🛡️ HÜKÜM-PİN GÜVENLİK SİSTEMİ DEVREDE | %100 YERLİ VE MİLLİ YAZILIM | KURTALAN'IN GURURU V18</div>
+    <div class="announcement-text">🛡️ HÜKÜM-PİN GÜVENLİK SİSTEMİ DEVREDE | %100 YERLİ VE MİLLİ YAZILIM | KURTALAN'IN GURURU V19</div>
 </div>
 
 <header>
@@ -190,20 +196,8 @@
             <input type="number" id="adm-a" placeholder="Miktar" style="border-color:#0f0;">
             <button class="power-btn" onclick="admAddBal()">BAKİYEYİ GÖNDER</button>
         </div>
-        <div class="admin-card"><small>4. BAN ÇEKİCİ</small><br><button class="power-btn" style="background: #f00;" onclick="alert('Ban Listesi Boş')">ÜYEYİ ŞUTLA</button></div>
-        <div class="admin-card"><small>5. MANŞET DEĞİŞTİR</small><br><button class="power-btn" onclick="alert('Duyuru Güncellendi')">DUYURU AT</button></div>
-        <div class="admin-card"><small>6. IP İZLEYİCİ</small><br><small>127.0.0.1 (Local)</small></div>
-        <div class="admin-card"><small>7. CPU DURUMU</small><br><b>%2 - Stabil</b></div>
-        <div class="admin-card"><small>8. SQL DURUMU</small><br><b style="color:var(--green)">BAĞLI</b></div>
-        <div class="admin-card"><small>9. FIREWALL</small><br><b style="color:var(--green)">AKTİF</b></div>
-        <div class="admin-card"><small>10. BEKLEYEN İLAN</small><br><b>0</b></div>
-        <div class="admin-card"><small>11. VERGİ PAYI</small><br><b>%5</b></div>
-        <div class="admin-card"><small>12. TEMA MODU</small><br><b>Hüküm Dark</b></div>
-        <div class="admin-card"><small>13. VIP ÜYELER</small><br><b>Eymen</b></div>
-        <div class="admin-card"><small>14. LOG SİL</small><br><button class="power-btn" onclick="document.getElementById('terminal').innerHTML='> Loglar silindi.'">TEMİZLE</button></div>
         <div class="admin-card"><small>15. SİSTEM KİLİDİ</small><br><button class="power-btn" onclick="location.reload()">SİTEYİ RESETLE</button></div>
     </div>
-
     <button class="exit-btn" onclick="document.getElementById('admin-room').style.display='none'">KARARGAHTAN ÇIK</button>
 </div>
 
@@ -232,15 +226,22 @@
         if(list.length === 0) {
             grid.innerHTML = `<div class="empty-msg">Bu kategoride henüz ilan yok.</div>`;
         } else {
-            list.forEach(item => {
+            list.forEach((item, index) => {
+                // Sadece ilan sahibi veya admin silebilir
+                let deleteHtml = (currentUser === item.s || currentUser === 'eymen') ? 
+                    `<button class="del-btn" onclick="deleteIlan(${item.id}, event)"><i class="fa fa-trash"></i></button>` : "";
+
                 grid.innerHTML += `
                     <div class="card" onclick="buyProcess(${item.id})">
-                        <div class="card-img" style="display:flex; align-items:center; justify-content:center; height:110px; background:#242731;">
+                        ${deleteHtml}
+                        <div class="card-img" style="display:flex; align-items:center; justify-content:center; height:110px; background:#242731; position:relative;">
                             <i class="fa fa-box-open" style="color:#3b82f6; font-size:40px;"></i>
+                            <div style="position:absolute; bottom:5px; right:10px; font-size:10px; color:var(--green)">Stok: ${item.stok || 1}</div>
                         </div>
                         <div class="card-body">
                             <div class="card-seller"><i class="fa fa-shield" style="color:var(--green);"></i> ${item.s}</div>
                             <div style="font-size:13px; font-weight:700; margin:6px 0;">${item.n}</div>
+                            <div style="font-size:10px; color:var(--text-gray); margin-bottom:5px;">İletişim: ${item.pform} (${item.pname})</div>
                             <div class="card-price">${item.p},00 ₺</div>
                         </div>
                     </div>
@@ -253,68 +254,82 @@
         
         if(currentUser) {
             document.getElementById('login-trigger').innerHTML = `<i class="fa fa-user-check" style="color:var(--gold)"></i> ${currentUser.toUpperCase()}`;
-            // Bakiye göstergesini güncelle ve görünür yap
             document.getElementById('header-wallet').style.display = 'flex';
             document.getElementById('user-money').innerText = state.users[currentUser].b.toFixed(2) + " ₺";
         }
     }
 
-    function showSupport() {
-        alert("🛡️ HÜKÜM DESTEK: \nBakiye ve ilan onayları için TikTok @hukum_v45 hesabına mesaj atın.");
-        window.open("https://www.tiktok.com/@hukum_v45", "_blank");
+    function deleteIlan(id, e) {
+        e.stopPropagation(); // Kart tıklamasını engelle
+        if(confirm("Bu ilanı kaldırmak istediğine emin misin Paşa?")) {
+            state.items = state.items.filter(i => i.id !== id);
+            save();
+        }
     }
 
     function showIlanEkle() {
         if(!currentUser) { openLogin(); return; }
-        let n = prompt("Ürün Adı (Örn: 1000 Robux):");
-        let p = prompt("Satış Fiyatı (₺):");
-        let cat = prompt("Kategori (hesap, item, epin, discord, tiktok):").toLowerCase();
-        let link = prompt("İletişim Adresiniz (TikTok/Insta):");
         
-        if(n && p && cat && link) {
-            state.items.push({ id: Date.now(), n: n, p: parseInt(p), s: currentUser, cat: cat, link: link });
+        let n = prompt("Ürünün İsmi Ne Satacan? (Örn: 1000 Robux)");
+        if(!n) return;
+        
+        let p = prompt("Ne Kadar Kaç Para? (₺)");
+        if(!p) return;
+        
+        let stok = prompt("Kaç Tane Var Stok?");
+        if(!stok) return;
+
+        let cat = prompt("Kategori? (hesap, item, epin, discord, tiktok)").toLowerCase();
+        
+        let pform = prompt("Müşteri Sana Nerden Ulaşabilir? (TikTok, Instagram vb.)");
+        let pname = prompt("O Platformdaki İsmin Ne?");
+        
+        let note = prompt("Not (Artık burası serbest):");
+        
+        if(n && p && cat && pform && pname) {
+            state.items.push({ 
+                id: Date.now(), 
+                n: n, 
+                p: parseInt(p), 
+                stok: parseInt(stok),
+                s: currentUser, 
+                cat: cat, 
+                pform: pform, 
+                pname: pname,
+                note: note 
+            });
             save();
-            alert("İlan başarıyla yayına alındı Eymen Paşa!");
+            alert("İlan Karargah Onayıyla Yayına Alındı!");
         }
     }
 
     function buyProcess(id) {
         if(!currentUser) { openLogin(); return; }
         let itm = state.items.find(x => x.id === id);
-        if(state.users[currentUser].b >= itm.p) {
-            state.users[currentUser].b -= itm.p;
-            state.vault += itm.p;
-            alert("İşlem Başarılı! \nSatıcı Bilgisi: " + itm.link);
-            save();
-        } else {
-            alert("Bakiye Yetersiz! Lütfen bakiye yükleyin.");
-            showSupport();
+        
+        let onay = confirm(`${itm.n} ürününü satın almak istiyor musun?\nSatıcı: ${itm.s}\nFiyat: ${itm.p}₺\n\nNot: ${itm.note || "Not yok."}`);
+        
+        if(onay) {
+            if(state.users[currentUser].b >= itm.p) {
+                state.users[currentUser].b -= itm.p;
+                state.vault += itm.p;
+                itm.stok -= 1;
+                
+                alert(`İşlem Başarılı! \n\nSATICIYA ULAŞIN:\nPlatform: ${itm.pform}\nİsim: ${itm.pname}`);
+                
+                if(itm.stok <= 0) {
+                    state.items = state.items.filter(x => x.id !== id);
+                }
+                save();
+            } else {
+                alert("Bakiye Yetersiz! Lütfen bakiye yükleyin.");
+                showSupport();
+            }
         }
     }
 
-    function adminClickCount() {
-        if(!currentUser) { openLogin(); return; }
-        adminClicks++;
-        if(adminClicks >= 5) {
-            adminClicks = 0;
-            let pass = prompt("HÜKÜM-PİN KARARGAH ŞİFRESİ:");
-            if(pass === "Eyo_pasha15") {
-                document.getElementById('admin-room').style.display = 'block';
-            } else { alert("YETKİSİZ GİRİŞ!"); }
-        }
-    }
-
-    function admAddBal() {
-        let t = document.getElementById('adm-t').value.toLowerCase();
-        let a = parseFloat(document.getElementById('adm-a').value);
-        if(state.users[t]) {
-            state.users[t].b += a;
-            save();
-            document.getElementById('terminal').innerHTML += `> [LOG] ${t} kullanıcısına ${a}₺ gönderildi.<br>`;
-            alert("Başarıyla eklendi.");
-        } else { alert("Kullanıcı bulunamadı!"); }
-    }
-
+    // DİĞER FONKSİYONLAR AYNI KALDI
+    function showSupport() { alert("TikTok @hukum_v45 üzerinden destek alabilirsiniz."); }
     function openLogin() { document.getElementById('login-modal').style.display = 'flex'; }
     function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
     function processLogin() {
@@ -325,6 +340,19 @@
             save();
             closeLogin();
         }
+    }
+    function adminClickCount() {
+        if(!currentUser) { openLogin(); return; }
+        adminClicks++;
+        if(adminClicks >= 5) {
+            adminClicks = 0;
+            if(prompt("HÜKÜM ŞİFRESİ:") === "Eyo_pasha15") document.getElementById('admin-room').style.display = 'block';
+        }
+    }
+    function admAddBal() {
+        let t = document.getElementById('adm-t').value.toLowerCase();
+        let a = parseFloat(document.getElementById('adm-a').value);
+        if(state.users[t]) { state.users[t].b += a; save(); alert("Bakiye Eklendi."); }
     }
 
     render();
