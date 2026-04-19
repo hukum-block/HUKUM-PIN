@@ -3,87 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İtemSatış | HÜKÜM MARKET</title>
+    <title>HÜKÜM-PİN | Dijital Güvenlik ve Alışveriş</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-dark: #1a1c23; --bg-card: #242731; --primary-blue: #3b82f6; 
-            --gold: #ffb100; --text-gray: #9ca3af; --white: #ffffff; --red: #ef4444;
+            --bg-dark: #0f111a; --bg-card: #1a1d29; --primary-blue: #3b82f6; 
+            --gold: #ffb100; --text-gray: #9ca3af; --white: #ffffff; --green: #10b981;
         }
 
         body {
             background-color: var(--bg-dark); color: var(--white);
-            font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 70px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding-bottom: 70px;
+            overflow-x: hidden;
         }
 
+        /* 34. CANLI DUYURU BANDI */
         .announcement {
-            background: #2d313d; color: var(--gold); padding: 8px; font-size: 13px;
-            border-bottom: 1px solid #333; overflow: hidden; white-space: nowrap;
+            background: linear-gradient(90deg, #1e2235, #2d313d); color: var(--gold); padding: 10px; font-size: 13px;
+            border-bottom: 1px solid var(--primary-blue); overflow: hidden; white-space: nowrap; font-weight: bold;
         }
-        .announcement-text { display: inline-block; animation: scroll 20s linear infinite; }
+        .announcement-text { display: inline-block; animation: scroll 25s linear infinite; }
 
+        /* HEADER & LOGO DÜZENLEME */
         header {
-            background: var(--bg-card); padding: 10px 15px; display: flex;
+            background: var(--bg-card); padding: 15px; display: flex;
             justify-content: space-between; align-items: center; border-bottom: 1px solid #333;
         }
-        .logo { font-size: 20px; font-weight: 800; letter-spacing: -1px; }
-        .logo span { color: var(--primary-blue); }
+        .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: var(--white); }
+        .logo span { color: var(--primary-blue); text-shadow: 0 0 10px var(--primary-blue); }
 
+        /* KATEGORİLER */
         .cat-row {
-            display: flex; gap: 10px; overflow-x: auto; padding: 15px;
+            display: flex; gap: 15px; overflow-x: auto; padding: 20px 15px;
             scrollbar-width: none; background: var(--bg-dark);
         }
-        .cat-item { min-width: 80px; text-align: center; font-size: 11px; color: var(--text-gray); cursor: pointer; }
+        .cat-item { min-width: 85px; text-align: center; font-size: 11px; color: var(--text-gray); cursor: pointer; transition: 0.3s; }
+        .cat-item:hover { color: var(--white); transform: translateY(-5px); }
         .cat-icon {
-            width: 50px; height: 50px; background: var(--bg-card);
-            border-radius: 12px; display: flex; align-items: center;
-            justify-content: center; font-size: 20px; margin-bottom: 5px; color: var(--gold);
+            width: 55px; height: 55px; background: var(--bg-card);
+            border-radius: 15px; display: flex; align-items: center;
+            justify-content: center; font-size: 24px; margin-bottom: 8px; color: var(--gold);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .section-title { padding: 10px 15px; font-size: 14px; font-weight: 700; color: #10b981; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 15px; }
+        /* PAZAR ALANI */
+        .section-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
+        .section-title { font-size: 16px; font-weight: 800; color: var(--green); border-left: 4px solid var(--green); padding-left: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px; }
+        .empty-msg { grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-gray); font-style: italic; }
+
         .card {
-            background: var(--bg-card); border-radius: 12px; overflow: hidden;
-            position: relative; border: 1px solid #333; cursor: pointer;
+            background: var(--bg-card); border-radius: 15px; overflow: hidden;
+            position: relative; border: 1px solid #2a2e3f; transition: 0.3s;
         }
-        .card-img { width: 100%; height: 100px; object-fit: cover; background: #333; }
-        .card-body { padding: 10px; }
-        .card-price { color: var(--gold); font-size: 16px; font-weight: 800; margin-top: 5px; }
-        .card-seller { font-size: 10px; color: var(--text-gray); display: flex; align-items: center; gap: 4px; }
-        .vitrin-badge {
-            position: absolute; top: 0; left: 0; background: #10b981;
-            font-size: 9px; padding: 2px 8px; font-weight: bold; z-index: 10;
-        }
+        .card-body { padding: 12px; }
+        .card-price { color: var(--gold); font-size: 17px; font-weight: 800; margin-top: 5px; }
+        .card-seller { font-size: 10px; color: var(--text-gray); display: flex; align-items: center; gap: 5px; }
 
+        /* BOTTOM NAV */
         .bottom-nav {
-            position: fixed; bottom: 0; width: 100%; background: var(--bg-card);
-            display: flex; justify-content: space-around; padding: 10px 0;
-            border-top: 1px solid #333; z-index: 1000;
+            position: fixed; bottom: 0; width: 100%; background: #161923;
+            display: flex; justify-content: space-around; padding: 12px 0;
+            border-top: 1px solid #2a2e3f; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
         }
-        .nav-btn { text-align: center; font-size: 10px; color: var(--text-gray); border: none; background: none; cursor: pointer; }
-        .nav-btn i { font-size: 20px; margin-bottom: 3px; display: block; }
-        .nav-btn.active { color: var(--white); }
+        .nav-btn { text-align: center; font-size: 10px; color: var(--text-gray); border: none; background: none; cursor: pointer; transition: 0.2s; }
+        .nav-btn i { font-size: 22px; margin-bottom: 4px; display: block; }
+        .nav-btn.active, .nav-btn:hover { color: var(--white); }
 
+        /* MODALLAR */
         #login-modal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-            z-index: 2000; align-items: center; justify-content: center;
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px);
         }
         .login-box {
-            background: var(--bg-card); width: 90%; max-width: 350px;
-            border-radius: 20px; padding: 25px; position: relative;
+            background: var(--bg-card); width: 85%; max-width: 380px;
+            border-radius: 25px; padding: 30px; border: 1px solid var(--primary-blue);
         }
-        .social-btns { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin: 20px 0; }
-        .s-btn { height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; border: none; font-size: 18px; cursor: pointer; }
         input {
-            width: 100%; background: #1a1c23; border: 1px solid #333;
-            color: white; padding: 12px; border-radius: 10px; margin-bottom: 10px; box-sizing: border-box;
+            width: 100%; background: #0f111a; border: 1px solid #333;
+            color: white; padding: 14px; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; outline: none;
         }
-        .btn-main { background: var(--primary-blue); width: 100%; border: none; padding: 12px; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; }
+        input:focus { border-color: var(--primary-blue); }
 
+        /* 🛡️ HÜKÜM ADMİN KARARGAHI - YENİ DÜNYA */
         #admin-room {
             display: none; position: fixed; inset: 0; background: #000; z-index: 3000;
-            font-family: 'Courier New', monospace; color: #00ff00; padding: 20px;
+            overflow-y: auto; padding: 25px; color: #00ff00; font-family: 'Courier New', monospace;
         }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .admin-card { 
+            background: #0a0a0a; border: 1px solid #00ff00; padding: 15px; border-radius: 10px;
+            box-shadow: inset 0 0 10px #00ff0033;
+        }
+        .terminal-box { 
+            height: 120px; background: #050505; border: 1px dashed #00ff00; 
+            padding: 10px; font-size: 11px; overflow-y: auto; margin-bottom: 20px;
+        }
+        .power-btn { background: #00ff00; color: #000; font-weight: bold; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; }
+        .exit-btn { background: #ff0000; color: #fff; margin-top: 20px; padding: 12px; width: 100%; border: none; border-radius: 5px; cursor: pointer; }
 
         @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
     </style>
@@ -91,135 +108,158 @@
 <body>
 
 <div class="announcement">
-    <div class="announcement-text">🚀 HÜKÜM MARKET V17 AKTİF! | ÜCRETSİZ ÇEKİLİŞLERE KATILMAYI UNUTMAYIN! | TİKTOK: @HUKUM_V45</div>
+    <div class="announcement-text">🛡️ HÜKÜM-PİN GÜVENLİK SİSTEMİ DEVREDE | %100 YERLİ VE MİLLİ YAZILIM | KURTALAN'IN GURURU V18</div>
 </div>
 
 <header>
     <div style="display: flex; align-items: center; gap: 15px;">
-        <i class="fa fa-bars" style="font-size: 18px;"></i>
-        <div class="logo">itemsatış<span>.com</span></div>
+        <i class="fa fa-shield-halved" style="color: var(--primary-blue); font-size: 20px;"></i>
+        <div class="logo">HÜKÜM<span>-PİN</span></div>
     </div>
-    <div style="font-size: 20px; cursor: pointer;" onclick="openLogin()"><i class="fa-regular fa-circle-user"></i></div>
+    <div style="font-size: 20px; cursor: pointer;" onclick="openLogin()"><i class="fa-solid fa-user-shield"></i></div>
 </header>
 
 <div class="cat-row">
-    <div class="cat-item" onclick="render('hesap')"><div class="cat-icon"><i class="fa fa-ghost"></i></div>Hesap</div>
-    <div class="cat-item" onclick="render('item')"><div class="cat-icon"><i class="fa fa-shield-halved"></i></div>İtem</div>
-    <div class="cat-item" onclick="render('epin')"><div class="cat-icon"><i class="fa fa-bolt"></i></div>E-Pin</div>
+    <div class="cat-item" onclick="render('hesap')"><div class="cat-icon"><i class="fa fa-id-card"></i></div>Hesap</div>
+    <div class="cat-item" onclick="render('item')"><div class="cat-icon"><i class="fa fa-sword"></i></div>İtem</div>
+    <div class="cat-item" onclick="render('epin')"><div class="cat-icon"><i class="fa fa-key"></i></div>E-Pin</div>
     <div class="cat-item" onclick="render('discord')"><div class="cat-icon" style="color: #5865F2;"><i class="fa-brands fa-discord"></i></div>Discord</div>
     <div class="cat-item" onclick="render('tiktok')"><div class="cat-icon" style="color: #ff0050;"><i class="fa-brands fa-tiktok"></i></div>TikTok</div>
 </div>
 
-<div class="section-title">VİTRİN İLANLARI</div>
+<div class="section-header">
+    <div class="section-title">PAZAR ALANI (VİTRİN)</div>
+    <small style="color: var(--text-gray);" id="item-count">0 İlan</small>
+</div>
 
-<div class="grid" id="market-grid"></div>
+<div class="grid" id="market-grid">
+    <div class="empty-msg">Henüz ilan bulunmuyor. İlk ilanı sen ekle!</div>
+</div>
 
 <div class="bottom-nav">
-    <button class="nav-btn active" onclick="render('all')"><i class="fa fa-home"></i>Anasayfa</button>
-    <button class="nav-btn" onclick="render('all')"><i class="fa fa-store"></i>İlan Pazarı</button>
-    <button class="nav-btn" onclick="showIlanEkle()"><i class="fa fa-plus-circle" style="color: var(--primary-blue);"></i>İlan Ekle</button>
-    <button class="nav-btn" onclick="showBakiyeYukle()"><i class="fa fa-life-ring"></i>Destek</button>
-    <button class="nav-btn" id="login-trigger">
-        <div onclick="adminClickCount()" style="display: flex; flex-direction: column; align-items: center;">
-            <i class="fa fa-user"></i>Giriş Yap
-        </div>
+    <button class="nav-btn active" onclick="render('all')"><i class="fa fa-house-chimney"></i>Anasayfa</button>
+    <button class="nav-btn" onclick="render('all')"><i class="fa fa-shop"></i>Pazar</button>
+    <button class="nav-btn" onclick="showIlanEkle()"><i class="fa fa-circle-plus" style="color: var(--primary-blue);"></i>İlan Ekle</button>
+    <button class="nav-btn" onclick="showSupport()"><i class="fa fa-headset"></i>Destek</button>
+    <button class="nav-btn" id="login-trigger" onclick="adminClickCount()">
+        <i class="fa fa-lock"></i>Giriş Yap
     </button>
 </div>
 
 <div id="login-modal">
     <div class="login-box">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="margin: 0; font-size: 18px;">Giriş Yap</h2>
-            <i class="fa fa-times" onclick="closeLogin()" style="cursor:pointer;"></i>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; font-size: 20px;">HÜKÜM'e Katıl</h2>
+            <i class="fa fa-xmark" onclick="closeLogin()" style="cursor:pointer; font-size: 24px;"></i>
         </div>
-        <p style="font-size: 12px; color: var(--text-gray); margin: 15px 0;">Aşağıdaki seçeneklerden hızlıca giriş yapabilirsiniz.</p>
-        <div class="social-btns">
-            <button class="s-btn" style="background: #ea4335;"><i class="fa-brands fa-google"></i></button>
-            <button class="s-btn" style="background: #1877f2;"><i class="fa-brands fa-facebook"></i></button>
-            <button class="s-btn" style="background: #5865f2;"><i class="fa-brands fa-discord"></i></button>
-            <button class="s-btn" style="background: #000000;"><i class="fa-brands fa-steam"></i></button>
-        </div>
-        <div style="text-align: center; color: #333; margin: 10px 0;">veya</div>
-        <input type="text" id="l-user" placeholder="Kullanıcı Adı / Mail">
-        <input type="password" id="l-pass" placeholder="Parola">
-        <button class="btn-main" onclick="processLogin()">Giriş Yap</button>
+        <input type="text" id="l-user" placeholder="Kullanıcı Adı">
+        <input type="password" id="l-pass" placeholder="Şifre">
+        <button class="btn-main" onclick="processLogin()">GİRİŞ YAP / KAYIT OL</button>
+        <p style="font-size: 11px; text-align: center; margin-top: 15px; color: var(--text-gray);">Bu sistem LocalStorage ile korunmaktadır.</p>
     </div>
 </div>
 
 <div id="admin-room">
-    <h3>[ HÜKÜM OPERASYON MERKEZİ ]</h3>
-    <div id="terminal" style="height: 150px; overflow-y: auto; background: #050505; padding: 10px; font-size: 11px; border: 1px solid #00ff00;">
-        > Sistem yüklendi...<br>> Karargah aktif: Hoşgeldin Eymen Paşa.<br>
+    <h2 style="text-align: center; border-bottom: 2px solid #00ff00; padding-bottom: 10px;">☣️ HÜKÜM MERKEZİ KARARGAH ☣️</h2>
+    
+    <div class="terminal-box" id="terminal">
+        > Karargah protokolleri yükleniyor...<br>
+        > Yetki doğrulandı: Eymen Paşa.<br>
+        > Sistem: Aktif ve Korunaklı.
     </div>
-    <hr color="#00ff00">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
-        <div style="background: #111; padding: 10px; border: 1px solid #00ff00;">
-            <small>PATRON KASASI</small><br><b id="adm-vault" style="font-size: 20px;">0.00 ₺</b>
+
+    <div class="admin-grid">
+        <div class="admin-card"><small>1. PATRON KASASI</small><br><b id="adm-vault">0.00 ₺</b></div>
+        <div class="admin-card"><small>2. TOPLAM NEFER</small><br><b id="adm-users">1</b></div>
+        <div class="admin-card" style="grid-column: span 2;">
+            <small>3. BAKİYE TANIMLA</small><br>
+            <input type="text" id="adm-t" placeholder="Kullanıcı" style="margin-top:5px; border-color:#0f0;">
+            <input type="number" id="adm-a" placeholder="Miktar" style="border-color:#0f0;">
+            <button class="power-btn" onclick="admAddBal()">BAKİYEYİ GÖNDER</button>
         </div>
-        <div style="background: #111; padding: 10px; border: 1px solid #00ff00;">
-            <small>TOPLAM ÜYE</small><br><b id="adm-users">1</b>
-        </div>
+        <div class="admin-card"><small>4. BAN ÇEKİCİ</small><br><button class="power-btn" style="background: #f00;" onclick="alert('Ban Listesi Boş')">ÜYEYİ ŞUTLA</button></div>
+        <div class="admin-card"><small>5. MANŞET DEĞİŞTİR</small><br><button class="power-btn" onclick="alert('Duyuru Güncellendi')">DUYURU AT</button></div>
+        <div class="admin-card"><small>6. IP İZLEYİCİ</small><br><small>127.0.0.1 (Local)</small></div>
+        <div class="admin-card"><small>7. CPU DURUMU</small><br><b>%2 - Stabil</b></div>
+        <div class="admin-card"><small>8. SQL DURUMU</small><br><b style="color:var(--green)">BAĞLI</b></div>
+        <div class="admin-card"><small>9. FIREWALL</small><br><b style="color:var(--green)">AKTİF</b></div>
+        <div class="admin-card"><small>10. BEKLEYEN İLAN</small><br><b>0</b></div>
+        <div class="admin-card"><small>11. VERGİ PAYI</small><br><b>%5</b></div>
+        <div class="admin-card"><small>12. TEMA MODU</small><br><b>Hüküm Dark</b></div>
+        <div class="admin-card"><small>13. VIP ÜYELER</small><br><b>Eymen</b></div>
+        <div class="admin-card"><small>14. LOG SİL</small><br><button class="power-btn" onclick="document.getElementById('terminal').innerHTML='> Loglar silindi.'">TEMİZLE</button></div>
+        <div class="admin-card"><small>15. SİSTEM KİLİDİ</small><br><button class="power-btn" onclick="location.reload()">SİTEYİ RESETLE</button></div>
     </div>
-    <h4 style="margin-bottom: 5px; margin-top: 20px;">Bakiye Editörü</h4>
-    <input type="text" id="adm-target" placeholder="Kullanıcı Adı" style="border-color: #00ff00; background: #000; color: #00ff00;">
-    <input type="number" id="adm-amt" placeholder="Miktar" style="border-color: #00ff00; background: #000; color: #00ff00;">
-    <button class="btn-main" style="background: #00ff00; color: #000;" onclick="admAddBal()">BAKİYE EKLE</button>
-    <button onclick="document.getElementById('admin-room').style.display='none'" style="margin-top: 20px; background: red; color: white; border: none; padding: 10px; width: 100%; cursor: pointer;">ÇIKIŞ YAP</button>
+
+    <button class="exit-btn" onclick="document.getElementById('admin-room').style.display='none'">KARARGAHTAN ÇIK</button>
 </div>
 
 <script>
-    let state = JSON.parse(localStorage.getItem('hukum_v17_data')) || {
-        users: { "eymen": { b: 1000, pass: "123", pin: "1907", rank: "Admin" } },
+    // VERİ TABANI SIFIRLANDI (İLANLAR SİLİNDİ)
+    let state = JSON.parse(localStorage.getItem('hukum_v18_data')) || {
+        users: { "eymen": { b: 5000, pass: "123", rank: "Admin" } },
         vault: 0,
-        items: [
-            { id: 1, n: "Grand Theft Auto V", p: 30, s: "XorShop", vitrin: true, cat: "hesap", link: "hukum_v45" },
-            { id: 2, n: "TikTok 2023-2026 Hesap", p: 30, s: "AhmetWsl", vitrin: true, cat: "tiktok", link: "hukum_v45" },
-            { id: 3, n: "1000 Robux Kodu", p: 250, s: "Mert_Store", vitrin: false, cat: "epin", link: "hukum_v45" }
-        ]
+        items: [] // İlanlar senin için temizlendi
     };
 
-    let currentUser = null;
+    let currentUser = localStorage.getItem('hukum_user') || null;
     let adminClicks = 0;
 
-    function save() { localStorage.setItem('hukum_v17_data', JSON.stringify(state)); render(); }
+    function save() { 
+        localStorage.setItem('hukum_v18_data', JSON.stringify(state)); 
+        if(currentUser) localStorage.setItem('hukum_user', currentUser);
+        render(); 
+    }
 
     function render(filter = 'all') {
         let grid = document.getElementById('market-grid');
         grid.innerHTML = "";
+        
         let list = filter === 'all' ? state.items : state.items.filter(i => i.cat === filter);
-        list.forEach(item => {
-            grid.innerHTML += `
-                <div class="card" onclick="buyProcess(${item.id})">
-                    ${item.vitrin ? '<div class="vitrin-badge">VİTRİN İLANI</div>' : ''}
-                    <div class="card-img" style="display:flex; align-items:center; justify-content:center; background:#2d313d;">
-                        <i class="fa fa-box-open" style="color:#444; font-size:30px;"></i>
+        
+        if(list.length === 0) {
+            grid.innerHTML = `<div class="empty-msg">Bu kategoride henüz ilan yok.</div>`;
+        } else {
+            list.forEach(item => {
+                grid.innerHTML += `
+                    <div class="card" onclick="buyProcess(${item.id})">
+                        <div class="card-img" style="display:flex; align-items:center; justify-content:center; height:110px; background:#242731;">
+                            <i class="fa fa-box-open" style="color:#3b82f6; font-size:40px;"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-seller"><i class="fa fa-shield" style="color:var(--green);"></i> ${item.s}</div>
+                            <div style="font-size:13px; font-weight:700; margin:6px 0;">${item.n}</div>
+                            <div class="card-price">${item.p},00 ₺</div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="card-seller"><i class="fa fa-check-circle" style="color:var(--primary-blue);"></i> ${item.s}</div>
-                        <div style="font-size:12px; font-weight:600; margin:4px 0;">${item.n}</div>
-                        <div class="card-price">${item.p},00 ₺</div>
-                    </div>
-                </div>
-            `;
-        });
+                `;
+            });
+        }
+        document.getElementById('item-count').innerText = state.items.length + " İlan";
         document.getElementById('adm-vault').innerText = state.vault.toFixed(2) + " ₺";
         document.getElementById('adm-users').innerText = Object.keys(state.users).length;
+        
+        if(currentUser) {
+            document.getElementById('login-trigger').innerHTML = `<i class="fa fa-user-check" style="color:var(--gold)"></i> ${currentUser.toUpperCase()}`;
+        }
     }
 
-    function showBakiyeYukle() {
-        alert("Bakiye onay ve yardım için TikTok @hukum_v45 DM üzerinden iletişime geçin.");
+    function showSupport() {
+        alert("🛡️ HÜKÜM DESTEK: \nBakiye ve ilan onayları için TikTok @hukum_v45 hesabına mesaj atın.");
         window.open("https://www.tiktok.com/@hukum_v45", "_blank");
     }
 
     function showIlanEkle() {
         if(!currentUser) { openLogin(); return; }
-        let n = prompt("Ürün İsmi:");
-        let p = prompt("Fiyat (₺):");
-        let soc = prompt("TikTok/Insta Adresiniz:");
-        if(n && p && soc) {
-            state.items.push({ id: Date.now(), n: n, p: parseInt(p), s: currentUser, vitrin: false, cat: "item", link: soc });
+        let n = prompt("Ürün Adı (Örn: 1000 Robux):");
+        let p = prompt("Satış Fiyatı (₺):");
+        let cat = prompt("Kategori (hesap, item, epin, discord, tiktok):").toLowerCase();
+        let link = prompt("İletişim Adresiniz (TikTok/Insta):");
+        
+        if(n && p && cat && link) {
+            state.items.push({ id: Date.now(), n: n, p: parseInt(p), s: currentUser, cat: cat, link: link });
             save();
-            alert("İlan başarıyla pazar alanına eklendi!");
+            alert("İlan başarıyla yayına alındı Eymen Paşa!");
         }
     }
 
@@ -229,31 +269,34 @@
         if(state.users[currentUser].b >= itm.p) {
             state.users[currentUser].b -= itm.p;
             state.vault += itm.p;
-            alert("Satın alma başarılı! Teslimat için satıcıya ulaşın: " + itm.link);
+            alert("İşlem Başarılı! \nSatıcı Bilgisi: " + itm.link);
             save();
         } else {
-            showBakiyeYukle();
+            alert("Bakiye Yetersiz! Lütfen bakiye yükleyin.");
+            showSupport();
         }
     }
 
     function adminClickCount() {
+        if(!currentUser) { openLogin(); return; }
         adminClicks++;
         if(adminClicks >= 5) {
             adminClicks = 0;
-            let pass = prompt("HÜKÜM SİBER KARARGAH ŞİFRESİ:");
+            let pass = prompt("HÜKÜM-PİN KARARGAH ŞİFRESİ:");
             if(pass === "Eyo_pasha15") {
                 document.getElementById('admin-room').style.display = 'block';
-            }
+            } else { alert("YETKİSİZ GİRİŞ!"); }
         }
     }
 
     function admAddBal() {
-        let t = document.getElementById('adm-target').value.toLowerCase();
-        let a = parseFloat(document.getElementById('adm-amt').value);
+        let t = document.getElementById('adm-t').value.toLowerCase();
+        let a = parseFloat(document.getElementById('adm-a').value);
         if(state.users[t]) {
             state.users[t].b += a;
             save();
-            alert(t + " kullanıcısına " + a + "₺ tanımlandı.");
+            document.getElementById('terminal').innerHTML += `> [LOG] ${t} kullanıcısına ${a}₺ gönderildi.<br>`;
+            alert("Başarıyla eklendi.");
         } else { alert("Kullanıcı bulunamadı!"); }
     }
 
@@ -263,10 +306,9 @@
         let u = document.getElementById('l-user').value.toLowerCase();
         if(u) {
             currentUser = u;
-            if(!state.users[u]) state.users[u] = { b: 0, pass: "123", pin: "0000" };
+            if(!state.users[u]) state.users[u] = { b: 0, pass: "123", rank: "Üye" };
+            save();
             closeLogin();
-            render();
-            document.getElementById('login-trigger').innerHTML = `<i class="fa fa-user" style="color:var(--gold)"></i> ${u.toUpperCase()}`;
         }
     }
 
