@@ -1,1 +1,275 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HÜKÜM YAZILIM | Dijital Karargah V13</title>
+    <style>
+        /* HÜKÜM RENK PROTOKOLÜ: Lacivert, Mavi, Beyaz ve Güç (Sarı) */
+        :root { 
+            --lacivert: #0B132B; 
+            --mavi: #1C3A63; 
+            --beyaz: #FFFFFF; 
+            --sari: #FFD700; 
+            --koyu-bg: #050A18;
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: var(--lacivert); 
+            color: var(--beyaz); 
+            margin: 0; 
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at center, #1c3a63 0%, #0b132b 100%);
+        }
+
+        /* 1. DUYURU BANDI */
+        .marquee { background: var(--sari); color: var(--koyu-bg); padding: 8px 0; font-weight: 900; font-size: 14px; overflow: hidden; position: relative; border-bottom: 2px solid var(--beyaz); }
+        .marquee div { display: inline-block; white-space: nowrap; animation: scroll 25s linear infinite; }
+
+        /* 2. HEADER */
+        header { background: var(--koyu-bg); padding: 20px 6%; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--sari); position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow); }
+        .logo { font-size: 30px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; }
+        .logo span { color: var(--sari); text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+
+        .container { padding: 40px 6%; display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
+
+        /* 3. BANKA KARTI (GÜÇ TASARIMI) */
+        .card { 
+            background: linear-gradient(135deg, var(--mavi) 0%, #000 100%); 
+            padding: 30px; border-radius: 25px; border: 2px solid var(--sari);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6); position: relative; overflow: hidden;
+        }
+        .card::before { content: "HÜKÜM"; position: absolute; right: -20px; bottom: -10px; font-size: 80px; opacity: 0.05; font-weight: 900; }
+        .balance-label { font-size: 12px; color: var(--sari); letter-spacing: 2px; text-transform: uppercase; }
+        .balance-val { font-size: 48px; font-weight: 900; margin: 15px 0; display: flex; align-items: center; gap: 15px; }
+        
+        /* 4. BUTONLAR */
+        .btn { padding: 12px 25px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 13px; }
+        .btn-sari { background: var(--sari); color: var(--koyu-bg); box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); }
+        .btn-sari:hover { transform: scale(1.05); background: #fff; }
+        .btn-outline { background: transparent; border: 2px solid var(--sari); color: var(--sari); }
+
+        /* 5. SATIŞ ALANLARI */
+        .box { background: rgba(28, 58, 99, 0.5); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); margin-bottom: 25px; }
+        .box h3 { color: var(--sari); border-bottom: 2px solid var(--sari); padding-bottom: 10px; margin-top: 0; }
+        .item { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin: 10px 0; border: 1px solid transparent; transition: 0.3s; }
+        .item:hover { border-color: var(--sari); }
+
+        /* 6. BAŞARI EKRANI (TIKTOK YÖNLENDİRME) */
+        #success-screen { display: none; position: fixed; inset: 0; background: rgba(5, 10, 24, 0.98); z-index: 10000; align-items: center; justify-content: center; }
+        .success-card { background: var(--mavi); padding: 60px; border-radius: 20px; border: 3px solid var(--sari); text-align: center; max-width: 500px; box-shadow: 0 0 50px rgba(255, 215, 0, 0.2); }
+
+        /* 7. ADMİN PANELİ */
+        #admin-panel { display: none; position: fixed; inset: 0; background: var(--koyu-bg); z-index: 9999; padding: 50px; overflow-y: auto; }
+        .admin-box { background: #111; border: 1px solid #333; padding: 20px; border-radius: 10px; }
+        input { background: #000; border: 1px solid var(--sari); color: #fff; padding: 12px; border-radius: 5px; width: 100%; margin-bottom: 15px; box-sizing: border-box; }
+
+        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* 8. OYUN ALANI */
+        #game-box { height: 150px; background: #000; position: relative; overflow: hidden; border-radius: 10px; border: 1px solid var(--sari); }
+        #dino { width: 30px; height: 30px; background: var(--sari); position: absolute; bottom: 0; left: 50px; }
+        #obs { width: 20px; height: 30px; background: #fff; position: absolute; bottom: 0; right: -50px; }
+        @keyframes obsMove { 0% { right: -50px; } 100% { right: 110%; } }
+    </style>
+</head>
+<body onkeydown="if(event.code=='Space') jump()">
+
+<div class="marquee">
+    <div>⚡ HÜKÜM V13 KARARGAHINA HOŞ GELDİNİZ | DELTA V3 VE ÖZEL BOT KODLARI STOKLARDA | GÜVENLİK PİNİ AKTİF ⚡</div>
+</div>
+
+<header>
+    <div class="logo">HÜKÜM <span>YAZILIM</span></div>
+    <div>
+        <button class="btn btn-outline" onclick="openAdmin()">ADMİN</button>
+        <button class="btn btn-sari" onclick="location.reload()" style="margin-left:10px">ÇIKIŞ</button>
+    </div>
+</header>
+
+<div class="container">
+    <div>
+        <div class="card">
+            <div class="balance-label">Kullanılabilir Bakiye</div>
+            <div class="balance-val" id="disp-bal">0.00 ₺</div>
+            <button class="btn btn-outline" style="font-size:10px;" onclick="toggleHidden()">BAKİYEYİ GİZLE/GÖSTER</button>
+            <div style="margin-top:20px; font-size:13px; color:#aaa;">Hesap: <span id="disp-user" style="color:#fff">...</span></div>
+            <div style="font-size:13px; color:#aaa;">Patron Kasası: <span id="boss-bal" style="color:var(--sari)">0.00 ₺</span></div>
+        </div>
+
+        <div class="box" style="margin-top:25px;">
+            <h3>🎲 HÜKÜM ŞANS ÇARKI</h3>
+            <p style="font-size:12px;">10 ₺ Karşılığında şansını dene!</p>
+            <button class="btn btn-sari" style="width:100%" onclick="spinWheel()">ÇARKI ÇEVİR</button>
+        </div>
+    </div>
+
+    <div>
+        <div class="box">
+            <h3>🚀 YAZILIM & SCRİPT MARKETİ</h3>
+            <div class="item">
+                <div><strong>Delta V3 Auto-Farm (Roblox)</strong><br><small>Fiyat: 60.00 ₺</small></div>
+                <button class="btn btn-sari" onclick="processSale('Delta V3 Script', 60)">SATIN AL</button>
+            </div>
+            <div class="item">
+                <div><strong>Discord Sorgu Botu Altyapı</strong><br><small>Fiyat: 150.00 ₺</small></div>
+                <button class="btn btn-sari" onclick="processSale('Bot Altyapısı', 150)">SATIN AL</button>
+            </div>
+            <div class="item">
+                <div><strong>Hüküm Özel Site Kodları</strong><br><small>Fiyat: 250.00 ₺</small></div>
+                <button class="btn btn-sari" onclick="processSale('Site Kodları', 250)">SATIN AL</button>
+            </div>
+        </div>
+
+        <div class="box">
+            <h3>🎮 HÜKÜM DINO (Zıplamak için Boşluk)</h3>
+            <div id="game-box">
+                <div id="dino"></div>
+                <div id="obs"></div>
+            </div>
+            <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="startGame()">OYUNU BAŞLAT</button>
+        </div>
+    </div>
+</div>
+
+<div id="success-screen">
+    <div class="success-card">
+        <div style="font-size:60px; color:var(--sari)">✔️</div>
+        <h2 style="letter-spacing:2px;">ÖDEME ONAYLANDI</h2>
+        <p id="success-text" style="font-size:20px; margin:30px 0; color:#ddd;"></p>
+        <button class="btn btn-sari" onclick="closeSuccess()">KAPAT VE DEVAM ET</button>
+    </div>
+</div>
+
+<div id="admin-panel">
+    <h1 style="color:var(--sari); border-bottom:3px solid var(--sari); padding-bottom:10px;">HÜKÜM KARARGAH YÖNETİMİ</h1>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-top:30px;">
+        <div class="admin-box">
+            <h3>Bakiyeyi Yönet</h3>
+            <input type="text" id="adm-user" placeholder="Kullanıcı Adı">
+            <input type="number" id="adm-amt" placeholder="Eklenecek Miktar (₺)">
+            <button class="btn btn-sari" style="width:100%" onclick="adminAddMoney()">BAKİYEYİ GÖNDER</button>
+        </div>
+        <div class="admin-box">
+            <h3>Sistem Verileri</h3>
+            <div id="stat-list" style="font-size:14px; line-height:2;"></div>
+        </div>
+    </div>
+    <button class="btn btn-outline" style="margin-top:30px; color:red; border-color:red;" onclick="document.getElementById('admin-panel').style.display='none'">YÖNETİMİ KAPAT</button>
+</div>
+
+<script>
+    // --- VERİTABANI VE DEĞİŞKENLER ---
+    let db = JSON.parse(localStorage.getItem('hukum_v13_data')) || {
+        users: { "Eymen": { p: "123", b: 500, pin: "1907", d: 0 } },
+        boss_vault: 0 // Senin kasandaki para
+    };
+    let currentUser = "Eymen"; // Bu normalde giriş ekranından gelir
+    let isHidden = false;
+
+    function save() {
+        localStorage.setItem('hukum_v13_data', JSON.stringify(db));
+        render();
+    }
+
+    function render() {
+        let u = db.users[currentUser];
+        document.getElementById('disp-user').innerText = currentUser;
+        document.getElementById('disp-bal').innerText = isHidden ? "****" : u.b.toFixed(2) + " ₺";
+        document.getElementById('boss-bal').innerText = db.boss_vault.toFixed(2) + " ₺";
+
+        // Admin listesi güncelleme
+        let list = "";
+        for(let n in db.users) { list += `👤 ${n}: ${db.users[n].b} ₺<br>`; }
+        document.getElementById('stat-list').innerHTML = list;
+    }
+
+    function toggleHidden() { isHidden = !isHidden; render(); }
+
+    // --- SATIŞ MOTORU (SİSTEMİN KALBİ) ---
+    function processSale(name, price) {
+        let u = db.users[currentUser];
+        if(u.b < price) return alert("HATA: Bakiyeniz yetersiz! Bakiye yüklemek için admine ulaşın.");
+
+        let enteredPin = prompt(`${name} alımı için 4 haneli PİN kodunu gir:`);
+        if(enteredPin === u.pin) {
+            // Ekonomi Simülasyonu
+            u.b -= price; // Müşteriden çıktı
+            db.boss_vault += price; // PARA SANA (PATRONA) GEÇTİ
+            
+            // Özel Mesaj
+            document.getElementById('success-text').innerHTML = `
+                <b>${name}</b> Kodunuz Hazır!<br><br>
+                <span style="color:var(--sari)">tiktok hukum_v45</span><br>
+                adresinden istediğin kodu alabilirsin.
+            `;
+            document.getElementById('success-screen').style.display = 'flex';
+            save();
+        } else {
+            alert("GÜVENLİK İHLALİ: PİN Kodu Yanlış!");
+        }
+    }
+
+    function closeSuccess() { document.getElementById('success-screen').style.display = 'none'; }
+
+    // --- ŞANS ÇARKI (HEYECAN) ---
+    function spinWheel() {
+        let u = db.users[currentUser];
+        if(u.b < 10) return alert("Çark için 10 ₺ lazım.");
+        u.b -= 10;
+        let win = Math.random() > 0.7 ? 20 : 0; // %30 şansla 20 TL verir
+        u.b += win;
+        save();
+        alert(win > 0 ? `TEBRİKLER! 20 ₺ KAZANDIN!` : `MAALESEF! Bu sefer gelmedi.`);
+    }
+
+    // --- DİNO OYUNU ---
+    let isJumping = false;
+    function jump() {
+        if(isJumping) return;
+        let d = document.getElementById('dino');
+        isJumping = true;
+        d.style.transition = "0.3s";
+        d.style.bottom = "100px";
+        setTimeout(() => { d.style.bottom = "0px"; isJumping = false; }, 300);
+    }
+    function startGame() {
+        let o = document.getElementById('obs');
+        o.style.animation = "obsMove 1.5s infinite linear";
+        let check = setInterval(() => {
+            let dBottom = parseInt(window.getComputedStyle(document.getElementById('dino')).getPropertyValue("bottom"));
+            let oLeft = parseInt(window.getComputedStyle(document.getElementById('obs')).getPropertyValue("left"));
+            if(oLeft > 50 && oLeft < 80 && dBottom < 30) {
+                o.style.animation = "none";
+                alert("ÖLDÜN ASLANIM! Tekrar dene.");
+                clearInterval(check);
+            }
+        }, 10);
+    }
+
+    // --- ADMİN PANELİ ---
+    function openAdmin() {
+        let p = prompt("YÖNETİCİ ŞİFRESİ:");
+        if(p === "Eyo_pasha15") {
+            document.getElementById('admin-panel').style.display = 'block';
+        } else { alert("YETKİSİZ ERİŞİM!"); }
+    }
+
+    function adminAddMoney() {
+        let user = document.getElementById('adm-user').value;
+        let amt = parseFloat(document.getElementById('adm-amt').value);
+        if(db.users[user]) {
+            db.users[user].b += amt;
+            save();
+            alert("Bakiye başarıyla gönderildi!");
+        } else { alert("Kullanıcı bulunamadı."); }
+    }
+
+    render();
+</script>
+
+</body>
+</html>
 
