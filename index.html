@@ -3,247 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HÜKÜM-PİN | Siber Karargah</title>
+    <title>HÜKÜM-PİN | Dijital Güvenlik ve Alışveriş</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-dark: #080a0f; --bg-card: #121520; --primary: #3b82f6; 
-            --gold: #ffb100; --text-gray: #8892b0; --neon-green: #00ff41; --danger: #ef4444;
+            --bg-dark: #0f111a; --bg-card: #1a1d29; --primary-blue: #3b82f6; 
+            --gold: #ffb100; --text-gray: #9ca3af; --white: #ffffff; --green: #10b981;
         }
 
         body {
-            background-color: var(--bg-dark); color: #e6edf3;
-            font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; overflow-x: hidden;
+            background-color: var(--bg-dark); color: var(--white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding-bottom: 70px;
+            overflow-x: hidden;
         }
 
-        /* Üst Menü & Bakiye */
+        /* 34. CANLI DUYURU BANDI */
+        .announcement {
+            background: linear-gradient(90deg, #1e2235, #2d313d); color: var(--gold); padding: 10px; font-size: 13px;
+            border-bottom: 1px solid var(--primary-blue); overflow: hidden; white-space: nowrap; font-weight: bold;
+        }
+        .announcement-text { display: inline-block; animation: scroll 25s linear infinite; }
+
+        /* HEADER & LOGO DÜZENLEME */
         header {
-            background: rgba(18, 21, 32, 0.95); padding: 15px 20px; display: flex;
-            justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary);
-            position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(10px);
+            background: var(--bg-card); padding: 15px; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid #333;
         }
-        .logo { font-size: 24px; font-weight: 900; color: #fff; letter-spacing: 2px; }
-        .logo span { color: var(--primary); }
-        
-        .user-stats { display: flex; align-items: center; gap: 15px; }
-        .balance-chip {
-            background: #1e293b; border: 1px solid var(--gold); padding: 6px 12px;
-            border-radius: 20px; font-weight: bold; color: var(--gold); font-size: 14px;
+        .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: var(--white); }
+        .logo span { color: var(--primary-blue); text-shadow: 0 0 10px var(--primary-blue); }
+
+        /* 💰 BAKİYE GÖSTERGE PANELİ (YENİ) */
+        .wallet-display {
+            background: #161b22; border: 1px solid var(--gold); padding: 5px 12px;
+            border-radius: 10px; display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 0 10px rgba(255, 177, 0, 0.2);
+        }
+        .wallet-val { color: var(--gold); font-weight: bold; font-size: 14px; }
+
+        /* KATEGORİLER */
+        .cat-row {
+            display: flex; gap: 15px; overflow-x: auto; padding: 20px 15px;
+            scrollbar-width: none; background: var(--bg-dark);
+        }
+        .cat-item { min-width: 85px; text-align: center; font-size: 11px; color: var(--text-gray); cursor: pointer; transition: 0.3s; }
+        .cat-item:hover { color: var(--white); transform: translateY(-5px); }
+        .cat-icon {
+            width: 55px; height: 55px; background: var(--bg-card);
+            border-radius: 15px; display: flex; align-items: center;
+            justify-content: center; font-size: 24px; margin-bottom: 8px; color: var(--gold);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* 🛡️ ADMİN ODASI (AYRI BİR DÜNYA) */
-        #admin-hudson {
-            display: none; position: fixed; inset: 0; background: #000; z-index: 5000;
-            padding: 30px; font-family: 'Courier New', monospace; overflow-y: auto;
-        }
-        .hq-title { color: var(--neon-green); text-align: center; text-shadow: 0 0 10px var(--neon-green); margin-bottom: 30px; }
-        
-        .hq-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
-        .hq-node {
-            background: #0a0a0a; border: 1px solid #1a1a1a; padding: 20px; border-radius: 12px;
-            transition: 0.3s; position: relative; overflow: hidden;
-        }
-        .hq-node:hover { border-color: var(--neon-green); box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); }
-        .hq-node i { font-size: 30px; color: var(--neon-green); margin-bottom: 10px; }
-        .hq-label { font-size: 11px; color: #555; text-transform: uppercase; }
-        .hq-val { font-size: 18px; font-weight: bold; color: #fff; }
+        /* PAZAR ALANI */
+        .section-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
+        .section-title { font-size: 16px; font-weight: 800; color: var(--green); border-left: 4px solid var(--green); padding-left: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px; }
+        .empty-msg { grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-gray); font-style: italic; }
 
-        /* Market Kartları */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 20px; }
         .card {
-            background: var(--bg-card); border-radius: 18px; padding: 15px;
-            border: 1px solid #232a3d; transition: 0.3s; position: relative;
+            background: var(--bg-card); border-radius: 15px; overflow: hidden;
+            position: relative; border: 1px solid #2a2e3f; transition: 0.3s;
         }
-        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .card-price { color: var(--gold); font-size: 18px; font-weight: 800; }
-        
-        /* Butonlar */
-        .btn-buy {
-            width: 100%; background: var(--primary); color: white; border: none;
-            padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;
-        }
-        .btn-buy:active { transform: scale(0.95); }
+        .card-body { padding: 12px; }
+        .card-price { color: var(--gold); font-size: 17px; font-weight: 800; margin-top: 5px; }
+        .card-seller { font-size: 10px; color: var(--text-gray); display: flex; align-items: center; gap: 5px; }
 
-        /* Alt Navigasyon */
-        .nav-bar {
-            position: fixed; bottom: 0; width: 100%; background: #0c0e16;
-            display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #1e293b;
+        /* BOTTOM NAV */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; background: #161923;
+            display: flex; justify-content: space-around; padding: 12px 0;
+            border-top: 1px solid #2a2e3f; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
         }
-        .nav-link { color: var(--text-gray); text-decoration: none; font-size: 11px; text-align: center; cursor: pointer; }
-        .nav-link i { font-size: 22px; display: block; margin-bottom: 5px; }
-        .nav-link.active { color: var(--primary); }
+        .nav-btn { text-align: center; font-size: 10px; color: var(--text-gray); border: none; background: none; cursor: pointer; transition: 0.2s; }
+        .nav-btn i { font-size: 22px; margin-bottom: 4px; display: block; }
+        .nav-btn.active, .nav-btn:hover { color: var(--white); }
 
+        /* MODALLAR */
+        #login-modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px);
+        }
+        .login-box {
+            background: var(--bg-card); width: 85%; max-width: 380px;
+            border-radius: 25px; padding: 30px; border: 1px solid var(--primary-blue);
+        }
+        input {
+            width: 100%; background: #0f111a; border: 1px solid #333;
+            color: white; padding: 14px; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; outline: none;
+        }
+        input:focus { border-color: var(--primary-blue); }
+        .btn-main { width: 100%; background: var(--primary-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+
+        /* 🛡️ HÜKÜM ADMİN KARARGAHI - YENİ DÜNYA */
+        #admin-room {
+            display: none; position: fixed; inset: 0; background: #000; z-index: 3000;
+            overflow-y: auto; padding: 25px; color: #00ff00; font-family: 'Courier New', monospace;
+        }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .admin-card { 
+            background: #0a0a0a; border: 1px solid #00ff00; padding: 15px; border-radius: 10px;
+            box-shadow: inset 0 0 10px #00ff0033;
+        }
+        .terminal-box { 
+            height: 120px; background: #050505; border: 1px dashed #00ff00; 
+            padding: 10px; font-size: 11px; overflow-y: auto; margin-bottom: 20px;
+        }
+        .power-btn { background: #00ff00; color: #000; font-weight: bold; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; }
+        .exit-btn { background: #ff0000; color: #fff; margin-top: 20px; padding: 12px; width: 100%; border: none; border-radius: 5px; cursor: pointer; }
+
+        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
     </style>
 </head>
 <body>
 
+<div class="announcement">
+    <div class="announcement-text">🛡️ HÜKÜM-PİN GÜVENLİK SİSTEMİ DEVREDE | %100 YERLİ VE MİLLİ YAZILIM | KURTALAN'IN GURURU V18</div>
+</div>
+
 <header>
-    <div class="logo">HÜKÜM<span>-PİN</span></div>
-    <div class="user-stats">
-        <div class="balance-chip" id="user-balance-top">0.00 ₺</div>
-        <i class="fa fa-circle-user" style="font-size: 24px; color: var(--primary);"></i>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <i class="fa fa-shield-halved" style="color: var(--primary-blue); font-size: 20px;"></i>
+        <div class="logo">HÜKÜM<span>-PİN</span></div>
     </div>
+    <div class="wallet-display" id="header-wallet" style="display: none;">
+        <i class="fa fa-coins"></i>
+        <span class="wallet-val" id="user-money">0.00 ₺</span>
+    </div>
+    <div style="font-size: 20px; cursor: pointer;" onclick="openLogin()"><i class="fa-solid fa-user-shield"></i></div>
 </header>
 
-<div id="market-area">
-    <div style="padding: 20px 20px 0; color: var(--gold); font-weight: bold;">🛡️ AKTİF OPERASYONLAR (İLANLAR)</div>
-    <div class="grid" id="market-grid">
+<div class="cat-row">
+    <div class="cat-item" onclick="render('hesap')"><div class="cat-icon"><i class="fa fa-id-card"></i></div>Hesap</div>
+    <div class="cat-item" onclick="render('item')"><div class="cat-icon"><i class="fa fa-sword"></i></div>İtem</div>
+    <div class="cat-item" onclick="render('epin')"><div class="cat-icon"><i class="fa fa-key"></i></div>E-Pin</div>
+    <div class="cat-item" onclick="render('discord')"><div class="cat-icon" style="color: #5865F2;"><i class="fa-brands fa-discord"></i></div>Discord</div>
+    <div class="cat-item" onclick="render('tiktok')"><div class="cat-icon" style="color: #ff0050;"><i class="fa-brands fa-tiktok"></i></div>TikTok</div>
+</div>
+
+<div class="section-header">
+    <div class="section-title">PAZAR ALANI (VİTRİN)</div>
+    <small style="color: var(--text-gray);" id="item-count">0 İlan</small>
+</div>
+
+<div class="grid" id="market-grid">
+    <div class="empty-msg">Henüz ilan bulunmuyor. İlk ilanı sen ekle!</div>
+</div>
+
+<div class="bottom-nav">
+    <button class="nav-btn active" onclick="render('all')"><i class="fa fa-house-chimney"></i>Anasayfa</button>
+    <button class="nav-btn" onclick="render('all')"><i class="fa fa-shop"></i>Pazar</button>
+    <button class="nav-btn" onclick="showIlanEkle()"><i class="fa fa-circle-plus" style="color: var(--primary-blue);"></i>İlan Ekle</button>
+    <button class="nav-btn" onclick="showSupport()"><i class="fa fa-headset"></i>Destek</button>
+    <button class="nav-btn" id="login-trigger" onclick="adminClickCount()">
+        <i class="fa fa-lock"></i>Giriş Yap
+    </button>
+</div>
+
+<div id="login-modal">
+    <div class="login-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; font-size: 20px;">HÜKÜM'e Katıl</h2>
+            <i class="fa fa-xmark" onclick="closeLogin()" style="cursor:pointer; font-size: 24px;"></i>
         </div>
+        <input type="text" id="l-user" placeholder="Kullanıcı Adı">
+        <input type="password" id="l-pass" placeholder="Şifre">
+        <button class="btn-main" onclick="processLogin()">GİRİŞ YAP / KAYIT OL</button>
+        <p style="font-size: 11px; text-align: center; margin-top: 15px; color: var(--text-gray);">Bu sistem LocalStorage ile korunmaktadır.</p>
+    </div>
 </div>
 
-<div class="nav-bar">
-    <div class="nav-link active" onclick="showSection('market')"><i class="fa fa-ghost"></i>Pazar</div>
-    <div class="nav-link" onclick="addBalance()"><i class="fa fa-wallet"></i>Yükle</div>
-    <div class="nav-link" onclick="addNewItem()"><i class="fa fa-plus-square"></i>İlan Ver</div>
-    <div class="nav-link" id="admin-trigger" onclick="handleAdmin()"><i class="fa fa-shield-virus"></i>Karargah</div>
-</div>
-
-<div id="admin-hudson">
-    <h1 class="hq-title">SİBER HAREKAT MERKEZİ [EYMEN PAŞA]</h1>
+<div id="admin-room">
+    <h2 style="text-align: center; border-bottom: 2px solid #00ff00; padding-bottom: 10px;">☣️ HÜKÜM MERKEZİ KARARGAH ☣️</h2>
     
-    <div class="hq-grid">
-        <div class="hq-node"><i class="fa fa-vault"></i><div class="hq-label">Ana Kasa</div><div class="hq-val" id="hq-vault">0 ₺</div></div>
-        <div class="hq-node"><i class="fa fa-users-viewfinder"></i><div class="hq-label">Aktif Nefer</div><div class="hq-val" id="hq-users">1</div></div>
-        <div class="hq-node"><i class="fa fa-server"></i><div class="hq-label">Sunucu Durumu</div><div class="hq-val" style="color:var(--neon-green)">STABİL</div></div>
-        <div class="hq-node"><i class="fa fa-user-secret"></i><div class="hq-label">Gizli Mod</div><div class="hq-val">AKTİF</div></div>
-        <div class="hq-node"><i class="fa fa-satellite-dish"></i><div class="hq-label">Sinyal Gücü</div><div class="hq-val">%99</div></div>
-        <div class="hq-node"><i class="fa fa-microchip"></i><div class="hq-label">İşlem Kapasitesi</div><div class="hq-val">4.2 GHz</div></div>
-        <div class="hq-node"><i class="fa fa-shield-heart"></i><div class="hq-label">Güvenlik Seviyesi</div><div class="hq-val">MAKSİMUM</div></div>
-        <div class="hq-node"><i class="fa fa-bug-slash"></i><div class="hq-label">Saldırı Engelleme</div><div class="hq-val">1248 Adet</div></div>
-        <div class="hq-node" style="grid-column: span 2; border: 1px dashed var(--neon-green);">
-            <i class="fa fa-money-bill-transfer"></i><div class="hq-label">MANUEL BAKİYE OPERASYONU</div>
-            <input type="text" id="target-user" placeholder="Kullanıcı Adı" style="background:#000; border:1px solid #333; color:#fff; padding:5px; width:100%; margin:5px 0;">
-            <button onclick="adminGiveMoney()" style="background:var(--neon-green); color:#000; border:none; padding:10px; width:100%; font-weight:bold; cursor:pointer;">BAKİYEYİ TANIMLA</button>
-        </div>
-        <div class="hq-node"><i class="fa fa-database"></i><div class="hq-label">Data Log</div><div class="hq-val">TEMİZ</div></div>
-        <div class="hq-node"><i class="fa fa-wifi"></i><div class="hq-label">IP Havuzu</div><div class="hq-val">Statik</div></div>
-        <div class="hq-node"><i class="fa fa-clock"></i><div class="hq-label">Uptime</div><div class="hq-val" id="uptime">00:00:00</div></div>
-        <div class="hq-node"><i class="fa fa-code-branch"></i><div class="hq-label">Sürüm</div><div class="hq-val">V19.0.4</div></div>
-        <div class="hq-node" style="background:var(--danger); border:none; cursor:pointer;" onclick="location.reload()">
-            <i class="fa fa-power-off" style="color:#fff"></i><div class="hq-label" style="color:#fff">SİSTEMİ KAPAT</div>
-        </div>
+    <div class="terminal-box" id="terminal">
+        > Karargah protokolleri yükleniyor...<br>
+        > Yetki doğrulandı: Eymen Paşa.<br>
+        > Sistem: Aktif ve Korunaklı.
     </div>
 
-    <button onclick="closeAdmin()" style="width:100%; margin-top:30px; padding:20px; background:#111; border:1px solid #333; color:var(--neon-green); font-weight:bold; cursor:pointer;">ODADAN ÇIK (GÖREVE DÖN)</button>
+    <div class="admin-grid">
+        <div class="admin-card"><small>1. PATRON KASASI</small><br><b id="adm-vault">0.00 ₺</b></div>
+        <div class="admin-card"><small>2. TOPLAM NEFER</small><br><b id="adm-users">1</b></div>
+        <div class="admin-card" style="grid-column: span 2;">
+            <small>3. BAKİYE TANIMLA</small><br>
+            <input type="text" id="adm-t" placeholder="Kullanıcı" style="margin-top:5px; border-color:#0f0;">
+            <input type="number" id="adm-a" placeholder="Miktar" style="border-color:#0f0;">
+            <button class="power-btn" onclick="admAddBal()">BAKİYEYİ GÖNDER</button>
+        </div>
+        <div class="admin-card"><small>4. BAN ÇEKİCİ</small><br><button class="power-btn" style="background: #f00;" onclick="alert('Ban Listesi Boş')">ÜYEYİ ŞUTLA</button></div>
+        <div class="admin-card"><small>5. MANŞET DEĞİŞTİR</small><br><button class="power-btn" onclick="alert('Duyuru Güncellendi')">DUYURU AT</button></div>
+        <div class="admin-card"><small>6. IP İZLEYİCİ</small><br><small>127.0.0.1 (Local)</small></div>
+        <div class="admin-card"><small>7. CPU DURUMU</small><br><b>%2 - Stabil</b></div>
+        <div class="admin-card"><small>8. SQL DURUMU</small><br><b style="color:var(--green)">BAĞLI</b></div>
+        <div class="admin-card"><small>9. FIREWALL</small><br><b style="color:var(--green)">AKTİF</b></div>
+        <div class="admin-card"><small>10. BEKLEYEN İLAN</small><br><b>0</b></div>
+        <div class="admin-card"><small>11. VERGİ PAYI</small><br><b>%5</b></div>
+        <div class="admin-card"><small>12. TEMA MODU</small><br><b>Hüküm Dark</b></div>
+        <div class="admin-card"><small>13. VIP ÜYELER</small><br><b>Eymen</b></div>
+        <div class="admin-card"><small>14. LOG SİL</small><br><button class="power-btn" onclick="document.getElementById('terminal').innerHTML='> Loglar silindi.'">TEMİZLE</button></div>
+        <div class="admin-card"><small>15. SİSTEM KİLİDİ</small><br><button class="power-btn" onclick="location.reload()">SİTEYİ RESETLE</button></div>
+    </div>
+
+    <button class="exit-btn" onclick="document.getElementById('admin-room').style.display='none'">KARARGAHTAN ÇIK</button>
 </div>
 
 <script>
-    // SİSTEM HAFIZASI
-    let db = JSON.parse(localStorage.getItem('hukum_db_v19')) || {
-        currentUser: "Eymen Paşa",
-        balance: 1000,
-        vault: 50000,
-        users: ["eymen", "asker", "komutan"],
-        items: [] // İlanlar silindi, seninkileri bekliyor
+    let state = JSON.parse(localStorage.getItem('hukum_v18_data')) || {
+        users: { "eymen": { b: 5000, pass: "123", rank: "Admin" } },
+        vault: 0,
+        items: [] 
     };
 
-    let adminClick = 0;
+    let currentUser = localStorage.getItem('hukum_user') || null;
+    let adminClicks = 0;
 
-    function save() {
-        localStorage.setItem('hukum_db_v19', JSON.stringify(db));
-        updateUI();
+    function save() { 
+        localStorage.setItem('hukum_v18_data', JSON.stringify(state)); 
+        if(currentUser) localStorage.setItem('hukum_user', currentUser);
+        render(); 
     }
 
-    function updateUI() {
-        document.getElementById('user-balance-top').innerText = db.balance.toLocaleString() + " ₺";
-        document.getElementById('hq-vault').innerText = db.vault.toLocaleString() + " ₺";
-        document.getElementById('hq-users').innerText = db.users.length;
-        
+    function render(filter = 'all') {
         let grid = document.getElementById('market-grid');
         grid.innerHTML = "";
         
-        if(db.items.length === 0) {
-            grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:50px; color:var(--text-gray);">Henüz ilan yok. Pazar temizlendi, senin emirlerini bekliyor!</div>`;
+        let list = filter === 'all' ? state.items : state.items.filter(i => i.cat === filter);
+        
+        if(list.length === 0) {
+            grid.innerHTML = `<div class="empty-msg">Bu kategoride henüz ilan yok.</div>`;
         } else {
-            db.items.forEach((item, idx) => {
+            list.forEach(item => {
                 grid.innerHTML += `
-                    <div class="card">
-                        <div style="font-size:12px; color:var(--primary); margin-bottom:5px;"><i class="fa fa-shield"></i> ${item.seller}</div>
-                        <div style="font-weight:bold; height:40px; overflow:hidden;">${item.name}</div>
-                        <div class="card-price">${item.price} ₺</div>
-                        <button class="btn-buy" onclick="buyItem(${idx})">SATIN AL</button>
+                    <div class="card" onclick="buyProcess(${item.id})">
+                        <div class="card-img" style="display:flex; align-items:center; justify-content:center; height:110px; background:#242731;">
+                            <i class="fa fa-box-open" style="color:#3b82f6; font-size:40px;"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-seller"><i class="fa fa-shield" style="color:var(--green);"></i> ${item.s}</div>
+                            <div style="font-size:13px; font-weight:700; margin:6px 0;">${item.n}</div>
+                            <div class="card-price">${item.p},00 ₺</div>
+                        </div>
                     </div>
                 `;
             });
         }
-    }
-
-    // BAKİYE YÜKLEME (OTOMATİK SİSTEM)
-    function addBalance() {
-        let miktar = prompt("Yüklemek istediğiniz bakiye miktarını girin (Örn: 100):");
-        if(miktar && !isNaN(miktar)) {
-            db.balance += parseFloat(miktar);
-            save();
-            alert("Bakiye başarıyla yüklendi! Mevcut: " + db.balance + " ₺");
+        document.getElementById('item-count').innerText = state.items.length + " İlan";
+        document.getElementById('adm-vault').innerText = state.vault.toFixed(2) + " ₺";
+        document.getElementById('adm-users').innerText = Object.keys(state.users).length;
+        
+        if(currentUser) {
+            document.getElementById('login-trigger').innerHTML = `<i class="fa fa-user-check" style="color:var(--gold)"></i> ${currentUser.toUpperCase()}`;
+            // Bakiye göstergesini güncelle ve görünür yap
+            document.getElementById('header-wallet').style.display = 'flex';
+            document.getElementById('user-money').innerText = state.users[currentUser].b.toFixed(2) + " ₺";
         }
     }
 
-    // YENİ İLAN EKLEME
-    function addNewItem() {
-        let ad = prompt("Ürün/İlan Adı:");
-        let fiyat = prompt("Fiyat (₺):");
-        if(ad && fiyat) {
-            db.items.push({ name: ad, price: parseFloat(fiyat), seller: db.currentUser });
+    function showSupport() {
+        alert("🛡️ HÜKÜM DESTEK: \nBakiye ve ilan onayları için TikTok @hukum_v45 hesabına mesaj atın.");
+        window.open("https://www.tiktok.com/@hukum_v45", "_blank");
+    }
+
+    function showIlanEkle() {
+        if(!currentUser) { openLogin(); return; }
+        let n = prompt("Ürün Adı (Örn: 1000 Robux):");
+        let p = prompt("Satış Fiyatı (₺):");
+        let cat = prompt("Kategori (hesap, item, epin, discord, tiktok):").toLowerCase();
+        let link = prompt("İletişim Adresiniz (TikTok/Insta):");
+        
+        if(n && p && cat && link) {
+            state.items.push({ id: Date.now(), n: n, p: parseInt(p), s: currentUser, cat: cat, link: link });
             save();
-            alert("İlan Karargah onayından geçti ve yayına alındı!");
+            alert("İlan başarıyla yayına alındı Eymen Paşa!");
         }
     }
 
-    // SATIN ALMA
-    function buyItem(index) {
-        let item = db.items[index];
-        if(db.balance >= item.price) {
-            db.balance -= item.price;
-            db.vault += item.price;
-            db.items.splice(index, 1);
+    function buyProcess(id) {
+        if(!currentUser) { openLogin(); return; }
+        let itm = state.items.find(x => x.id === id);
+        if(state.users[currentUser].b >= itm.p) {
+            state.users[currentUser].b -= itm.p;
+            state.vault += itm.p;
+            alert("İşlem Başarılı! \nSatıcı Bilgisi: " + itm.link);
             save();
-            alert("Operasyon Başarılı! Ürün teslim alındı.");
         } else {
-            alert("Yetersiz Bakiye! Önce cüzdanını doldur Paşam.");
+            alert("Bakiye Yetersiz! Lütfen bakiye yükleyin.");
+            showSupport();
         }
     }
 
-    // 🛡️ ADMİN KARARGAH KONTROLÜ
-    function handleAdmin() {
-        adminClick++;
-        if(adminClick >= 5) {
-            adminClick = 0;
-            let pass = prompt("DİKKAT: Siber Karargah Giriş Şifresi?");
+    function adminClickCount() {
+        if(!currentUser) { openLogin(); return; }
+        adminClicks++;
+        if(adminClicks >= 5) {
+            adminClicks = 0;
+            let pass = prompt("HÜKÜM-PİN KARARGAH ŞİFRESİ:");
             if(pass === "Eyo_pasha15") {
-                document.getElementById('admin-hudson').style.display = 'block';
-                startUptime();
-            } else {
-                alert("YETKİSİZ ERİŞİM: Sistem logları kaydedildi!");
-            }
-        } else {
-            alert("Bu alan sadece yetkili HÜKÜM üyeleri içindir.");
+                document.getElementById('admin-room').style.display = 'block';
+            } else { alert("YETKİSİZ GİRİŞ!"); }
         }
     }
 
-    function closeAdmin() { document.getElementById('admin-hudson').style.display = 'none'; }
-
-    function adminGiveMoney() {
-        let user = document.getElementById('target-user').value;
-        let miktar = prompt("Eklenecek Tutar:");
-        if(user && miktar) {
-            db.balance += parseFloat(miktar);
+    function admAddBal() {
+        let t = document.getElementById('adm-t').value.toLowerCase();
+        let a = parseFloat(document.getElementById('adm-a').value);
+        if(state.users[t]) {
+            state.users[t].b += a;
             save();
-            alert("Manuel bakiye transferi tamamlandı.");
+            document.getElementById('terminal').innerHTML += `> [LOG] ${t} kullanıcısına ${a}₺ gönderildi.<br>`;
+            alert("Başarıyla eklendi.");
+        } else { alert("Kullanıcı bulunamadı!"); }
+    }
+
+    function openLogin() { document.getElementById('login-modal').style.display = 'flex'; }
+    function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
+    function processLogin() {
+        let u = document.getElementById('l-user').value.toLowerCase();
+        if(u) {
+            currentUser = u;
+            if(!state.users[u]) state.users[u] = { b: 0, pass: "123", rank: "Üye" };
+            save();
+            closeLogin();
         }
     }
 
-    function startUptime() {
-        let sec = 0;
-        setInterval(() => {
-            sec++;
-            let h = Math.floor(sec / 3600).toString().padStart(2, '0');
-            let m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
-            let s = (sec % 60).toString().padStart(2, '0');
-            document.getElementById('uptime').innerText = `${h}:${m}:${s}`;
-        }, 1000);
-    }
-
-    updateUI();
+    render();
 </script>
 </body>
 </html>
