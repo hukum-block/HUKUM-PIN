@@ -3,201 +3,301 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HÜKÜM V45 | Digital Panel</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>İtemSatış | HÜKÜM MARKET</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* İTEMSATIŞ RENK PALETİ VE TASARIMI */
+        :root {
+            --bg-dark: #1a1c23; --bg-card: #242731; --primary-blue: #3b82f6; 
+            --gold: #ffb100; --text-gray: #9ca3af; --white: #ffffff; --red: #ef4444;
+        }
+
         body {
-            background-color: #050a14;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
+            background-color: var(--bg-dark); color: var(--white);
+            font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 70px;
         }
 
-        /* Matrix Arka Plan Efekti */
-        #matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.1;
+        /* 34. CANLI DUYURU BANDI */
+        .announcement {
+            background: #2d313d; color: var(--gold); padding: 8px; font-size: 13px;
+            border-bottom: 1px solid #333; overflow: hidden; white-space: nowrap;
+        }
+        .announcement-text { display: inline-block; animation: scroll 20s linear infinite; }
+
+        /* HEADER (FOTO 2 & 3 UYUMLU) */
+        header {
+            background: var(--bg-card); padding: 10px 15px; display: flex;
+            justify-content: space-between; align-items: center; border-bottom: 1px solid #333;
+        }
+        .logo { font-size: 20px; font-weight: 800; letter-spacing: -1px; }
+        .logo span { color: var(--primary-blue); }
+
+        /* ÜST KATEGORİ İKONLARI (FOTO 6 UYUMLU) */
+        .cat-row {
+            display: flex; gap: 10px; overflow-x: auto; padding: 15px;
+            scrollbar-width: none; background: var(--bg-dark);
+        }
+        .cat-item {
+            min-width: 80px; text-align: center; font-size: 11px; color: var(--text-gray);
+        }
+        .cat-icon {
+            width: 50px; height: 50px; background: var(--bg-card);
+            border-radius: 12px; display: flex; align-items: center;
+            justify-content: center; font-size: 20px; margin-bottom: 5px; color: var(--gold);
         }
 
-        /* Degrade Cüzdan Kartı */
-        .bank-card {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s;
+        /* 22. VİTRİN İLANLARI */
+        .section-title { padding: 10px 15px; font-size: 14px; font-weight: 700; color: #10b981; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 15px; }
+        .card {
+            background: var(--bg-card); border-radius: 12px; overflow: hidden;
+            position: relative; border: 1px solid #333;
+        }
+        .card-img { width: 100%; height: 100px; object-fit: cover; background: #333; }
+        .card-body { padding: 10px; }
+        .card-price { color: var(--gold); font-size: 16px; font-weight: 800; margin-top: 5px; }
+        .card-seller { font-size: 10px; color: var(--text-gray); display: flex; align-items: center; gap: 4px; }
+        .vitrin-badge {
+            position: absolute; top: 0; left: 0; background: #10b981;
+            font-size: 9px; padding: 2px 8px; font-weight: bold;
         }
 
-        .bank-card:hover { transform: scale(1.02); }
-
-        /* Kayan Yazı Bandı */
-        .marquee {
-            background: #facc15;
-            color: black;
-            font-weight: bold;
-            padding: 5px 0;
+        /* BOTTOM NAV (FOTO 2-6 UYUMLU) */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; background: var(--bg-card);
+            display: flex; justify-content: space-around; padding: 10px 0;
+            border-top: 1px solid #333; z-index: 1000;
         }
+        .nav-btn { text-align: center; font-size: 10px; color: var(--text-gray); border: none; background: none; }
+        .nav-btn i { font-size: 20px; margin-bottom: 3px; display: block; }
+        .nav-btn.active { color: var(--white); }
 
-        /* Admin Gizli Kapı */
-        .admin-secret {
-            cursor: default;
-            user-select: none;
+        /* 1. PROFESYONEL GİRİŞ PANELİ */
+        #login-modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            z-index: 2000; align-items: center; justify-content: center;
         }
+        .login-box {
+            background: var(--bg-card); width: 90%; max-width: 350px;
+            border-radius: 20px; padding: 25px; position: relative;
+        }
+        .social-btns { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin: 20px 0; }
+        .s-btn { height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; border: none; font-size: 18px; }
+        input {
+            width: 100%; background: #1a1c23; border: 1px solid #333;
+            color: white; padding: 12px; border-radius: 10px; margin-bottom: 10px; box-sizing: border-box;
+        }
+        .btn-main { background: var(--primary-blue); width: 100%; border: none; padding: 12px; border-radius: 10px; color: white; font-weight: bold; }
 
-        .hidden-panel { display: none; }
-        
-        .vip-badge {
-            color: #facc15;
-            text-shadow: 0 0 10px #facc15;
+        /* 36. ADMİN KARARGAHI (TERMİNAL) */
+        #admin-room {
+            display: none; position: fixed; inset: 0; background: #000; z-index: 3000;
+            font-family: 'Courier New', monospace; color: #00ff00; padding: 20px;
         }
+        .matrix-bg { position: absolute; top:0; left:0; width:100%; height:100%; opacity: 0.1; z-index: -1; pointer-events: none; }
+
+        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
     </style>
 </head>
 <body>
 
-<canvas id="matrix-bg"></canvas>
+<div class="announcement">
+    <div class="announcement-text">🚀 HÜKÜM MARKET V16 AKTİF! | ÜCRETSİZ ÇEKİLİŞLERE KATILMAYI UNUTMAYIN! | TİKTOK: @HUKUM_V45</div>
+</div>
 
-<div class="marquee overflow-hidden whitespace-nowrap">
-    <div class="inline-block animate-marquee">
-        🚀 HÜKÜM V45 AKTİF! | YENİ ROBLOX SCRIPT'LERİ EKLENDİ | GÜVENLİK PİN SİSTEMİ DEVREDE!
+<header>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <i class="fa fa-bars" style="font-size: 18px;"></i>
+        <div class="logo">itemsatış<span>.com</span></div>
+    </div>
+    <div style="font-size: 20px;" onclick="openLogin()"><i class="fa-regular fa-circle-user"></i></div>
+</header>
+
+<div class="cat-row">
+    <div class="cat-item"><div class="cat-icon"><i class="fa fa-ghost"></i></div>Hesap</div>
+    <div class="cat-item"><div class="cat-icon"><i class="fa fa-shield-halved"></i></div>İtem</div>
+    <div class="cat-item"><div class="cat-icon"><i class="fa fa-bolt"></i></div>E-Pin</div>
+    <div class="cat-item"><div class="cat-icon" style="color: #5865F2;"><i class="fa-brands fa-discord"></i></div>Discord</div>
+    <div class="cat-item"><div class="cat-icon" style="color: #ff0050;"><i class="fa-brands fa-tiktok"></i></div>TikTok</div>
+</div>
+
+<div class="section-title">VİTRİN İLANLARI</div>
+
+<div class="grid" id="market-grid">
+    </div>
+
+<div class="bottom-nav">
+    <button class="nav-btn active"><i class="fa fa-home"></i>Anasayfa</button>
+    <button class="nav-btn" onclick="filter('pazar')"><i class="fa fa-store"></i>İlan Pazarı</button>
+    <button class="nav-btn" onclick="showIlanEkle()"><i class="fa fa-plus-circle" style="color: var(--primary-blue);"></i>İlan Ekle</button>
+    <button class="nav-btn"><i class="fa fa-life-ring"></i>Destek</button>
+    <button class="nav-btn" id="login-trigger" onclick="openLogin()">
+        <i class="fa fa-user"></i>Giriş Yap
+        <div style="width: 10px; height: 10px; margin: 0 auto;" onclick="adminClickCount()"></div> </button>
+</div>
+
+<div id="login-modal">
+    <div class="login-box">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="margin: 0; font-size: 18px;">Giriş Yap</h2>
+            <i class="fa fa-times" onclick="closeLogin()" style="cursor:pointer;"></i>
+        </div>
+        <p style="font-size: 12px; color: var(--text-gray); margin: 15px 0;">Aşağıdaki seçeneklerden hızlıca giriş yapabilirsiniz.</p>
+        <div class="social-btns">
+            <button class="s-btn" style="background: #ea4335;"><i class="fa-brands fa-google"></i></button>
+            <button class="s-btn" style="background: #1877f2;"><i class="fa-brands fa-facebook"></i></button>
+            <button class="s-btn" style="background: #5865f2;"><i class="fa-brands fa-discord"></i></button>
+            <button class="s-btn" style="background: #000000;"><i class="fa-brands fa-steam"></i></button>
+        </div>
+        <div style="text-align: center; color: #333; margin: 10px 0;">veya</div>
+        <input type="text" id="l-user" placeholder="Kullanıcı Adı / Mail">
+        <input type="password" id="l-pass" placeholder="Parola">
+        <button class="btn-main" onclick="processLogin()">Giriş Yap</button>
+        <p style="font-size: 11px; text-align: center; margin-top: 15px;">Hala bir üyeliğiniz yok mu? <span style="color: var(--primary-blue);">Hemen ücretsiz üye ol</span></p>
     </div>
 </div>
 
-<div class="container mx-auto px-4 py-8">
-    
-    <div id="login-screen" class="max-w-md mx-auto bg-gray-900 p-8 rounded-xl border border-blue-900 shadow-2xl">
-        <h2 class="text-3xl font-bold text-center mb-6 text-blue-400">HÜKÜM GİRİŞ</h2>
-        <input type="text" id="user" placeholder="Kullanıcı Adı" class="w-full p-3 mb-4 bg-gray-800 rounded border border-gray-700">
-        <input type="password" id="pass" placeholder="Şifre" class="w-full p-3 mb-4 bg-gray-800 rounded border border-gray-700">
-        <button onclick="siteyeGir()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-bold transition">Mertçe Giriş Yap</button>
-        
-        <div class="flex justify-between mt-6">
-            <button class="bg-red-600 p-2 rounded text-xs">Google</button>
-            <button class="bg-indigo-600 p-2 rounded text-xs">Discord</button>
-            <button class="bg-blue-800 p-2 rounded text-xs">Facebook</button>
-            <button class="bg-gray-700 p-2 rounded text-xs">Steam</button>
+<div id="admin-room">
+    <div class="matrix-bg" id="matrix"></div>
+    <h3>[ HÜKÜM OPERASYON MERKEZİ ]</h3>
+    <div id="terminal" style="height: 150px; overflow-y: auto; background: #050505; padding: 10px; font-size: 11px;">
+        > Sistem yüklendi...<br>
+        > Karargah aktif: Hoşgeldin Eymen Paşa.<br>
+    </div>
+    <hr color="#00ff00">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+        <div style="background: #111; padding: 10px; border: 1px solid #00ff00;">
+            <small>PATRON KASASI</small><br>
+            <b id="adm-vault" style="font-size: 20px;">0.00 ₺</b>
+        </div>
+        <div style="background: #111; padding: 10px; border: 1px solid #00ff00;">
+            <small>TOPLAM ÜYE</small><br>
+            <b id="adm-users">1</b>
         </div>
     </div>
-
-    <div id="main-panel" class="hidden-panel">
-        
-        <div class="bank-card max-w-sm mx-auto p-6 mb-8 relative">
-            <div class="flex justify-between items-start">
-                <div>
-                    <p class="text-xs opacity-75">HÜKÜM KART</p>
-                    <h3 id="display-name" class="text-xl font-bold mt-1">Eymen Paşa <span class="vip-badge">★ VIP</span></h3>
-                </div>
-                <img src="https://img.icons8.com/color/48/000000/chip.png" width="40"/>
-            </div>
-            <div class="mt-8">
-                <p class="text-sm opacity-75">Mevcut Bakiye</p>
-                <div class="flex items-center gap-3">
-                    <h2 id="balance-text" class="text-3xl font-mono font-bold">1.250,00 ₺</h2>
-                    <button onclick="bakiyeGizle()" class="text-xl">👁️</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-gray-900 p-4 rounded-lg border border-yellow-500 border-opacity-30">
-                <span class="text-yellow-500 font-bold">🔥 GÜNÜN FIRSATI</span>
-                <img src="https://via.placeholder.com/150" class="w-full rounded mt-2">
-                <h4 class="mt-2 font-bold">Premium Roblox Script</h4>
-                <p class="text-sm text-gray-400">Stok: 12</p>
-                <div class="flex justify-between items-center mt-4">
-                    <span class="text-xl font-bold text-yellow-400">45,00 ₺</span>
-                    <button onclick="satinAl()" class="bg-green-600 px-4 py-1 rounded text-sm">AL</button>
-                </div>
-            </div>
-            </div>
-
-        <div class="mt-10 bg-gray-900 p-6 rounded-xl border border-blue-500">
-            <h3 class="text-xl font-bold mb-4">🎰 Hüküm Çarkı (10 TL)</h3>
-            <button onclick="carkCevir()" class="bg-blue-600 px-6 py-2 rounded-full hover:bg-yellow-500 transition hover:text-black font-bold">ÇARKI ÇEVİR</button>
-            <p id="cark-sonuc" class="mt-3 font-mono"></p>
-        </div>
-
-    </div>
+    <h4 style="margin-bottom: 5px;">Bakiye Editörü</h4>
+    <input type="text" id="adm-target" placeholder="Kullanıcı" style="border-color: #00ff00;">
+    <input type="number" id="adm-amt" placeholder="Miktar" style="border-color: #00ff00;">
+    <button class="btn-main" style="background: #00ff00; color: #000;" onclick="admAddBal()">BAKİYE EKLE</button>
+    <button onclick="document.getElementById('admin-room').style.display='none'" style="margin-top: 20px; background: red; color: white; border: none; padding: 10px; width: 100%;">ÇIKIŞ YAP</button>
 </div>
-
-<div onclick="adminPanelAc()" class="fixed bottom-0 right-0 w-10 h-10 admin-secret"></div>
 
 <script>
-    // Matrix Efekti
-    const canvas = document.getElementById('matrix-bg');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const chars = "010101HUKUMV45EYMEN";
-    const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
+    // 5. & 8. VERİ VE GÜVENLİK
+    let state = JSON.parse(localStorage.getItem('hukum_v16_data')) || {
+        users: { "eymen": { b: 1000, pass: "123", pin: "1907", rank: "Admin" } },
+        vault: 0,
+        items: [
+            { id: 1, n: "Grand Theft Auto V", p: 30, s: "XorShop", vitrin: true, cat: "hesap", link: "hukum_v45" },
+            { id: 2, n: "TikTok 2023-2026 Hesap", p: 30, s: "AhmetWsl", vitrin: true, cat: "tiktok", link: "hukum_v45" },
+            { id: 3, n: "Counter-Strike 2 Prime", p: 85, s: "MertYazılım", vitrin: false, cat: "hesap", link: "hukum_v45" }
+        ],
+        logs: []
+    };
 
-    function drawMatrix() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0044ff";
-        ctx.font = fontSize + "px monospace";
-        for (let i = 0; i < drops.length; i++) {
-            const text = chars.charAt(Math.floor(Math.random() * chars.length));
-            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
+    let currentUser = null;
+    let adminClicks = 0;
+
+    function save() { localStorage.setItem('hukum_v16_data', JSON.stringify(state)); render(); }
+
+    function render() {
+        let grid = document.getElementById('market-grid');
+        grid.innerHTML = "";
+        state.items.forEach(item => {
+            grid.innerHTML += `
+                <div class="card" onclick="buyProcess(${item.id})">
+                    ${item.vitrin ? '<div class="vitrin-badge">VİTRİN İLANI</div>' : ''}
+                    <div class="card-img" style="display:flex; align-items:center; justify-content:center; background:#2d313d;">
+                        <i class="fa fa-image" style="color:#444; font-size:30px;"></i>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-seller"><i class="fa fa-check-circle" style="color:var(--primary-blue);"></i> ${item.s}</div>
+                        <div style="font-size:12px; font-weight:600; margin:4px 0;">${item.n}</div>
+                        <div class="card-price">${item.p},00 ₺</div>
+                    </div>
+                </div>
+            `;
+        });
+        document.getElementById('adm-vault').innerText = state.vault.toFixed(2) + " ₺";
+        document.getElementById('adm-users').innerText = Object.keys(state.users).length;
+    }
+
+    // 13. BAKİYE YÜKLEME TİKTOK YÖNLENDİRME
+    function showBakiyeYukle() {
+        alert("Bakiye yükleme paketleri: 50₺, 100₺, 250₺. Onay için TikTok @hukum_v45 DM gönderin.");
+        window.open("https://www.tiktok.com/@hukum_v45", "_blank");
+    }
+
+    // 26. İLAN EKLEME (FOTO 2 UYUMLU)
+    function showIlanEkle() {
+        if(!currentUser) return openLogin();
+        let n = prompt("Ürün Adı:");
+        let p = prompt("Fiyat (₺):");
+        let soc = prompt("İletişim İçin TikTok/Insta (Zorunlu):");
+        if(n && p && soc) {
+            state.items.push({ id: Date.now(), n: n, p: parseInt(p), s: currentUser, vitrin: false, cat: "all", link: soc });
+            addLog(`Yeni ilan eklendi: ${n}`);
+            save();
         }
     }
-    setInterval(drawMatrix, 50);
 
-    // Site Fonksiyonları
-    let bakiye = 1250;
-    let bakiyeGizli = false;
-
-    function siteyeGir() {
-        const pin = prompt("Güvenlik için 4 Haneli PİN girin:"); // 3. Tek Seferlik PİN
-        if(pin && pin.length === 4) {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-panel').classList.remove('hidden-panel');
-            alert("Sisteme Mertçe Giriş Yapıldı. Hoş geldin Paşam!");
+    function buyProcess(id) {
+        if(!currentUser) return openLogin();
+        let itm = state.items.find(x => x.id === id);
+        if(state.users[currentUser].b >= itm.p) {
+            state.users[currentUser].b -= itm.p;
+            state.vault += itm.p;
+            addLog(`${currentUser} adlı kullanıcı ${itm.n} satın aldı.`);
+            alert("Satın Alım Başarılı! Teslimat için satıcıyla ("+itm.link+") iletişime geçin.");
+            save();
         } else {
-            alert("Hatalı PİN!");
+            showBakiyeYukle();
         }
     }
 
-    function bakiyeGizle() {
-        bakiyeGizli = !bakiyeGizli;
-        document.getElementById('balance-text').innerText = bakiyeGizli ? "******* ₺" : bakiye.toFixed(2) + " ₺";
-    }
-
-    function satinAl() {
-        window.location.href = "https://www.tiktok.com/@hukum_v45"; // 13. TikTok Yönlendirme
-    }
-
-    function carkCevir() {
-        if(bakiye < 10) return alert("Bakiyen yetersiz aslanım.");
-        bakiye -= 10;
-        const sans = Math.random();
-        let mesaj = "";
-        if(sans > 0.8) {
-            bakiye += 50;
-            mesaj = "🔥 KAZANDIN! +50 TL";
-        } else {
-            mesaj = "❌ Şansına küs paşam, bakiye gitti.";
-        }
-        document.getElementById('cark-sonuc').innerText = mesaj;
-        if(!bakiyeGizli) bakiyeGizle(); bakiyeGizle(); // Güncelleme için
-    }
-
-    // 36. Admin Panel (Gizli Kombinasyon)
-    function adminPanelAc() {
-        const sifre = prompt("ADMIN ŞİFRESİ:");
-        if(sifre === "Eyo_pasha15") {
-            alert("HÜKÜM KARARGAHINA HOŞ GELDİN KOMUTANIM. \nBakiye: " + bakiye + "\nKasa: 50.000 TL");
+    // ADMİN ODASI GİZLİ TETİKLEYİCİ
+    function adminClickCount() {
+        adminClicks++;
+        if(adminClicks >= 5) {
+            adminClicks = 0;
+            let pass = prompt("HÜKÜM YÖNETİCİ ŞİFRESİ:");
+            if(pass === "Eyo_pasha15") {
+                document.getElementById('admin-room').style.display = 'block';
+            }
         }
     }
+
+    function admAddBal() {
+        let t = document.getElementById('adm-target').value;
+        let a = parseFloat(document.getElementById('adm-amt').value);
+        if(state.users[t]) {
+            state.users[t].b += a;
+            addLog(`ADMİN: ${t} kullanıcısına ${a}₺ eklendi.`);
+            save();
+            alert("Bakiye tanımlandı.");
+        }
+    }
+
+    function addLog(msg) {
+        let t = new Date().toLocaleTimeString();
+        state.logs.push(`[${t}] ${msg}`);
+        document.getElementById('terminal').innerHTML += `> [${t}] ${msg}<br>`;
+    }
+
+    function openLogin() { document.getElementById('login-modal').style.display = 'flex'; }
+    function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
+    function processLogin() {
+        let u = document.getElementById('l-user').value.toLowerCase();
+        if(u) {
+            currentUser = u;
+            if(!state.users[u]) state.users[u] = { b: 0, pass: "123", pin: "0000", rank: "Üye" };
+            closeLogin();
+            render();
+            alert("Hoşgeldin " + u.toUpperCase());
+        }
+    }
+
+    render();
 </script>
-
 </body>
 </html>
-
