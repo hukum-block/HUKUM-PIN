@@ -115,6 +115,8 @@
 </head>
 <body>
 
+<input type="file" id="hidden-file-input" accept="image/*" style="display: none;">
+
 <div class="announcement">
     <div class="announcement-text">🛡️ HÜKÜM-PİN GÜVENLİK SİSTEMİ DEVREDE | %100 YERLİ VE MİLLİ YAZILIM | KURTALAN'IN GURURU V19</div>
 </div>
@@ -253,7 +255,6 @@
                 let deleteHtml = (currentUser === item.s || currentUser === 'eymen') ? 
                     `<button class="del-btn" onclick="deleteIlan(${item.id}, event)"><i class="fa fa-trash"></i></button>` : "";
 
-                // GÖRSEL KONTROLÜ
                 let imgHtml = item.img ? `<img src="${item.img}" onerror="this.src='https://placehold.co/400x200/242731/3b82f6?text=Gorsel+Yok'">` : `<i class="fa fa-box-open" style="color:#3b82f6; font-size:40px;"></i>`;
 
                 grid.innerHTML += `
@@ -285,6 +286,22 @@
         }
     }
 
+    // FOTOĞRAF SEÇME VE BASE64'E ÇEVİRME SİSTEMİ
+    function pickImage() {
+        return new Promise((resolve) => {
+            const input = document.getElementById('hidden-file-input');
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = readerEvent => {
+                    resolve(readerEvent.target.result); // Base64 kodunu döndürür
+                }
+            }
+            input.click();
+        });
+    }
+
     async function showIlanEkle() {
         if(!currentUser) { openLogin(); return; }
         let n = prompt("Ürün İsmi?"); if(!n) return;
@@ -293,7 +310,13 @@
         let cat = prompt("Kategori? (hesap, item, epin, discord, tiktok)");
         let pform = prompt("Müşteri Sana Nerden Ulaşsın? (TikTok, IG vb.)");
         let pname = prompt("O Platformdaki Kullanıcı Adın?");
-        let img = prompt("Ürün Fotoğraf Linki (URL) - Boş bırakabilirsin:");
+        
+        let img = "";
+        if(confirm("İlan için galeriden fotoğraf seçmek ister misin?")) {
+            alert("Şimdi galeriden fotoğrafı seç Paşa!");
+            img = await pickImage();
+        }
+
         let note = prompt("Müşteriye Notun (Satın alırken gözükecek):");
 
         if(n && p) {
@@ -320,7 +343,6 @@
         if(!currentUser) { openLogin(); return; }
         let itm = state.items.find(x => x.id === id);
         
-        // SATICI BİLGİSİ VE NOT GÖSTERİMİ
         let msg = `🛒 ÜRÜN: ${itm.n}\n💰 FİYAT: ${itm.p}₺\n👤 SATICI: ${itm.s}\n📝 SATICI NOTU: ${itm.note || "Yok"}\n\nSatın alımı onaylıyor musun Paşa?`;
         
         if(confirm(msg)) {
