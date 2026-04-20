@@ -115,8 +115,10 @@
 </head>
 <body>
 
+<input type="file" id="hidden-file-input" accept="image/*" style="display: none;">
+
 <div class="announcement">
-    <div class="announcement-text">🛡️ HÜKÜM-PİN GÜVENLİK SİSTEMİ DEVREDE | %100 YERLİ VE MİLLİ YAZILIM | KURTALAN'IN GURURU V20</div>
+    <div class="announcement-text">🛡️ HÜKÜM-PİN GÜVENLİK SİSTEMİ DEVREDE | %100 YERLİ VE MİLLİ YAZILIM | KURTALAN'IN GURURU V19</div>
 </div>
 
 <header>
@@ -145,10 +147,8 @@
 </div>
 
 <div class="grid" id="market-grid">
-    <div class="empty-msg">Veriler Karargahtan Çekiliyor...</div>
+    <div class="empty-msg">Yükleniyor...</div>
 </div>
-
-<input type="file" id="image-picker" style="display:none" accept="image/*">
 
 <div class="bottom-nav">
     <button class="nav-btn active" onclick="render('all')"><i class="fa fa-house-chimney"></i>Anasayfa</button>
@@ -169,6 +169,7 @@
         <input type="text" id="l-user" placeholder="Kullanıcı Adı">
         <input type="password" id="l-pass" placeholder="Şifre">
         <button class="btn-main" onclick="processLogin()">GİRİŞ YAP / KAYIT OL</button>
+        <p style="font-size: 11px; text-align: center; margin-top: 15px; color: var(--text-gray);">Bu sistem LocalStorage ile korunmaktadır.</p>
     </div>
 </div>
 
@@ -176,7 +177,7 @@
     <h2 style="text-align: center; border-bottom: 2px solid #00ff00; padding-bottom: 10px;">☣️ HÜKÜM MERKEZİ KARARGAH ☣️</h2>
     <div class="terminal-box" id="terminal">
         > Yetki doğrulandı: Eymen Paşa.<br>
-        > Telegram Senkronizasyonu: Aktif.
+        > Telegram Veritabanı: Aktif.
     </div>
     <div class="admin-grid">
         <div class="admin-card"><small>1. PATRON KASASI</small><br><b id="adm-vault">0.00 ₺</b></div>
@@ -196,7 +197,7 @@
     const BOT_TOKEN = '8615703049:AAGCPGH59YdLkvCsHdr1WkYuSWGgyuEfBSQ';
     const KANAL_ID = '@hukum_pin_bot1';
 
-    let state = {
+    let state = JSON.parse(localStorage.getItem('hukum_v18_data')) || {
         users: { "eymen": { b: 5000, pass: "123", rank: "Admin" } },
         vault: 0,
         items: [] 
@@ -205,9 +206,14 @@
     let currentUser = localStorage.getItem('hukum_user') || null;
     let adminClicks = 0;
 
-    async function sendSync(type, data) {
-        const payload = { type: type, content: data, ts: Date.now() };
-        const msg = `🛡️ #HUKUM_SYNC\n\`\`\`json\n${JSON.stringify(payload)}\n\`\`\``;
+    function save() { 
+        localStorage.setItem('hukum_v18_data', JSON.stringify(state)); 
+        if(currentUser) localStorage.setItem('hukum_user', currentUser);
+        render(); 
+    }
+
+    async function sendToTelegram(item) {
+        const msg = `📦 #İLAN\n\`\`\`json\n${JSON.stringify(item)}\n\`\`\``;
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -217,28 +223,24 @@
 
     async function loadFromTelegram() {
         try {
-            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-100`);
+            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-50`);
             const data = await res.json();
+            let telegramItems = [];
             
-            data.result.reverse().forEach(update => {
-                const text = update.channel_post ? update.channel_post.text : (update.message ? update.message.text : "");
-                if(text && text.includes("#HUKUM_SYNC")) {
+            data.result.forEach(update => {
+                if(update.channel_post && update.channel_post.text.includes("json")) {
                     try {
-                        const jsonStr = text.split("```json")[1].split("```")[0];
-                        const sync = JSON.parse(jsonStr);
-                        
-                        if(sync.type === 'ITEM_ADD') {
-                            if(!state.items.find(i => i.id === sync.content.id)) state.items.push(sync.content);
-                        } else if(sync.type === 'ITEM_DEL') {
-                            state.items = state.items.filter(i => i.id !== sync.content);
-                        } else if(sync.type === 'USER_SYNC') {
-                            state.users[sync.content.u] = sync.content.data;
-                        }
+                        const jsonStr = update.channel_post.text.split("```json")[1].split("```")[0];
+                        telegramItems.push(JSON.parse(jsonStr));
                     } catch(e) {}
                 }
             });
-            render();
-        } catch(e) { console.log("Senkronizasyon hatası"); }
+            
+            if(telegramItems.length > 0) {
+                state.items = telegramItems;
+                render();
+            }
+        } catch(e) { console.log("Telegram bağlantı hatası"); }
     }
 
     function render(filter = 'all') {
@@ -247,22 +249,27 @@
         let list = filter === 'all' ? state.items : state.items.filter(i => i.cat === filter);
         
         if(list.length === 0) {
-            grid.innerHTML = `<div class="empty-msg">İlan bulunamadı...</div>`;
+            grid.innerHTML = `<div class="empty-msg">İlan yok veya yükleniyor...</div>`;
         } else {
             list.forEach((item) => {
                 let deleteHtml = (currentUser === item.s || currentUser === 'eymen') ? 
                     `<button class="del-btn" onclick="deleteIlan(${item.id}, event)"><i class="fa fa-trash"></i></button>` : "";
 
-                let imgHtml = item.img ? `<img src="${item.img}">` : `<i class="fa fa-box-open" style="color:#3b82f6; font-size:40px;"></i>`;
+                let imgHtml = item.img ? `<img src="${item.img}" onerror="this.src='https://placehold.co/400x200/242731/3b82f6?text=Gorsel+Yok'">` : `<i class="fa fa-box-open" style="color:#3b82f6; font-size:40px;"></i>`;
 
                 grid.innerHTML += `
                     <div class="card" onclick="buyProcess(${item.id})">
                         ${deleteHtml}
-                        <div class="card-img">${imgHtml}</div>
+                        <div class="card-img" style="position:relative;">
+                            ${imgHtml}
+                            <div style="position:absolute; bottom:5px; right:10px; font-size:10px; color:var(--green); background:rgba(0,0,0,0.6); padding:2px 5px; border-radius:5px;">Stok: ${item.stok || 1}</div>
+                        </div>
                         <div class="card-body">
                             <div class="card-seller"><i class="fa fa-shield" style="color:var(--green);"></i> ${item.s}</div>
                             <div style="font-size:13px; font-weight:700; margin:6px 0;">${item.n}</div>
-                            <div style="font-size:10px; color:var(--text-gray); margin-bottom:5px;">${item.pform}: <b>${item.pname}</b></div>
+                            <div style="font-size:10px; color:var(--text-gray); margin-bottom:5px;">
+                                <i class="fa-solid fa-share-nodes"></i> ${item.pform}: <b>${item.pname}</b>
+                            </div>
                             <div class="card-price">${item.p},00 ₺</div>
                         </div>
                     </div>
@@ -270,19 +277,28 @@
             });
         }
         document.getElementById('item-count').innerText = state.items.length + " İlan";
-        if(currentUser && state.users[currentUser]) {
+        document.getElementById('adm-vault').innerText = state.vault.toFixed(2) + " ₺";
+        document.getElementById('adm-users').innerText = Object.keys(state.users).length;
+        if(currentUser) {
             document.getElementById('login-trigger').innerHTML = `<i class="fa fa-user-check" style="color:var(--gold)"></i> ${currentUser.toUpperCase()}`;
             document.getElementById('header-wallet').style.display = 'flex';
             document.getElementById('user-money').innerText = state.users[currentUser].b.toFixed(2) + " ₺";
         }
     }
 
-    function getBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
+    // FOTOĞRAF SEÇME VE BASE64'E ÇEVİRME SİSTEMİ
+    function pickImage() {
+        return new Promise((resolve) => {
+            const input = document.getElementById('hidden-file-input');
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = readerEvent => {
+                    resolve(readerEvent.target.result); // Base64 kodunu döndürür
+                }
+            }
+            input.click();
         });
     }
 
@@ -292,72 +308,62 @@
         let p = prompt("Fiyat (₺)?"); if(!p) return;
         let stok = prompt("Stok Sayısı?"); if(!stok) return;
         let cat = prompt("Kategori? (hesap, item, epin, discord, tiktok)");
-        let pform = prompt("Müşteri Sana Nerden Ulaşsın?");
+        let pform = prompt("Müşteri Sana Nerden Ulaşsın? (TikTok, IG vb.)");
         let pname = prompt("O Platformdaki Kullanıcı Adın?");
-        let note = prompt("Müşteriye Notun:");
         
-        alert("Şimdi Galeriden Ürün Fotoğrafını Seç Paşa!");
-        const picker = document.getElementById('image-picker');
-        picker.click();
-        
-        picker.onchange = async () => {
-            let imgData = "";
-            if(picker.files[0]) {
-                imgData = await getBase64(picker.files[0]);
-            }
-            
-            let newItem = { id: Date.now(), n, p: parseInt(p), stok: parseInt(stok), s: currentUser, cat, pform, pname, img: imgData, note };
-            state.items.push(newItem);
-            await sendSync('ITEM_ADD', newItem);
-            render();
-            alert("İlan Herkese Görünür Şekilde Yayınlandı!");
-        };
-    }
+        let img = "";
+        if(confirm("İlan için galeriden fotoğraf seçmek ister misin?")) {
+            alert("Şimdi galeriden fotoğrafı seç Paşa!");
+            img = await pickImage();
+        }
 
-    async function deleteIlan(id, e) {
-        e.stopPropagation();
-        if(confirm("İlanı silelim mi?")) {
-            state.items = state.items.filter(i => i.id !== id);
-            await sendSync('ITEM_DEL', id);
-            render();
+        let note = prompt("Müşteriye Notun (Satın alırken gözükecek):");
+
+        if(n && p) {
+            let newItem = { 
+                id: Date.now(), n, p: parseInt(p), stok: parseInt(stok), 
+                s: currentUser, cat, pform, pname, img, note 
+            };
+            state.items.push(newItem);
+            await sendToTelegram(newItem);
+            save();
+            alert("İlan Karargaha Mühürlendi!");
         }
     }
 
-    async function buyProcess(id) {
+    function deleteIlan(id, e) {
+        e.stopPropagation();
+        if(confirm("İlanı silelim mi Paşa?")) {
+            state.items = state.items.filter(i => i.id !== id);
+            save();
+        }
+    }
+
+    function buyProcess(id) {
         if(!currentUser) { openLogin(); return; }
         let itm = state.items.find(x => x.id === id);
-        if(confirm(`${itm.n} ürününü satın alıyor musun?`)) {
+        
+        let msg = `🛒 ÜRÜN: ${itm.n}\n💰 FİYAT: ${itm.p}₺\n👤 SATICI: ${itm.s}\n📝 SATICI NOTU: ${itm.note || "Yok"}\n\nSatın alımı onaylıyor musun Paşa?`;
+        
+        if(confirm(msg)) {
             if(state.users[currentUser].b >= itm.p) {
                 state.users[currentUser].b -= itm.p;
+                state.vault += itm.p;
                 itm.stok -= 1;
-                await sendSync('USER_SYNC', {u: currentUser, data: state.users[currentUser]});
-                alert(`BAŞARILI! Satıcı: ${itm.pform} - ${itm.pname}`);
-                if(itm.stok <= 0) {
-                    state.items = state.items.filter(x => x.id !== id);
-                    await sendSync('ITEM_DEL', id);
-                }
-                render();
-            } else { alert("Bakiye Yetersiz!"); }
+                alert(`✅ BAŞARILI! \n\nSatıcıya Ulaş: ${itm.pform} - ${itm.pname}\n\nNot: ${itm.note || "Not yok."}`);
+                if(itm.stok <= 0) state.items = state.items.filter(x => x.id !== id);
+                save();
+            } else { alert("❌ Bakiye yetersiz! Lütfen destek ile iletişime geç."); }
         }
     }
 
+    function showSupport() { alert("TikTok @hukum_v45 üzerinden destek alabilirsiniz."); }
     function openLogin() { document.getElementById('login-modal').style.display = 'flex'; }
     function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
-    
-    async function processLogin() {
+    function processLogin() {
         let u = document.getElementById('l-user').value.toLowerCase();
-        if(u) { 
-            currentUser = u; 
-            localStorage.setItem('hukum_user', u);
-            if(!state.users[u]) {
-                state.users[u] = { b: 0, pass: "123", rank: "Üye" };
-                await sendSync('USER_SYNC', {u: u, data: state.users[u]});
-            }
-            closeLogin(); 
-            render(); 
-        }
+        if(u) { currentUser = u; if(!state.users[u]) state.users[u] = { b: 0, pass: "123", rank: "Üye" }; save(); closeLogin(); }
     }
-
     function adminClickCount() {
         if(!currentUser) { openLogin(); return; }
         adminClicks++;
@@ -366,23 +372,14 @@
             if(prompt("HÜKÜM ŞİFRESİ:") === "Eyo_pasha15") document.getElementById('admin-room').style.display = 'block';
         }
     }
-
-    async function admAddBal() {
+    function admAddBal() {
         let t = document.getElementById('adm-t').value.toLowerCase();
         let a = parseFloat(document.getElementById('adm-a').value);
-        if(state.users[t]) { 
-            state.users[t].b += a; 
-            await sendSync('USER_SYNC', {u: t, data: state.users[t]});
-            alert("Bakiye Herkeste Güncellendi.");
-            render();
-        }
+        if(state.users[t]) { state.users[t].b += a; save(); alert("Bakiye Eklendi."); }
     }
 
-    function showSupport() { alert("TikTok @hukum_v45"); }
-
     window.onload = loadFromTelegram;
-    // Her 30 saniyede bir yeni ilanları kontrol et
-    setInterval(loadFromTelegram, 30000);
+    render();
 </script>
 </body>
 </html>
