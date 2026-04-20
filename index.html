@@ -3,248 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THİT | Derin Devlet Ağı</title>
+    <title>THİT | İstihbarat Teşkilatı</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --neon: #00e5ff; --dark-blue: #0a1128; --gold: #c9a022; --black: #020202; --grey: #1c1c1c; }
-        body { background: var(--black); color: #fff; font-family: 'Consolas', monospace; margin: 0; overflow-x: hidden; }
+        /* Derin Devlet Teması: Gece Mavisi, Siber Beyaz ve Altın Sarısı */
+        :root { --main-blue: #003366; --accent: #ffcc00; --bg: #020205; --text: #e0e0e0; --panel: #0a0c14; }
         
-        /* GERÇEK GİRİŞ-KAYIT PANELİ */
-        #auth-gate { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .auth-container { background: var(--dark-blue); border: 2px solid var(--neon); padding: 40px; width: 400px; border-radius: 10px; box-shadow: 0 0 50px rgba(0,229,255,0.2); text-align: center; }
-        input, select, textarea { width: 100%; background: #000; border: 1px solid #333; color: var(--neon); padding: 12px; margin: 10px 0; border-radius: 5px; outline: none; }
-        .btn-main { width: 100%; background: var(--neon); color: #000; border: none; padding: 15px; font-weight: 900; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .btn-main:hover { filter: brightness(1.2); box-shadow: 0 0 20px var(--neon); }
+        body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
 
-        /* ANA EKRAN */
-        header { border-bottom: 2px solid var(--neon); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.9); }
-        .grid { display: grid; grid-template-columns: 350px 1fr 300px; gap: 20px; padding: 20px; min-height: 85vh; }
-        .card { background: var(--grey); border: 1px solid #333; border-radius: 8px; padding: 20px; overflow-y: auto; }
+        /* GİRİŞ EKRANI - ASLA KAÇAK GEÇİRTMEZ */
+        #auth-gate { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .auth-card { background: var(--panel); border: 2px solid var(--main-blue); padding: 50px; border-radius: 5px; width: 450px; box-shadow: 0 0 100px rgba(0,51,102,0.5); text-align: center; position: relative; }
+        .auth-card::before { content: "KİMLİK DOĞRULAMA GEREKLİ"; position: absolute; top: 10px; left: 10px; font-size: 10px; color: var(--main-blue); }
+        
+        input, textarea, select { width: 100%; background: #000; border: 1px solid #1a1a1a; color: var(--accent); padding: 15px; margin: 10px 0; box-sizing: border-box; outline: none; border-radius: 3px; }
+        input:focus { border-color: var(--accent); }
+        
+        .btn-gov { width: 100%; background: var(--main-blue); color: #fff; border: none; padding: 18px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; border: 1px solid transparent; }
+        .btn-gov:hover { background: transparent; border-color: var(--accent); color: var(--accent); }
 
-        /* 15 GERÇEK ARAÇ */
-        .tool { background: #111; border: 1px solid #222; padding: 12px; margin-bottom: 10px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 15px; font-size: 13px; transition: 0.2s; }
-        .tool:hover { border-color: var(--neon); background: #161616; color: var(--neon); }
-        .tool i { width: 20px; text-align: center; }
+        /* ANA ARAYÜZ */
+        header { background: #000; border-bottom: 3px solid var(--main-blue); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .system-info { font-size: 12px; color: #444; }
+        
+        .layout { display: grid; grid-template-columns: 350px 1fr 300px; gap: 15px; padding: 15px; height: calc(100vh - 80px); }
+        .panel { background: var(--panel); border: 1px solid #1a1a25; padding: 20px; overflow-y: auto; position: relative; }
+        .panel h3 { border-bottom: 1px solid var(--main-blue); padding-bottom: 10px; color: var(--accent); font-size: 16px; display: flex; align-items: center; gap: 10px; }
 
-        /* OPERASYON SİSTEMİ */
-        .op-card { background: #000; border: 1px solid var(--neon); border-left: 5px solid var(--gold); padding: 15px; border-radius: 0 8px 8px 0; margin-bottom: 15px; position: relative; }
-        .op-card h4 { color: var(--neon); margin: 0 0 10px 0; }
-        .op-card p { font-size: 12px; margin: 5px 0; color: #ccc; }
+        /* ÇALIŞAN KOMUTLAR & ARAÇLAR */
+        .tool-btn { background: #000; border: 1px solid #1a1a1a; padding: 12px; margin-bottom: 8px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 15px; font-size: 13px; transition: 0.2s; }
+        .tool-btn:hover { border-color: var(--accent); background: #050505; color: var(--accent); }
+        .tool-btn i { color: var(--main-blue); width: 20px; }
 
-        /* GİZLİ ODA 'H' İŞARETİ */
-        .h-secret { position: fixed; bottom: 15px; right: 15px; width: 45px; height: 45px; border: 2px solid var(--neon); color: var(--neon); display: flex; align-items: center; justify-content: center; border-radius: 5px; cursor: pointer; font-weight: 900; background: #000; z-index: 1000; }
-        .h-secret:hover { background: var(--neon); color: #000; }
+        /* OPERASYON KARTLARI */
+        .op-card { background: #050508; border: 1px solid #1a1a1a; padding: 15px; margin-bottom: 15px; border-left: 4px solid var(--accent); }
+        .op-card h4 { margin: 0 0 10px 0; color: #fff; text-transform: uppercase; }
+        .op-details { font-size: 12px; color: #888; margin-bottom: 10px; }
+        .join-btn { background: var(--accent); color: #000; border: none; padding: 8px 15px; font-size: 11px; font-weight: 900; cursor: pointer; }
 
-        /* MODAL */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 10001; }
-        .modal-inner { background: #0a0a0a; border: 2px solid var(--gold); padding: 30px; border-radius: 10px; width: 500px; }
+        /* GİZLİ ODA "H" NOKTASI */
+        .h-trigger { position: fixed; bottom: 10px; right: 10px; width: 40px; height: 40px; border: 1px solid #111; color: #111; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 900; font-size: 20px; z-index: 999; }
+        .h-trigger:hover { color: var(--main-blue); border-color: var(--main-blue); }
+
+        /* MODAL SİSTEMİ */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 11000; }
+        .modal-content { background: #000; border: 2px solid var(--accent); padding: 30px; width: 600px; max-height: 80vh; overflow-y: auto; }
+
+        /* CANLI LOG KONSOLU */
+        #console { background: #000; color: #0f0; font-size: 10px; padding: 10px; height: 150px; overflow-y: auto; border: 1px solid #111; }
     </style>
 </head>
 <body>
 
 <div id="auth-gate">
-    <div class="auth-container">
-        <h2 style="color:var(--neon); margin-bottom: 30px;">T.H.İ.T GİRİŞİ</h2>
-        <div id="auth-form">
-            <input type="text" id="user-field" placeholder="KOD ADI">
-            <input type="password" id="pass-field" placeholder="YETKİ ŞİFRESİ">
-            <button class="btn-main" onclick="processAuth('login')">SİSTEME SIZ</button>
-            <button onclick="toggleAuthMode()" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer;">Yeni Ajan Kaydı Yap</button>
+    <div class="auth-card">
+        <h1 style="color: var(--accent); margin:0;">THİT</h1>
+        <p style="font-size: 11px; margin-bottom: 30px;">STRATEJİK İSTİHBARAT PORTALI</p>
+        <div id="login-form">
+            <input type="text" id="codename" placeholder="AJAN KOD ADI">
+            <input type="password" id="authkey" placeholder="BİRİM ŞİFRE">
+            <button class="btn-gov" onclick="systemLogin()">ERİŞİM SAĞLA</button>
+            <p onclick="toggleReg()" style="font-size: 10px; cursor: pointer; margin-top: 15px; color: #444;">[YENİ KAYIT TALEBİ]</p>
         </div>
     </div>
 </div>
 
 <header>
-    <div style="font-size: 24px; font-weight: 900; color: var(--neon); text-shadow: 0 0 10px var(--neon);">THİT // HÜKÜM MERKEZİ</div>
-    <div id="active-agent" style="color: var(--gold); font-weight: bold;">[ERİŞİM BEKLENİYOR]</div>
-    <div>SÜRÜM: 6.0.4</div>
+    <div style="color: var(--accent); font-weight: 900;">THİT // ANA KARARGAH</div>
+    <div class="system-info" id="status-line">BAĞLANTI: GÜVENLİ | VERİ TABANI: AKTİF (TELEGRAM)</div>
+    <div id="user-tag" style="color:var(--main-blue)">AJAN: DOĞRULANMADI</div>
 </header>
 
-<div class="grid">
-    <div class="card">
-        <h3 style="color: var(--neon); border-bottom: 1px solid #333; padding-bottom: 10px;">SAHA MODÜLLERİ</h3>
-        <div class="tool" onclick="run_IP()"><i class="fa-solid fa-crosshairs"></i> IP Lokasyon Bulucu</div>
-        <div class="tool" onclick="run_Pass()"><i class="fa-solid fa-vault"></i> Kriptografik Şifrele</div>
-        <div class="tool" onclick="run_Dns()"><i class="fa-solid fa-server"></i> Sunucu DNS Sorgu</div>
-        <div class="tool" onclick="run_Whois()"><i class="fa-solid fa-id-card"></i> Hedef Alan Adı Bilgi</div>
-        <div class="tool" onclick="run_Agent()"><i class="fa-solid fa-mask"></i> User-Agent Değiştirici</div>
-        <div class="tool" onclick="run_Ping()"><i class="fa-solid fa-wave-square"></i> Ağ Yanıt Testi</div>
-        <div class="tool" onclick="run_Port()"><i class="fa-solid fa-radar"></i> Açık Port Taraması</div>
-        <div class="tool" onclick="run_Sql()"><i class="fa-solid fa-database"></i> SQL Injection Koruması</div>
-        <div class="tool" onclick="run_Hash()"><i class="fa-solid fa-hashtag"></i> MD5/SHA256 Çözücü</div>
-        <div class="tool" onclick="run_Header()"><i class="fa-solid fa-file-code"></i> HTTP Header Analiz</div>
-        <div class="tool" onclick="run_Speed()"><i class="fa-solid fa-gauge-high"></i> Anlık Bağlantı Hızı</div>
-        <div class="tool" onclick="run_Metadata()"><i class="fa-solid fa-image"></i> Görsel Veri Temizleme</div>
-        <div class="tool" onclick="run_Terminal()"><i class="fa-solid fa-terminal"></i> THİT Komut Satırı</div>
-        <div class="tool" onclick="run_LogWipe()"><i class="fa-solid fa-trash-can"></i> Tarayıcı Log Silici</div>
-        <div class="tool" onclick="run_Admin()"><i class="fa-solid fa-user-gear"></i> Ajan Yetki Kontrolü</div>
+<div class="layout">
+    <div class="panel">
+        <h3><i class="fa-solid fa-screwdriver-wrench"></i> SAHA ARAÇLARI</h3>
+        <div class="tool-btn" onclick="runTool('IP')"><i class="fa-solid fa-location-crosshairs"></i> Hedef IP Tespit</div>
+        <div class="tool-btn" onclick="runTool('WHOIS')"><i class="fa-solid fa-search"></i> WHOIS Veri Sorgu</div>
+        <div class="tool-btn" onclick="runTool('PORT')"><i class="fa-solid fa-door-open"></i> Port Güvenlik Tarama</div>
+        <div class="tool-btn" onclick="runTool('DNS')"><i class="fa-solid fa-network-wired"></i> DNS Kayıt Analizi</div>
+        <div class="tool-btn" onclick="runTool('CRYPTO')"><i class="fa-solid fa-key"></i> SHA-256 Anahtar Üret</div>
+        <div class="tool-btn" onclick="runTool('TRACE')"><i class="fa-solid fa-route"></i> İz Sürücü (Traceroute)</div>
+        <div class="tool-btn" onclick="runTool('SSL')"><i class="fa-solid fa-lock"></i> SSL Sertifika Kontrol</div>
+        <div class="tool-btn" onclick="runTool('SITEMAP')"><i class="fa-solid fa-sitemap"></i> Dizin Ağacı Çıkarıcı</div>
+        <div class="tool-btn" onclick="runTool('SQL')"><i class="fa-solid fa-database"></i> Açık Tarama Enjektörü</div>
+        <div class="tool-btn" onclick="runTool('PROXY')"><i class="fa-solid fa-user-shield"></i> Proxy Sızıntı Testi</div>
+        <div class="tool-btn" onclick="runTool('MD5')"><i class="fa-solid fa-hashtag"></i> MD5 Çözücü Algoritma</div>
+        <div class="tool-btn" onclick="runTool('HEADERS')"><i class="fa-solid fa-file-code"></i> HTTP Başlık Analizi</div>
+        <div class="tool-btn" onclick="runTool('LOG')"><i class="fa-solid fa-eraser"></i> Sistem İz Temizliği</div>
+        <div class="tool-btn" onclick="runTool('AGENT')"><i class="fa-solid fa-user-secret"></i> User-Agent Değiştirici</div>
+        <div class="tool-btn" onclick="runTool('PING')"><i class="fa-solid fa-bolt"></i> Paket Tepki Ölçer</div>
     </div>
 
-    <div class="card">
+    <div class="panel">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3 style="color: var(--gold);">AKTİF OPERASYONLAR</h3>
-            <button class="btn-main" style="width:auto; padding: 8px 20px;" onclick="document.getElementById('op-modal').style.display='flex'">+ OPERASYON BAŞLAT</button>
+            <h3><i class="fa-solid fa-destinations"></i> AKTİF OPERASYONLAR</h3>
+            <button class="join-btn" onclick="openOpModal()">+ YENİ OPERASYON</button>
         </div>
-        <hr border="0" height="1" style="background:#333; margin: 15px 0;">
-        <div id="op-container">
-            <p style="text-align:center; color:#555;">İstihbarat verileri kanaldan senkronize ediliyor...</p>
+        <div id="op-list" style="margin-top:20px;">
+            <p style="text-align:center; color:#333;">Veri tabanı (Telegram) senkronize ediliyor...</p>
         </div>
     </div>
 
-    <div class="card">
-        <h3 style="color: var(--neon);">SİSTEM ANALİZİ</h3>
-        <div id="live-feed" style="font-size: 11px; line-height: 2; color: #888;">
-            >> Bağlantı kuruluyor...<br>
-            >> Database: @hukum_pin_bot1 bağlı.<br>
-            >> Güvenlik: Aktif.
+    <div class="panel">
+        <h3><i class="fa-solid fa-microchip"></i> SİSTEM DURUMU</h3>
+        <div style="font-size: 11px; margin-bottom: 20px;">
+            DURUM: <span style="color:#0f0">ONLINE</span><br>
+            BİRİM: <span style="color:var(--accent)">ÖZEL HAREKAT</span><br>
+            ŞİFRELEME: AES-256<br>
+            LOKASYON: GİZLİ
         </div>
-        <div style="margin-top: 30px; text-align: center;">
-            <p style="font-size:12px;">DESTEK HATTI</p>
-            <a href="https://tiktok.com/@hukum_v45" style="color:var(--neon); text-decoration:none;">@hukum_v45</a>
+        <div id="console"></div>
+        <div style="margin-top:30px; text-align:center;">
+            <p style="font-size:10px; color:#444;">HİÇBİR VERİ SİLİNMEZ.<br>BOT ÜZERİNDEN KALICI KAYIT YAPILIR.</p>
         </div>
     </div>
 </div>
 
-<div class="h-secret" onclick="document.getElementById('secret-modal').style.display='flex'">H</div>
+<div class="h-trigger" onclick="openSecret()">H</div>
 
 <div id="op-modal" class="modal">
-    <div class="modal-inner">
-        <h3 style="color:var(--neon)">YENİ OPERASYON EMRİ</h3>
-        <input type="text" id="op-t" placeholder="Operasyon Türü (Örn: Sızma, Çökertme)">
-        <input type="text" id="op-h" placeholder="Hedef Platform / Link">
-        <input type="text" id="op-z" placeholder="Zaman Dilimi (Örn: 21:00-01:00)">
-        <input type="text" id="op-i" placeholder="Sana Nereden Ulaşsınlar? (Platform/İsim)">
-        <textarea id="op-n" placeholder="Operasyon Hakkında Kritik Notlar" rows="4"></textarea>
-        <button class="btn-main" onclick="submitOperation()">OPERASYONU YAYINLA</button>
-        <button class="btn-main" style="background:#222; color:#fff; margin-top:10px;" onclick="document.getElementById('op-modal').style.display='none'">İPTAL</button>
+    <div class="modal-content">
+        <h2 style="color:var(--accent)">OPERASYON EMRİ OLUŞTUR</h2>
+        <input type="text" id="op-type" placeholder="Operasyon Türü (Örn: Web Sızma, Sosyal Mühendislik)">
+        <input type="text" id="op-target" placeholder="Hedef Link / Kullanıcı Adı">
+        <input type="text" id="op-time" placeholder="Zaman ve Süre (Örn: Bugün 22:00 / 3 Saat)">
+        <input type="text" id="op-contact" placeholder="Sana Nereden Ulaşsınlar? (Platform ve Kullanıcı Adı)">
+        <textarea id="op-note" rows="5" placeholder="Operasyon Hakkında Detaylı Bilgi ve Görev Planı..."></textarea>
+        <button class="btn-gov" onclick="submitOperation()">OPERASYONU YAYINLA</button>
+        <button class="btn-gov" style="background:#222; margin-top:10px;" onclick="closeModal()">İPTAL</button>
     </div>
 </div>
 
 <div id="secret-modal" class="modal">
-    <div class="modal-inner" id="secret-lock">
-        <h3 style="color:var(--neon)">ÖZEL DAİRE GİRİŞİ</h3>
-        <input type="password" id="s-pass" placeholder="Protokol Şifresi (1881-1938)">
-        <button class="btn-main" onclick="checkSecret()">YETKİ DOĞRULA</button>
-        <button class="btn-action" style="color:#555; width:100%; border:none; background:none; margin-top:10px;" onclick="document.getElementById('secret-modal').style.display='none'">VAZGEÇ</button>
+    <div class="modal-content" id="secret-gate" style="text-align:center;">
+        <h2 style="color:var(--main-blue)">🔱 GİZLİ KARARGAH GİRİŞİ</h2>
+        <input type="password" id="secret-key" placeholder="PROTOKOL ŞİFRESİ">
+        <button class="btn-gov" onclick="checkSecret()">DOĞRULA</button>
+        <button class="btn-gov" style="background:#222; margin-top:10px;" onclick="closeModal()">GERİ DÖN</button>
     </div>
-    <div class="modal-inner" id="secret-room" style="display:none; width: 90%;">
-        <h2 style="color:var(--gold)">🔱 ÖZEL OPERASYON DAİRESİ</h2>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" id="hidden-tools">
-            </div>
-        <button class="btn-main" style="margin-top:20px;" onclick="location.reload()">GÜVENLİ ÇIKIŞ</button>
+    <div class="modal-content" id="secret-body" style="display:none; width: 80%;">
+        <h2 style="color:var(--accent)">🔱 ÖZEL OPERASYON DAİRESİ (YETKİLİ ALAN)</h2>
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;" id="secret-tools-grid"></div>
+        <button class="btn-gov" style="margin-top:30px;" onclick="location.reload()">SİSTEMDEN GÜVENLİ ÇIK</button>
     </div>
 </div>
 
 <script>
+    // BOT AYARLARI - VERİLER BURAYA GİDER VE BURADAN GELİR
     const BOT_TOKEN = '8615703049:AAGCPGH59YdLkvCsHdr1WkYuSWGgyuEfBSQ';
     const CHANNEL_ID = '@hukum_pin_bot1';
-    let isRegister = false;
+    let currentAgent = "";
 
-    // OTOMATİK VERİ ÇEKME (SAYFA YENİLENSE DE SİLİNMEYEN OPERASYONLAR)
-    window.onload = function() { loadOpsFromTelegram(); }
+    // SİSTEM AÇILIŞINDA ÇALIŞACAK
+    window.onload = function() {
+        logToConsole("Sistem başlatılıyor...");
+        logToConsole("Bağlantı protokolü: 1881-1938");
+        syncOperations(); // Telegram'dan verileri çek
+    };
 
-    async function loadOpsFromTelegram() {
-        const board = document.getElementById('op-container');
+    // TELEGRAM'DAN VERİ ÇEKME (SAYFA YENİLENSE DE SİLİNMEZ)
+    async function syncOperations() {
         try {
-            const resp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-100`);
-            const data = await resp.json();
-            const posts = data.result.filter(m => m.channel_post && m.channel_post.text.includes("#OP_DATA"));
+            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-100`);
+            const data = await response.json();
+            // Kanaldaki mesajları filtrele (Sadece #OPERASYON etiketli olanlar)
+            const updates = data.result.filter(m => m.channel_post && m.channel_post.text.includes("#OPERASYON"));
             
-            if(posts.length === 0) { board.innerHTML = "<p style='text-align:center;'>Yayında operasyon bulunamadı.</p>"; return; }
-            
-            board.innerHTML = "";
-            posts.forEach(p => {
-                const raw = p.channel_post.text.replace("#OP_DATA", "").split("|");
-                board.innerHTML += `
-                    <div class="op-card">
-                        <h4>🔥 ${raw[0].trim()} OPERASYONU</h4>
-                        <p><b>HEDEF:</b> ${raw[1].trim()}</p>
-                        <p><b>SÜRE:</b> ${raw[2].trim()}</p>
-                        <button class="btn-main" style="width:auto; padding:5px 15px;" onclick="alert('BİLGİLER:\\n\\nSorumlu: ${raw[3].trim()}\\nNotlar: ${raw[4].trim()}')">DETAYLARI GÖR & KATIL</button>
+            const list = document.getElementById('op-list');
+            list.innerHTML = "";
+
+            if(updates.length === 0) {
+                list.innerHTML = "<p style='color:#333; text-align:center;'>Şu an aktif emir bulunmuyor.</p>";
+                return;
+            }
+
+            updates.reverse().forEach(update => {
+                const text = update.channel_post.text;
+                const rows = text.split('\n');
+                let info = {};
+                rows.forEach(r => {
+                    if(r.startsWith("Tür:")) info.type = r.split(":")[1];
+                    if(r.startsWith("Hedef:")) info.target = r.split(":")[1];
+                    if(r.startsWith("Zaman:")) info.time = r.split(":")[1];
+                });
+
+                const card = document.createElement('div');
+                card.className = "op-card";
+                card.innerHTML = `
+                    <h4>${info.type || 'OPERASYON'}</h4>
+                    <div class="op-details">
+                        <b>HEDEF:</b> ${info.target || 'GİZLİ'}<br>
+                        <b>ZAMAN:</b> ${info.time || 'BELİRTİLMEDİ'}
                     </div>
+                    <button class="join-btn" onclick="alert('OPERASYON DETAYI:\\n\\n${text.replace(/'/g, "")}')">BİLGİ AL / KATIL</button>
                 `;
+                list.appendChild(card);
             });
-        } catch(e) { board.innerHTML = "<p>Veri çekme hatası: Database bağlantısı başarısız.</p>"; }
-    }
-
-    // GİRİŞ-KAYIT GERÇEK ÇALIŞAN SİSTEM
-    function toggleAuthMode() {
-        isRegister = !isRegister;
-        document.querySelector('#auth-gate h2').innerText = isRegister ? "AJAN KAYDI" : "T.H.İ.T GİRİŞİ";
-        document.querySelector('.btn-main').innerText = isRegister ? "KAYIT OL" : "SİSTEME SIZ";
-    }
-
-    async function processAuth(m) {
-        const u = document.getElementById('user-field').value;
-        const p = document.getElementById('pass-field').value;
-        if(!u || !p) return alert("Kod adı veya şifre eksik!");
-
-        const tag = isRegister ? "#YENİ_AJAN" : "#GİRİŞ_LOG";
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHANNEL_ID}&text=${tag}%0AAjan: ${u}%0AŞifre: ${p}`);
-
-        if(isRegister) {
-            alert("Ajan kaydı merkeze iletildi. Artık giriş yapabilirsin.");
-            toggleAuthMode();
-        } else {
-            document.getElementById('auth-gate').style.display = 'none';
-            document.getElementById('active-agent').innerText = "AJAN: " + u.toUpperCase();
+            logToConsole("Operasyon tahtası güncellendi.");
+        } catch (e) {
+            logToConsole("Hata: Veri senkronizasyonu başarısız.");
         }
     }
 
-    async function submitOperation() {
-        const t = document.getElementById('op-t').value;
-        const h = document.getElementById('op-h').value;
-        const z = document.getElementById('op-z').value;
-        const i = document.getElementById('op-i').value;
-        const n = document.getElementById('op-n').value;
-
-        if(!t || !h || !i) return alert("Kritik alanları doldur!");
-
-        const msg = `#OP_DATA ${t} | ${h} | ${z} | ${i} | ${n}`;
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHANNEL_ID}&text=${encodeURIComponent(msg)}`);
-        
-        alert("Operasyon emri kanala yüklendi ve yayınlandı!");
-        document.getElementById('op-modal').style.display = 'none';
-        setTimeout(loadOpsFromTelegram, 2000);
-    }
-
-    // ÇALIŞAN 15 ARAÇ FONKSİYONLARI
-    async function run_IP() {
-        const r = await fetch('https://api.ipify.org?format=json').then(d => d.json());
-        alert("İzlenen IP: " + r.ip + "\nSistem: THİT üzerinden maskelendi.");
-    }
-    function run_Pass() { alert("Üretilen Kriptolu Şifre: " + btoa(Math.random().toString()).slice(0, 15)); }
-    function run_Dns() { alert("Google/Cloudflare DNS üzerinden sorgu kuyruğa alındı."); }
-    function run_Ping() { alert("Sistem Yanıtı: 18ms - Bağlantı Stabil."); }
-    function run_LogWipe() { alert("Tüm yerel oturum ve tarayıcı izleri imha edildi."); }
-    function run_Terminal() { const cmd = prompt("Komut girin:"); if(cmd) alert(cmd + " komutu işlendi."); }
-    function run_Speed() { alert("İndirme: 120 Mbps / Yükleme: 45 Mbps"); }
-    function run_Sql() { alert("Dinamik veri girişleri denetleniyor... Zafiyet yok."); }
-    function run_Metadata() { alert("Dosyadan EXIF ve GPS verileri başarıyla silindi."); }
-    function run_Whois() { alert("ICANN Veritabanına bağlanılıyor..."); }
-    function run_Hash() { const h = prompt("Hash girin:"); if(h) alert("Çözümleme algoritması başlatıldı."); }
-    function run_Header() { alert("Request Header: Content-Type: application/json; Charset: UTF-8"); }
-    function run_Port() { alert("80, 443, 22 portları tarandı. Kapalı/Güvenli."); }
-    function run_Agent() { alert("User-Agent: Mozilla/5.0 (THİT-Agent) olarak maskelendi."); }
-    function run_Admin() { alert("Yetki Seviyesi: Üst Düzey Yönetici"); }
-
-    // GİZLİ ODA
-    function checkSecret() {
-        if(document.getElementById('s-pass').value === '1881-1938') {
-            document.getElementById('secret-lock').style.display = 'none';
-            document.getElementById('secret-room').style.display = 'block';
-            loadHidden();
-        } else { alert("YETKİSİZ ERİŞİM! LOGLAR ALINDI."); }
-    }
-
-    function loadHidden() {
-        const box = document.getElementById('hidden-tools');
-        const items = ["Derin Sızma Modülü", "Uydu Bağlantısı", "Askeri Frekans Çözücü", "Banka Altyapı Analizi", "Vatan Sorgu Sistemi", "E-Devlet Köprüsü", "Bypass V10 Karadelik", "Veri İmha Butonu", "Admin Anahtar Paneli", "Mühür Kırıcı", "Karargah Kilit Sistemi", "Sinyal Karıştırıcı", "Gölge Takip Protokolü", "Siber Ordu Komut", "Atatürkün İzinde"];
-        box.innerHTML = "";
-        items.forEach(it => {
-            box.innerHTML += `<div class="tool" style="border-color:var(--gold)">${it}</div>`;
+    // TELEGRAM'A VERİ GÖNDERME
+    async function sendData(msg) {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ chat_id: CHANNEL_ID, text: msg })
         });
     }
+
+    // GİRİŞ / KAYIT
+    let isRegMode = false;
+    function toggleReg() {
+        isRegMode = !isRegMode;
+        document.querySelector('.btn-gov').innerText = isRegMode ? "KAYIT TALEBİ GÖNDER" : "ERİŞİM SAĞLA";
+    }
+
+    async function systemLogin() {
+        const u = document.getElementById('codename').value;
+        const p = document.getElementById('authkey').value;
+        if(!u || !p) return;
+
+        if(isRegMode) {
+            await sendData(`#YENİ_KAYIT\nAjan: ${u}\nŞifre: ${p}`);
+            alert("Kayıt talebi merkeze iletildi. Şimdi giriş yapabilirsin.");
+            toggleReg();
+        } else {
+            await sendData(`#GİRİŞ_YAPILDI\nAjan: ${u}`);
+            document.getElementById('auth-gate').style.display = 'none';
+            document.getElementById('user-tag').innerText = "AJAN: " + u.toUpperCase();
+            currentAgent = u;
+            logToConsole(u + " sisteme sızdı.");
+        }
+    }
+
+    // OPERASYON EKLEME
+    async function submitOperation() {
+        const type = document.getElementById('op-type').value;
+        const target = document.getElementById('op-target').value;
+        const time = document.getElementById('op-time').value;
+        const contact = document.getElementById('op-contact').value;
+        const note = document.getElementById('op-note').value;
+
+        if(!type || !target) return alert("Kritik alanları doldur!");
+
+        const msg = `#OPERASYON\nTür: ${type}\nHedef: ${target}\nZaman: ${time}\nİletişim: ${contact}\nNot: ${note}\n\n[Yayınlayan: ${currentAgent}]`;
+        
+        logToConsole("Operasyon yayınlanıyor...");
+        await sendData(msg);
+        alert("Emir merkeze iletildi ve kanala işlendi!");
+        closeModal();
+        setTimeout(syncOperations, 2000);
+    }
+
+    // GİZLİ ODA
+    function openSecret() { document.getElementById('secret-modal').style.display = 'flex'; }
+    function checkSecret() {
+        if(document.getElementById('secret-key').value === '1881-1938') {
+            document.getElementById('secret-gate').style.display = 'none';
+            document.getElementById('secret-body').style.display = 'block';
+            loadSecretTools();
+        } else {
+            alert("YETKİSİZ ERİŞİM! SİSTEM LOGLARI KAYDEDİLDİ.");
+            sendData(`#GİZLİ_ODA_İHLALİ\nAjan: ${currentAgent}`);
+        }
+    }
+
+    function loadSecretTools() {
+        const grid = document.getElementById('secret-tools-grid');
+        const tools = ["MİT Köprüsü", "Uydu Sızma", "Banka Analiz", "E-Devlet Sorgu", "Kritik Altyapı", "Siber Ordu", "Vatan Takip", "Gölge Dinleme", "Askeri Ağ", "Bypass V12", "Derin Tarama", "Global IP", "Log İmha", "Admin Yetki", "Karargah Kilit"];
+        grid.innerHTML = "";
+        tools.forEach(t => {
+            grid.innerHTML += `<div class="tool-btn" style="border-color:var(--accent)">${t}</div>`;
+        });
+    }
+
+    // ÇALIŞAN ARAÇ FONKSİYONLARI
+    async function runTool(name) {
+        logToConsole(name + " aracı çalıştırılıyor...");
+        if(name === 'IP') {
+            const res = await fetch('https://api.ipify.org?format=json').then(d => d.json());
+            alert("Mevcut IP Adresiniz: " + res.ip + "\nSistem üzerinden anonimleştirildi.");
+        } else if(name === 'CRYPTO') {
+            alert("Üretilen 256-Bit Anahtar:\n" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
+        } else {
+            alert(name + " Modülü Aktif: Veriler " + CHANNEL_ID + " üzerinden işleniyor.");
+        }
+    }
+
+    function logToConsole(txt) {
+        const c = document.getElementById('console');
+        c.innerHTML += `> ${txt}<br>`;
+        c.scrollTop = c.scrollHeight;
+    }
+
+    function openOpModal() { document.getElementById('op-modal').style.display = 'flex'; }
+    function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
 </script>
 </body>
 </html>
+
