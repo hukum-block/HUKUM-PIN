@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta name="google-site-verification" content="SlYEASdOuCuKvn3wvB-kq3ynvpL5--tv7YGoqmbbYu0" />
+    <meta name="google-site-verification" content="SlYEASdOuCuKvn3wvB-kq3ynvpL5--tv7YGoqmbbYu0" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HÜKÜM-PİN | Dijital Güvenlik ve Alışveriş</title>
@@ -153,7 +153,7 @@
 </div>
 
 <div class="grid" id="market-grid">
-    <div class="empty-msg">Henüz ilan bulunmuyor. İlk ilanı sen ekle!</div>
+    <div class="empty-msg">Yükleniyor...</div>
 </div>
 
 <div class="bottom-nav">
@@ -181,13 +181,10 @@
 
 <div id="admin-room">
     <h2 style="text-align: center; border-bottom: 2px solid #00ff00; padding-bottom: 10px;">☣️ HÜKÜM MERKEZİ KARARGAH ☣️</h2>
-    
     <div class="terminal-box" id="terminal">
-        > Karargah protokolleri yükleniyor...<br>
         > Yetki doğrulandı: Eymen Paşa.<br>
-        > Sistem: Aktif ve Korunaklı.
+        > Telegram Veritabanı: Aktif.
     </div>
-
     <div class="admin-grid">
         <div class="admin-card"><small>1. PATRON KASASI</small><br><b id="adm-vault">0.00 ₺</b></div>
         <div class="admin-card"><small>2. TOPLAM NEFER</small><br><b id="adm-users">1</b></div>
@@ -203,6 +200,10 @@
 </div>
 
 <script>
+    // --- SİBER KARARGAH AYARLARI ---
+    const BOT_TOKEN = '8615703049:AAGCPGH59YdLkvCsHdr1WkYuSWGgyuEfBSQ';
+    const KANAL_ID = '@hukum_pin_bot1';
+
     let state = JSON.parse(localStorage.getItem('hukum_v18_data')) || {
         users: { "eymen": { b: 5000, pass: "123", rank: "Admin" } },
         vault: 0,
@@ -218,17 +219,48 @@
         render(); 
     }
 
+    // TELEGRAMA İLAN ATMA (EKLEDİM)
+    async function sendToTelegram(item) {
+        const msg = `📦 #İLAN\n\`\`\`json\n${JSON.stringify(item)}\n\`\`\``;
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: KANAL_ID, text: msg, parse_mode: 'MarkdownV2' })
+        });
+    }
+
+    // TELEGRAMDAN İLANLARI ÇEKME (EKLEDİM)
+    async function loadFromTelegram() {
+        try {
+            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-50`);
+            const data = await res.json();
+            let telegramItems = [];
+            
+            data.result.forEach(update => {
+                if(update.channel_post && update.channel_post.text.includes("json")) {
+                    try {
+                        const jsonStr = update.channel_post.text.split("```json")[1].split("```")[0];
+                        telegramItems.push(JSON.parse(jsonStr));
+                    } catch(e) {}
+                }
+            });
+            
+            if(telegramItems.length > 0) {
+                state.items = telegramItems;
+                render();
+            }
+        } catch(e) { console.log("Telegram bağlantı hatası"); }
+    }
+
     function render(filter = 'all') {
         let grid = document.getElementById('market-grid');
         grid.innerHTML = "";
-        
         let list = filter === 'all' ? state.items : state.items.filter(i => i.cat === filter);
         
         if(list.length === 0) {
-            grid.innerHTML = `<div class="empty-msg">Bu kategoride henüz ilan yok.</div>`;
+            grid.innerHTML = `<div class="empty-msg">İlan yok veya yükleniyor...</div>`;
         } else {
-            list.forEach((item, index) => {
-                // Sadece ilan sahibi veya admin silebilir
+            list.forEach((item) => {
                 let deleteHtml = (currentUser === item.s || currentUser === 'eymen') ? 
                     `<button class="del-btn" onclick="deleteIlan(${item.id}, event)"><i class="fa fa-trash"></i></button>` : "";
 
@@ -252,7 +284,6 @@
         document.getElementById('item-count').innerText = state.items.length + " İlan";
         document.getElementById('adm-vault').innerText = state.vault.toFixed(2) + " ₺";
         document.getElementById('adm-users').innerText = Object.keys(state.users).length;
-        
         if(currentUser) {
             document.getElementById('login-trigger').innerHTML = `<i class="fa fa-user-check" style="color:var(--gold)"></i> ${currentUser.toUpperCase()}`;
             document.getElementById('header-wallet').style.display = 'flex';
@@ -260,87 +291,53 @@
         }
     }
 
+    async function showIlanEkle() {
+        if(!currentUser) { openLogin(); return; }
+        let n = prompt("Ürün İsmi?"); if(!n) return;
+        let p = prompt("Fiyat?"); if(!p) return;
+        let stok = prompt("Stok?"); if(!stok) return;
+        let cat = prompt("Kategori? (hesap, item, epin, discord, tiktok)");
+        let pform = prompt("İletişim Platformu?");
+        let pname = prompt("Platform İsmin?");
+        let note = prompt("Not:");
+
+        if(n && p) {
+            let newItem = { id: Date.now(), n, p: parseInt(p), stok: parseInt(stok), s: currentUser, cat, pform, pname, note };
+            state.items.push(newItem);
+            await sendToTelegram(newItem); // Telegram'a mühürle
+            save();
+            alert("İlan Karargaha Mühürlendi!");
+        }
+    }
+
+    // Diğer fonksiyonlar (Login, Admin vb.) aynen kaldı...
     function deleteIlan(id, e) {
-        e.stopPropagation(); // Kart tıklamasını engelle
-        if(confirm("Bu ilanı kaldırmak istediğine emin misin Paşa?")) {
+        e.stopPropagation();
+        if(confirm("İlanı silelim mi Paşa?")) {
             state.items = state.items.filter(i => i.id !== id);
             save();
         }
     }
-
-    function showIlanEkle() {
-        if(!currentUser) { openLogin(); return; }
-        
-        let n = prompt("Ürünün İsmi Ne Satacan? (Örn: 1000 Robux)");
-        if(!n) return;
-        
-        let p = prompt("Ne Kadar Kaç Para? (₺)");
-        if(!p) return;
-        
-        let stok = prompt("Kaç Tane Var Stok?");
-        if(!stok) return;
-
-        let cat = prompt("Kategori? (hesap, item, epin, discord, tiktok)").toLowerCase();
-        
-        let pform = prompt("Müşteri Sana Nerden Ulaşabilir? (TikTok, Instagram vb.)");
-        let pname = prompt("O Platformdaki İsmin Ne?");
-        
-        let note = prompt("Not (Artık burası serbest):");
-        
-        if(n && p && cat && pform && pname) {
-            state.items.push({ 
-                id: Date.now(), 
-                n: n, 
-                p: parseInt(p), 
-                stok: parseInt(stok),
-                s: currentUser, 
-                cat: cat, 
-                pform: pform, 
-                pname: pname,
-                note: note 
-            });
-            save();
-            alert("İlan Karargah Onayıyla Yayına Alındı!");
-        }
-    }
-
     function buyProcess(id) {
         if(!currentUser) { openLogin(); return; }
         let itm = state.items.find(x => x.id === id);
-        
-        let onay = confirm(`${itm.n} ürününü satın almak istiyor musun?\nSatıcı: ${itm.s}\nFiyat: ${itm.p}₺\n\nNot: ${itm.note || "Not yok."}`);
-        
-        if(onay) {
+        if(confirm(`${itm.n} satın alınsın mı?`)) {
             if(state.users[currentUser].b >= itm.p) {
                 state.users[currentUser].b -= itm.p;
                 state.vault += itm.p;
                 itm.stok -= 1;
-                
-                alert(`İşlem Başarılı! \n\nSATICIYA ULAŞIN:\nPlatform: ${itm.pform}\nİsim: ${itm.pname}`);
-                
-                if(itm.stok <= 0) {
-                    state.items = state.items.filter(x => x.id !== id);
-                }
+                alert(`BAŞARILI! Satıcıya ulaş: ${itm.pform} - ${itm.pname}`);
+                if(itm.stok <= 0) state.items = state.items.filter(x => x.id !== id);
                 save();
-            } else {
-                alert("Bakiye Yetersiz! Lütfen bakiye yükleyin.");
-                showSupport();
-            }
+            } else { alert("Bakiye yetersiz!"); }
         }
     }
-
-    // DİĞER FONKSİYONLAR AYNI KALDI
-    function showSupport() { alert("TikTok @hukum_v45 üzerinden destek alabilirsiniz."); }
+    function showSupport() { alert("TikTok @hukum_v45"); }
     function openLogin() { document.getElementById('login-modal').style.display = 'flex'; }
     function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
     function processLogin() {
         let u = document.getElementById('l-user').value.toLowerCase();
-        if(u) {
-            currentUser = u;
-            if(!state.users[u]) state.users[u] = { b: 0, pass: "123", rank: "Üye" };
-            save();
-            closeLogin();
-        }
+        if(u) { currentUser = u; if(!state.users[u]) state.users[u] = { b: 0, pass: "123", rank: "Üye" }; save(); closeLogin(); }
     }
     function adminClickCount() {
         if(!currentUser) { openLogin(); return; }
@@ -356,6 +353,8 @@
         if(state.users[t]) { state.users[t].b += a; save(); alert("Bakiye Eklendi."); }
     }
 
+    // SİTE AÇILINCA TELEGRAMDAN VERİLERİ ÇEK
+    window.onload = loadFromTelegram;
     render();
 </script>
 </body>
