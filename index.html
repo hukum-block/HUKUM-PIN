@@ -18,14 +18,12 @@
             overflow-x: hidden;
         }
 
-        /* 34. CANLI DUYURU BANDI */
         .announcement {
             background: linear-gradient(90deg, #1e2235, #2d313d); color: var(--gold); padding: 10px; font-size: 13px;
             border-bottom: 1px solid var(--primary-blue); overflow: hidden; white-space: nowrap; font-weight: bold;
         }
         .announcement-text { display: inline-block; animation: scroll 25s linear infinite; }
 
-        /* HEADER & LOGO DÜZENLEME */
         header {
             background: var(--bg-card); padding: 15px; display: flex;
             justify-content: space-between; align-items: center; border-bottom: 1px solid #333;
@@ -33,7 +31,6 @@
         .logo { font-size: 22px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: var(--white); }
         .logo span { color: var(--primary-blue); text-shadow: 0 0 10px var(--primary-blue); }
 
-        /* 💰 BAKİYE GÖSTERGE PANELİ */
         .wallet-display {
             background: #161b22; border: 1px solid var(--gold); padding: 5px 12px;
             border-radius: 10px; display: flex; align-items: center; gap: 8px;
@@ -41,7 +38,6 @@
         }
         .wallet-val { color: var(--gold); font-weight: bold; font-size: 14px; }
 
-        /* KATEGORİLER */
         .cat-row {
             display: flex; gap: 15px; overflow-x: auto; padding: 20px 15px;
             scrollbar-width: none; background: var(--bg-dark);
@@ -55,7 +51,6 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* PAZAR ALANI */
         .section-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
         .section-title { font-size: 16px; font-weight: 800; color: var(--green); border-left: 4px solid var(--green); padding-left: 10px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px; }
@@ -65,18 +60,22 @@
             background: var(--bg-card); border-radius: 15px; overflow: hidden;
             position: relative; border: 1px solid #2a2e3f; transition: 0.3s;
         }
+        .card-img {
+            height: 110px; background: #242731; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; position: relative;
+        }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; }
+        
         .card-body { padding: 12px; }
         .card-price { color: var(--gold); font-size: 17px; font-weight: 800; margin-top: 5px; }
         .card-seller { font-size: 10px; color: var(--text-gray); display: flex; align-items: center; gap: 5px; }
         
-        /* 🗑️ İLAN KALDIRMA BUTONU */
         .del-btn {
             position: absolute; top: 5px; right: 5px; background: rgba(218, 54, 51, 0.8);
             border: none; color: white; border-radius: 50%; width: 25px; height: 25px;
             cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 12px;
         }
 
-        /* BOTTOM NAV */
         .bottom-nav {
             position: fixed; bottom: 0; width: 100%; background: #161923;
             display: flex; justify-content: space-around; padding: 12px 0;
@@ -86,7 +85,6 @@
         .nav-btn i { font-size: 22px; margin-bottom: 4px; display: block; }
         .nav-btn.active, .nav-btn:hover { color: var(--white); }
 
-        /* MODALLAR */
         #login-modal {
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
             z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px);
@@ -102,19 +100,13 @@
         input:focus { border-color: var(--primary-blue); }
         .btn-main { width: 100%; background: var(--primary-blue); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
 
-        /* 🛡️ HÜKÜM ADMİN KARARGAHI */
         #admin-room {
             display: none; position: fixed; inset: 0; background: #000; z-index: 3000;
             overflow-y: auto; padding: 25px; color: #00ff00; font-family: 'Courier New', monospace;
         }
         .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .admin-card { 
-            background: #0a0a0a; border: 1px solid #00ff00; padding: 15px; border-radius: 10px;
-        }
-        .terminal-box { 
-            height: 120px; background: #050505; border: 1px dashed #00ff00; 
-            padding: 10px; font-size: 11px; overflow-y: auto; margin-bottom: 20px;
-        }
+        .admin-card { background: #0a0a0a; border: 1px solid #00ff00; padding: 15px; border-radius: 10px; }
+        .terminal-box { height: 120px; background: #050505; border: 1px dashed #00ff00; padding: 10px; font-size: 11px; overflow-y: auto; margin-bottom: 20px; }
         .power-btn { background: #00ff00; color: #000; font-weight: bold; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; }
         .exit-btn { background: #ff0000; color: #fff; margin-top: 20px; padding: 12px; width: 100%; border: none; border-radius: 5px; cursor: pointer; }
 
@@ -200,7 +192,6 @@
 </div>
 
 <script>
-    // --- SİBER KARARGAH AYARLARI ---
     const BOT_TOKEN = '8615703049:AAGCPGH59YdLkvCsHdr1WkYuSWGgyuEfBSQ';
     const KANAL_ID = '@hukum_pin_bot1';
 
@@ -219,7 +210,6 @@
         render(); 
     }
 
-    // TELEGRAMA İLAN ATMA (EKLEDİM)
     async function sendToTelegram(item) {
         const msg = `📦 #İLAN\n\`\`\`json\n${JSON.stringify(item)}\n\`\`\``;
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -229,7 +219,6 @@
         });
     }
 
-    // TELEGRAMDAN İLANLARI ÇEKME (EKLEDİM)
     async function loadFromTelegram() {
         try {
             const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-50`);
@@ -264,17 +253,22 @@
                 let deleteHtml = (currentUser === item.s || currentUser === 'eymen') ? 
                     `<button class="del-btn" onclick="deleteIlan(${item.id}, event)"><i class="fa fa-trash"></i></button>` : "";
 
+                // GÖRSEL KONTROLÜ
+                let imgHtml = item.img ? `<img src="${item.img}" onerror="this.src='https://placehold.co/400x200/242731/3b82f6?text=Gorsel+Yok'">` : `<i class="fa fa-box-open" style="color:#3b82f6; font-size:40px;"></i>`;
+
                 grid.innerHTML += `
                     <div class="card" onclick="buyProcess(${item.id})">
                         ${deleteHtml}
-                        <div class="card-img" style="display:flex; align-items:center; justify-content:center; height:110px; background:#242731; position:relative;">
-                            <i class="fa fa-box-open" style="color:#3b82f6; font-size:40px;"></i>
-                            <div style="position:absolute; bottom:5px; right:10px; font-size:10px; color:var(--green)">Stok: ${item.stok || 1}</div>
+                        <div class="card-img" style="position:relative;">
+                            ${imgHtml}
+                            <div style="position:absolute; bottom:5px; right:10px; font-size:10px; color:var(--green); background:rgba(0,0,0,0.6); padding:2px 5px; border-radius:5px;">Stok: ${item.stok || 1}</div>
                         </div>
                         <div class="card-body">
                             <div class="card-seller"><i class="fa fa-shield" style="color:var(--green);"></i> ${item.s}</div>
                             <div style="font-size:13px; font-weight:700; margin:6px 0;">${item.n}</div>
-                            <div style="font-size:10px; color:var(--text-gray); margin-bottom:5px;">İletişim: ${item.pform} (${item.pname})</div>
+                            <div style="font-size:10px; color:var(--text-gray); margin-bottom:5px;">
+                                <i class="fa-solid fa-share-nodes"></i> ${item.pform}: <b>${item.pname}</b>
+                            </div>
                             <div class="card-price">${item.p},00 ₺</div>
                         </div>
                     </div>
@@ -294,23 +288,26 @@
     async function showIlanEkle() {
         if(!currentUser) { openLogin(); return; }
         let n = prompt("Ürün İsmi?"); if(!n) return;
-        let p = prompt("Fiyat?"); if(!p) return;
-        let stok = prompt("Stok?"); if(!stok) return;
+        let p = prompt("Fiyat (₺)?"); if(!p) return;
+        let stok = prompt("Stok Sayısı?"); if(!stok) return;
         let cat = prompt("Kategori? (hesap, item, epin, discord, tiktok)");
-        let pform = prompt("İletişim Platformu?");
-        let pname = prompt("Platform İsmin?");
-        let note = prompt("Not:");
+        let pform = prompt("Müşteri Sana Nerden Ulaşsın? (TikTok, IG vb.)");
+        let pname = prompt("O Platformdaki Kullanıcı Adın?");
+        let img = prompt("Ürün Fotoğraf Linki (URL) - Boş bırakabilirsin:");
+        let note = prompt("Müşteriye Notun (Satın alırken gözükecek):");
 
         if(n && p) {
-            let newItem = { id: Date.now(), n, p: parseInt(p), stok: parseInt(stok), s: currentUser, cat, pform, pname, note };
+            let newItem = { 
+                id: Date.now(), n, p: parseInt(p), stok: parseInt(stok), 
+                s: currentUser, cat, pform, pname, img, note 
+            };
             state.items.push(newItem);
-            await sendToTelegram(newItem); // Telegram'a mühürle
+            await sendToTelegram(newItem);
             save();
             alert("İlan Karargaha Mühürlendi!");
         }
     }
 
-    // Diğer fonksiyonlar (Login, Admin vb.) aynen kaldı...
     function deleteIlan(id, e) {
         e.stopPropagation();
         if(confirm("İlanı silelim mi Paşa?")) {
@@ -318,21 +315,27 @@
             save();
         }
     }
+
     function buyProcess(id) {
         if(!currentUser) { openLogin(); return; }
         let itm = state.items.find(x => x.id === id);
-        if(confirm(`${itm.n} satın alınsın mı?`)) {
+        
+        // SATICI BİLGİSİ VE NOT GÖSTERİMİ
+        let msg = `🛒 ÜRÜN: ${itm.n}\n💰 FİYAT: ${itm.p}₺\n👤 SATICI: ${itm.s}\n📝 SATICI NOTU: ${itm.note || "Yok"}\n\nSatın alımı onaylıyor musun Paşa?`;
+        
+        if(confirm(msg)) {
             if(state.users[currentUser].b >= itm.p) {
                 state.users[currentUser].b -= itm.p;
                 state.vault += itm.p;
                 itm.stok -= 1;
-                alert(`BAŞARILI! Satıcıya ulaş: ${itm.pform} - ${itm.pname}`);
+                alert(`✅ BAŞARILI! \n\nSatıcıya Ulaş: ${itm.pform} - ${itm.pname}\n\nNot: ${itm.note || "Not yok."}`);
                 if(itm.stok <= 0) state.items = state.items.filter(x => x.id !== id);
                 save();
-            } else { alert("Bakiye yetersiz!"); }
+            } else { alert("❌ Bakiye yetersiz! Lütfen destek ile iletişime geç."); }
         }
     }
-    function showSupport() { alert("TikTok @hukum_v45"); }
+
+    function showSupport() { alert("TikTok @hukum_v45 üzerinden destek alabilirsiniz."); }
     function openLogin() { document.getElementById('login-modal').style.display = 'flex'; }
     function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
     function processLogin() {
@@ -353,7 +356,6 @@
         if(state.users[t]) { state.users[t].b += a; save(); alert("Bakiye Eklendi."); }
     }
 
-    // SİTE AÇILINCA TELEGRAMDAN VERİLERİ ÇEK
     window.onload = loadFromTelegram;
     render();
 </script>
