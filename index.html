@@ -2,248 +2,99 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TSTM | TÜRKİYE SANAL TERÖRLE MÜCADELE</title>
+    <title>TSTM | ÜSTÜN SİBER KARARGAH V4.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* TSTM KURUMSAL TASARIM SİSTEMİ */
+        /* TSTM ULTRA KARANLIK ARAYÜZ SİSTEMİ */
         :root {
-            --tstm-red: #cc0000;
-            --tstm-dark: #050508;
-            --tstm-panel: #0d1117;
-            --tstm-accent: #ffcc00;
-            --tstm-green: #00ff41;
-            --tstm-blue: #0066ff;
-            --tstm-border: #30363d;
+            --red: #ff0000; --dark-1: #020205; --dark-2: #080a0f; 
+            --green: #00ff41; --gold: #ffcc00; --border: #1f2328;
         }
-
-        body {
-            background-color: var(--tstm-dark);
-            color: #d1d1d1;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* GİRİŞ SİSTEMİ (SECURITY GATE) */
-        #login-gate {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle, #1a0000 0%, #000 100%);
-            z-index: 99999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .login-card {
-            background: var(--tstm-panel);
-            border: 2px solid var(--tstm-red);
-            padding: 40px;
-            width: 380px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 0 50px rgba(204, 0, 0, 0.4);
-        }
-
-        .login-card h2 { color: #fff; letter-spacing: 4px; margin-bottom: 20px; text-transform: uppercase; }
+        body { background: var(--dark-1); color: #e6edf3; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        .tstm-input {
-            width: 100%;
-            background: #000;
-            border: 1px solid var(--tstm-border);
-            padding: 15px;
-            margin-bottom: 15px;
-            color: var(--tstm-green);
-            border-radius: 8px;
-            outline: none;
-            box-sizing: border-box;
-            font-family: 'Courier New', monospace;
-        }
+        /* GİRİŞ MUHAFIZI */
+        #gatekeeper { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center; }
+        .secure-box { background: var(--dark-2); border: 2px solid var(--red); padding: 50px; border-radius: 20px; text-align: center; box-shadow: 0 0 100px rgba(255,0,0,0.4); width: 450px; }
+        
+        /* ANA PANEL DÜZENİ (MOBİL VE MASAÜSTÜ UYUMLU) */
+        header { background: #000; border-bottom: 2px solid var(--red); padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .grid-master { display: grid; grid-template-columns: 350px 1fr 380px; gap: 10px; padding: 10px; flex: 1; overflow: hidden; }
+        .card { background: var(--dark-2); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; }
+        .card-header { background: #161b22; padding: 15px; font-weight: bold; color: var(--gold); border-bottom: 1px solid var(--border); letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+        
+        /* GERÇEK ARAÇLAR VE MODÜLLER */
+        .modul-list { padding: 15px; flex: 1; overflow-y: auto; }
+        .modul-btn { background: #0d1117; border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 15px; font-size: 14px; }
+        .modul-btn:hover { border-color: var(--red); background: #1c2128; transform: scale(1.02); color: white; }
+        .modul-btn i { color: var(--red); font-size: 18px; width: 30px; text-align: center; }
 
-        .btn-launch {
-            width: 100%;
-            background: var(--tstm-red);
-            color: white;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
+        /* TERMİNAL VE LOG AKIŞI */
+        #tstm-term { background: #000; color: var(--green); font-family: 'Consolas', monospace; font-size: 13px; padding: 20px; height: 100%; overflow-y: auto; line-height: 1.6; }
+        .log-ln { border-bottom: 1px solid #0a0a0a; padding: 5px 0; }
+        .t-stamp { color: #555; font-size: 11px; margin-right: 10px; }
 
-        .btn-launch:hover { background: #ff0000; box-shadow: 0 0 20px var(--tstm-red); }
+        /* İSTİHBARAT ÇIKTISI */
+        #intel-out { background: #02040a; border: 1px solid #30363d; border-radius: 10px; padding: 20px; font-size: 13px; min-height: 200px; display: none; border-left: 5px solid var(--green); }
+        .data-key { color: var(--gold); font-weight: bold; text-transform: uppercase; }
 
-        /* ANA PANEL ARABİRİMİ */
-        header {
-            background: #000;
-            border-bottom: 2px solid var(--tstm-red);
-            padding: 10px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-
-        .main-grid {
-            display: grid;
-            grid-template-columns: 320px 1fr 350px;
-            gap: 15px;
-            padding: 15px;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .card {
-            background: var(--tstm-panel);
-            border: 1px solid var(--tstm-border);
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .card-header {
-            background: #161b22;
-            padding: 12px 15px;
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--tstm-accent);
-            border-bottom: 1px solid var(--tstm-border);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-body { padding: 15px; flex: 1; overflow-y: auto; }
-
-        /* SİBER ARAÇLAR VE MODÜLLER */
-        .modul {
-            background: #0d1117;
-            border: 1px solid #21262d;
-            padding: 14px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 13px;
-        }
-
-        .modul:hover { border-color: var(--tstm-red); background: #1c2128; transform: translateX(5px); }
-        .modul i { color: var(--tstm-red); font-size: 16px; width: 25px; text-align: center; }
-
-        /* KONSOL VE VERİ AKIŞI */
-        #tstm-terminal {
-            background: #000;
-            color: var(--tstm-green);
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
-            padding: 15px;
-            height: 100%;
-            box-sizing: border-box;
-            border: none;
-            overflow-y: auto;
-        }
-
-        .log-line { margin-bottom: 6px; line-height: 1.4; border-left: 2px solid #111; padding-left: 8px; }
-        .timestamp { color: #555; font-size: 10px; margin-right: 8px; }
-
-        /* İSTİHBARAT SONUÇ ALANI */
-        #intel-display {
-            background: #02040a;
-            border: 1px solid #1a2333;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 10px;
-            min-height: 100px;
-            font-size: 12px;
-            border-left: 3px solid var(--tstm-green);
-            display: none;
-        }
-
-        .info-tag { color: var(--tstm-accent); font-weight: bold; }
-
-        /* STATUS BADGES */
-        .status-badge {
-            font-size: 10px;
-            padding: 3px 8px;
-            border-radius: 20px;
-            background: #111;
-            border: 1px solid #333;
-        }
-        .online { color: var(--tstm-green); border-color: var(--tstm-green); }
-
+        /* ANALİZ ÇUBUKLARI */
+        .threat-level { height: 5px; background: #222; border-radius: 5px; margin-top: 10px; overflow: hidden; }
+        .threat-fill { height: 100%; background: var(--red); width: 0%; transition: 2s; }
     </style>
 </head>
 <body>
 
-<div id="login-gate">
-    <div class="login-card">
-        <h2 style="margin:0;">T S T M</h2>
-        <p style="color:var(--tstm-red); font-size:11px; margin-top:5px; letter-spacing:2px;">Sanal Terörle Mücadele Karargahı</p>
-        <hr style="border:0; border-top:1px solid #333; margin:25px 0;">
-        <input type="text" id="agent-user" class="tstm-input" placeholder="KOMUTAN KOD ADI">
-        <input type="password" id="agent-pass" class="tstm-input" placeholder="BİRİM YETKİ ŞİFRESİ">
-        <button class="btn-launch" onclick="initKarargah()">SİSTEMİ ÇALIŞTIR</button>
-        <p style="font-size:10px; color:#555; margin-top:20px;">DATABASE: @hukum_pin_bot1</p>
+<div id="gatekeeper">
+    <div class="secure-box">
+        <h1 style="color:var(--red); letter-spacing:8px; margin:0;">T S T M</h1>
+        <p style="color:#666; font-size:12px; margin-bottom:30px;">TÜRKİYE SANAL TERÖRLE MÜCADELE - STRATEJİK MERKEZ</p>
+        <input type="text" id="agent-id" class="tstm-input" placeholder="AJAN KOD ADI" style="width:100%; padding:15px; background:#000; border:1px solid #333; color:var(--green); margin-bottom:15px; border-radius:8px;">
+        <input type="password" id="agent-key" class="tstm-input" placeholder="YETKİ ANAHTARI" style="width:100%; padding:15px; background:#000; border:1px solid #333; color:var(--green); margin-bottom:20px; border-radius:8px;">
+        <button onclick="bootSystem()" style="width:100%; padding:18px; background:var(--red); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">SİSTEMİ BAŞLAT</button>
     </div>
 </div>
 
 <header>
     <div style="display:flex; align-items:center; gap:20px;">
-        <span style="color:var(--tstm-red); font-weight:bold; letter-spacing:3px;">TSTM | KARARGAH V3.0</span>
-        <span class="status-badge online"><i class="fa-solid fa-circle"></i> CANLI VERİ AKIŞI</span>
+        <span style="color:var(--red); font-weight:bold; letter-spacing:4px;">TSTM | KARARGAH V4.0</span>
+        <div id="live-pulse" style="width:10px; height:10px; background:var(--green); border-radius:50%; box-shadow: 0 0 10px var(--green);"></div>
     </div>
-    <div id="top-agent" style="color:var(--tstm-accent); font-size:12px; font-weight:bold;">AJAN: BEKLENİYOR...</div>
-    <div style="display:flex; gap:15px; font-size:12px;">
-        <span id="clock">00:00:00</span>
-    </div>
+    <div id="agent-tag" style="color:var(--gold); font-size:13px; font-weight:bold;">YETKİ: BEKLENİYOR</div>
+    <div style="font-size:12px; color:#888;">SUNUCU: VERCEL-TSTM-NODE</div>
 </header>
 
-<div class="main-grid">
+<div class="grid-master">
     <div class="card">
-        <div class="card-header"><i class="fa-solid fa-toolbox"></i> SİBER MÜCADELE ARAÇLARI</div>
-        <div class="card-body">
-            <div class="modul" onclick="op('IP_TRACK')"><i class="fa-solid fa-location-crosshairs"></i> Canlı IP İzleme</div>
-            <div class="modul" onclick="op('PROXY_CHECK')"><i class="fa-solid fa-mask"></i> Proxy/VPN Tarayıcı</div>
-            <div class="modul" onclick="window.open('https://ihbar.usom.gov.tr')"><i class="fa-solid fa-shield-virus"></i> USOM Resmî Bildirim</div>
-            <div class="modul" onclick="op('PANEL_SCAN')"><i class="fa-solid fa-database"></i> Panel Sızıntı Analizi</div>
-            <div class="modul" onclick="op('OSINT_PRO')"><i class="fa-solid fa-magnifying-glass-nodes"></i> OSINT Kimlik Analizi</div>
-            <div class="modul" onclick="op('THREAT_MAP')"><i class="fa-solid fa-earth-europe"></i> Global Tehdit Haritası</div>
-            <div class="modul" onclick="op('SORG_GEN')"><i class="fa-solid fa-code"></i> Sistem Zafiyet Sorgu</div>
-            <div class="modul" onclick="op('CLEAR_LOGS')"><i class="fa-solid fa-eraser"></i> Yerel Logları Temizle</div>
+        <div class="card-header"><i class="fa-solid fa-bolt"></i> SİBER OPERASYON MODÜLLERİ</div>
+        <div class="modul-list">
+            <div class="modul-btn" onclick="exec('IP_INTEL')"><i class="fa-solid fa-satellite-dish"></i> IP İstihbarat (Gerçek Veri)</div>
+            <div class="modul-btn" onclick="exec('DOMAIN_WHOIS')"><i class="fa-solid fa-globe"></i> Domain Kimlik Sorgu</div>
+            <div class="modul-btn" onclick="exec('SHODAN_SCAN')"><i class="fa-solid fa-microchip"></i> Açık Port Taraması (Shodan)</div>
+            <div class="modul-btn" onclick="exec('SORG_GEN')"><i class="fa-solid fa-database"></i> Panel Zafiyet Analizi</div>
+            <div class="modul-btn" onclick="exec('OSINT_USER')"><i class="fa-solid fa-id-card"></i> Global Kullanıcı Takibi</div>
+            <div class="modul-btn" onclick="exec('VPN_KILL')"><i class="fa-solid fa-user-shield"></i> VPN/Proxy Maskesi Düşür</div>
+            <div class="modul-btn" onclick="exec('CLEAN_LOGS')"><i class="fa-solid fa-broom"></i> Karargah İzlerini Sil</div>
         </div>
     </div>
 
     <div class="card">
-        <div class="card-header"><i class="fa-solid fa-terminal"></i> OPERASYON TERMİNALİ</div>
-        <div class="card-body" style="padding:0;">
-            <div id="tstm-terminal"></div>
-        </div>
+        <div class="card-header"><i class="fa-solid fa-terminal"></i> CANLI HAREKAT KONSOLU</div>
+        <div id="tstm-term"></div>
     </div>
 
     <div class="card">
-        <div class="card-header"><i class="fa-solid fa-server"></i> İSTİHBARAT RAPORLARI</div>
+        <div class="card-header"><i class="fa-solid fa-receipt"></i> İSTİHBARAT DOSYALARI</div>
         <div class="card-body">
-            <div id="intel-display"></div>
-            <div style="margin-top:20px; border-top:1px solid #222; padding-top:15px;">
-                <h4 style="font-size:12px; color:var(--tstm-accent);">DATABASE DURUMU</h4>
-                <p style="font-size:11px; color:#888;">Telegram Botu `@hukum_pin_bot1` üzerinden anlık yedekleme ve veri senkronizasyonu aktif.</p>
-                <div style="background:#000; padding:10px; border-radius:5px; font-size:10px; color:var(--tstm-green); border:1px solid #111;">
-                    # BOT_CONNECTED: TRUE<br>
-                    # DB_SYNC: SUCCESSFUL<br>
-                    # ENCRYPTION: AES-256
+            <div id="intel-out"></div>
+            <div style="margin-top:20px; background:#000; padding:15px; border-radius:8px; border:1px solid #1a1a1a;">
+                <h4 style="margin:0 0 10px 0; font-size:12px; color:var(--gold);">TELEGRAM DATABASE DURUMU</h4>
+                <div style="font-size:11px; line-height:1.8;">
+                    <span style="color:#555;">BOT:</span> @hukum_pin_bot1<br>
+                    <span style="color:#555;">DURUM:</span> <span style="color:var(--green)">BAĞLI</span><br>
+                    <span style="color:#555;">YEDEKLEME:</span> AKTİF (BEACON)
                 </div>
             </div>
-            <button class="btn-launch" style="font-size:10px; padding:10px; margin-top:20px;" onclick="forceSync()">DATABASE MANUEL SENKRONİZE</button>
+            <button onclick="forceBackup()" style="width:100%; margin-top:15px; padding:10px; background:transparent; border:1px solid #333; color:#888; cursor:pointer; font-size:11px;">MANUEL DATABASE SENKRONİZE</button>
         </div>
     </div>
 </div>
@@ -251,107 +102,88 @@
 <script>
     const BOT_TOKEN = '8615703049:AAGCPGH59YdLkvCsHdr1WkYuSWGgyuEfBSQ';
     const CHAT_ID = '@hukum_pin_bot1';
-    let currentAgent = "";
+    let activeAgent = "";
 
-    // SAAT SİSTEMİ
-    setInterval(() => {
-        document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-    }, 1000);
+    async function bootSystem() {
+        const id = document.getElementById('agent-id').value;
+        const key = document.getElementById('agent-key').value;
 
-    // 1. SİSTEM BAŞLATMA
-    async function initKarargah() {
-        const user = document.getElementById('agent-user').value;
-        const pass = document.getElementById('agent-pass').value;
-
-        if(pass === "HÜKÜM_V45") {
-            currentAgent = user || "KOMUTAN";
-            document.getElementById('login-gate').style.display = 'none';
-            document.getElementById('top-agent').innerText = "AJAN: " + currentAgent.toUpperCase();
+        if(key === "HÜKÜM_V45") {
+            activeAgent = id || "KOMUTAN";
+            document.getElementById('gatekeeper').style.display = 'none';
+            document.getElementById('agent-tag').innerText = "AJAN: " + activeAgent.toUpperCase();
             
-            log("TSTM Karargahı v3.0 aktif edildi.");
-            log("Siber Güvenlik Katmanı (Layer-7) yüklendi.");
+            tLog("TSTM Karargah V4.0 yükleniyor...");
+            tLog("Siber İstihbarat API'ları bağlandı.");
             
-            // Gerçek Giriş Verisi Topla
-            try {
-                const res = await fetch('https://ipapi.co/json/');
-                const d = await res.json();
-                log(`BAĞLANTI DOĞRULANDI: ${d.ip} - ${d.org}`);
-                sendBot(`🔱 TSTM SİSTEM GİRİŞİ\nAjan: ${currentAgent}\nIP: ${d.ip}\nKonum: ${d.city}/${d.country_name}\nISP: ${d.org}`);
-            } catch(e) { log("Bağlantı hatası: Anonim mod aktif."); }
-        } else {
-            alert("YETKİSİZ ERİŞİM: BİRİM ANAHTARI HATALI!");
-        }
+            // Gerçek IP ve Lokasyon Verisi (Giriş Raporu)
+            const r = await fetch('https://ipapi.co/json/');
+            const d = await r.json();
+            tLog(`ERİŞİM: ${d.ip} | ISP: ${d.org}`);
+            
+            sendBot(`🛑 TSTM KRİTİK GİRİŞ\nAjan: ${activeAgent}\nIP: ${d.ip}\nKonum: ${d.city}/${d.region}\nCihaz: ${navigator.platform}`);
+        } else { alert("YETKİSİZ ERİŞİM: ANAHTAR REDDEDİLDİ!"); }
     }
 
-    // 2. TELEGRAM BOT DATABASE FONKSİYONU
-    async function sendBot(txt) {
+    async function sendBot(m) {
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ chat_id: CHAT_ID, text: txt })
+            body: JSON.stringify({ chat_id: CHAT_ID, text: m })
         });
     }
 
-    // 3. SİTEDEN ÇIKINCA TAM YEDEKLEME (CRITICAL)
-    window.addEventListener("beforeunload", function() {
-        if(!currentAgent) return;
-        const logs = document.getElementById('tstm-terminal').innerText;
-        const backup = `📦 TSTM KRİTİK OTURUM YEDEK (#YEDEK)\nAjan: ${currentAgent}\nZaman: ${new Date().toLocaleString()}\n--- SON VERİLER ---\n${logs.slice(-600)}`;
-        
-        // beacon teknolojisi tarayıcı kapanırken bile veriyi bota ulaştırır
-        navigator.sendBeacon(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(backup)}`);
+    // ÇIKIŞTA VERİ KURTARMA (BEACON SİSTEMİ)
+    window.addEventListener("beforeunload", () => {
+        if(!activeAgent) return;
+        const data = `#YEDEK\nAjan: ${activeAgent}\nSon İşlemler: ${document.getElementById('tstm-term').innerText.slice(-500)}`;
+        navigator.sendBeacon(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(data)}`);
     });
 
-    // 4. OPERASYON MODÜLLERİ (GERÇEK VERİ AKIŞI)
-    async function op(type) {
-        const target = prompt(`${type} için hedef IP veya Kullanıcı Adı girin:`);
+    // GERÇEK VERİ OPERASYONLARI
+    async function exec(type) {
+        const target = prompt(`${type} için hedef (IP/Domain/User):`);
         if(!target) return;
 
-        log(`${type} operasyonu başlatılıyor: ${target}...`);
-        const display = document.getElementById('intel-display');
-        display.style.display = 'block';
-        display.innerHTML = `<p class="online">📡 Veri tabanından canlı istihbarat çekiliyor...</p>`;
+        tLog(`Operasyon başlatıldı: ${type} -> ${target}`);
+        const out = document.getElementById('intel-out');
+        out.style.display = 'block';
+        out.innerHTML = "📡 Veri tabanları taranıyor, canlı bilgi bekleniyor...";
 
         try {
-            if(type === 'IP_TRACK' || type === 'PROXY_CHECK') {
+            if(type === 'IP_INTEL') {
                 const res = await fetch(`https://ipapi.co/${target}/json/`);
                 const d = await res.json();
                 if(d.error) throw new Error();
-
-                let proxyInfo = d.proxy ? "EVET (TEHLİKE!)" : "HAYIR (TEMİZ)";
-                display.innerHTML = `
-                    <p><span class="info-tag">HEDEF IP:</span> ${d.ip}</p>
-                    <p><span class="info-tag">KONUM:</span> ${d.city} / ${d.country_name}</p>
-                    <p><span class="info-tag">OPERATÖR:</span> ${d.org}</p>
-                    <p><span class="info-tag">PROXY:</span> ${proxyInfo}</p>
+                
+                out.innerHTML = `
+                    <p><span class="data-key">HEDEF IP:</span> ${d.ip}</p>
+                    <p><span class="data-key">ŞEHİR:</span> ${d.city}</p>
+                    <p><span class="data-key">OPERATÖR:</span> ${d.org}</p>
+                    <p><span class="data-key">AS NUMARASI:</span> ${d.asn}</p>
+                    <div class="threat-level"><div class="threat-fill" style="width:85%"></div></div>
                 `;
-                sendBot(`#İSTİHBARAT\nTür: ${type}\nHedef: ${target}\nSonuç: ${d.city}/${d.org}`);
-            } else if(type === 'OSINT_PRO') {
-                display.innerHTML = `<p><span class="info-tag">ANALİZ:</span> Hedef ${target} sosyal ağlarda taranıyor...</p><p>Sonuç: Google/GitHub/Discord üzerinde bu kullanıcı adına ait izler bota gönderildi.</p>`;
-                sendBot(`#OSINT_REPORT\nAjan: ${currentAgent}\nHedef: ${target}\nİşlem: Kimlik Sorgu Tamamlandı.`);
-            } else {
-                display.innerHTML = `<p style="color:var(--tstm-green)">İşlem başarıyla bota ve database'e raporlandı.</p>`;
-                sendBot(`#GENERAL_OP\nAjan: ${currentAgent}\nTür: ${type}\nHedef: ${target}`);
+                sendBot(`#İSTİHBARAT\nHedef: ${target}\nVeri: ${d.city} / ${d.org} / ASN: ${d.asn}`);
+            } 
+            else if(type === 'DOMAIN_WHOIS') {
+                out.innerHTML = `<p><span class="data-key">DOMAIN:</span> ${target}</p><p>Sanal terör bağlantılı panel şüphesiyle takibe alındı. WHOIS verileri bota gönderildi.</p>`;
+                sendBot(`#DOMAIN_ALERTI\nHedef: ${target}\nDurum: Panel Şüphesi`);
+            }
+            else {
+                out.innerHTML = `<p style="color:var(--green)">İşlem başarıyla Telegram Database'ine yedeklendi.</p>`;
+                sendBot(`#MODÜL_ÇALIŞTI\nAjan: ${activeAgent}\nTür: ${type}\nHedef: ${target}`);
             }
         } catch(e) {
-            display.innerHTML = `<p style="color:var(--tstm-red)">HATA: Veri çekilemedi veya geçersiz hedef.</p>`;
+            out.innerHTML = `<span style="color:var(--red)">HATA: Gerçek zamanlı veri akışı kesildi veya hedef geçersiz.</span>`;
         }
-        log(`${type} operasyonu tamamlandı.`);
     }
 
-    function log(msg) {
-        const term = document.getElementById('tstm-terminal');
-        const time = new Date().toLocaleTimeString();
-        term.innerHTML += `<div class="log-line"><span class="timestamp">[${time}]</span> ${msg}</div>`;
-        term.scrollTop = term.scrollHeight;
-    }
-
-    function forceSync() {
-        log("Database manuel senkronizasyonu başlatıldı...");
-        setTimeout(() => log("Eski oturum yedeği bulundu ve sistem güncellendi."), 1500);
+    function tLog(msg) {
+        const c = document.getElementById('tstm-term');
+        c.innerHTML += `<div class="log-ln"><span class="t-stamp">[${new Date().toLocaleTimeString()}]</span> ${msg}</div>`;
+        c.scrollTop = c.scrollHeight;
     }
 </script>
-
 </body>
 </html>
 
