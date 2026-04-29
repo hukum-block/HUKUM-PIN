@@ -3,78 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THİT | Karargah v2.0</title>
+    <title>TSTM | Karargah v1.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --main-blue: #003366; --accent: #ffcc00; --bg: #020205; --text: #e0e0e0; --panel: #0a0c14; }
-        body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
-        #auth-gate { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .auth-card { background: var(--panel); border: 2px solid var(--main-blue); padding: 50px; border-radius: 5px; width: 400px; text-align: center; box-shadow: 0 0 50px rgba(0,51,102,0.3); }
-        input, textarea { width: 100%; background: #000; border: 1px solid #1a1a1a; color: var(--accent); padding: 12px; margin: 8px 0; outline: none; border-radius: 3px; }
-        .btn-gov { width: 100%; background: var(--main-blue); color: #fff; border: none; padding: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
-        .btn-gov:hover { border: 1px solid var(--accent); color: var(--accent); background: transparent; }
-        header { background: #000; border-bottom: 2px solid var(--main-blue); padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; }
-        .layout { display: grid; grid-template-columns: 320px 1fr 300px; gap: 10px; padding: 10px; height: calc(100vh - 60px); }
-        .panel { background: var(--panel); border: 1px solid #1a1a25; padding: 15px; overflow-y: auto; border-radius: 5px; }
-        .panel h3 { color: var(--accent); border-bottom: 1px solid var(--main-blue); padding-bottom: 8px; font-size: 14px; margin-top: 0; }
-        .tool-btn { background: #050508; border: 1px solid #1a1a1a; padding: 10px; margin-bottom: 5px; border-radius: 3px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 10px; }
-        .tool-btn:hover { border-color: var(--accent); color: var(--accent); }
-        #console { background: #000; color: #0f0; font-size: 10px; padding: 8px; height: 180px; overflow-y: auto; border: 1px solid #111; margin-top: 10px; }
-        .result-box { background: #001a00; border: 1px solid #00ff00; padding: 10px; margin-top: 10px; font-size: 11px; color: #0f0; display: none; }
-        .loader { color: var(--accent); font-size: 10px; display: none; }
+        :root { --red: #cc0000; --dark-bg: #02040a; --panel: #0d1117; --accent: #ffcc00; --green: #00ff00; }
+        body { background: var(--dark-bg); color: #d1d1d1; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        
+        /* GİRİŞ EKRANI */
+        #login-gate { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: var(--panel); border: 2px solid var(--red); padding: 40px; width: 350px; text-align: center; border-radius: 5px; box-shadow: 0 0 30px rgba(204, 0, 0, 0.2); }
+        input { width: 100%; background: #000; border: 1px solid #333; color: var(--accent); padding: 12px; margin: 10px 0; outline: none; box-sizing: border-box; }
+        .btn-tstm { width: 100%; background: var(--red); color: #fff; border: none; padding: 15px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+
+        /* ANA PANEL */
+        header { background: #000; border-bottom: 2px solid var(--red); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .layout { display: grid; grid-template-columns: 300px 1fr 300px; gap: 10px; padding: 10px; height: calc(100vh - 60px); }
+        .panel { background: var(--panel); border: 1px solid #1a2333; padding: 15px; overflow-y: auto; }
+        .panel h3 { color: var(--accent); border-bottom: 1px solid var(--red); padding-bottom: 5px; margin-top: 0; font-size: 14px; }
+        
+        #console { background: #000; color: var(--green); font-size: 11px; padding: 10px; height: 250px; overflow-y: auto; border: 1px solid #222; }
+        .tool-btn { background: #0a0e14; border: 1px solid #222; padding: 12px; margin-bottom: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 12px; }
+        .tool-btn:hover { border-color: var(--red); color: var(--red); }
     </style>
 </head>
 <body>
 
-<div id="auth-gate">
-    <div class="auth-card">
-        <h2 style="color: var(--accent);">THİT GİRİŞ</h2>
-        <input type="text" id="codename" placeholder="AJAN KOD ADI">
-        <input type="password" id="authkey" placeholder="BİRİM ŞİFRE">
-        <button class="btn-gov" onclick="systemLogin()">SİSTEME SIZ</button>
+<div id="login-gate">
+    <div class="login-box">
+        <h2 style="color:var(--red)">TSTM GİRİŞ</h2>
+        <p style="font-size: 10px;">TÜRKİYE SANAL TERÖRLE MÜCADELE</p>
+        <input type="text" id="agent-name" placeholder="AJAN KOD ADI">
+        <input type="password" id="agent-pass" placeholder="BİRİM ŞİFRESİ">
+        <button class="btn-tstm" onclick="tstmLogin()">SİSTEME BAĞLAN</button>
     </div>
 </div>
 
 <header>
-    <div style="color: var(--accent); font-weight: 900; letter-spacing: 2px;">THİT KARARGAH</div>
-    <div id="user-tag" style="color:var(--main-blue); font-size: 12px;">YETKİ: BEKLENİYOR...</div>
+    <div style="font-weight: bold; letter-spacing: 2px;">TSTM | KARARGAH</div>
+    <div id="status-display" style="font-size: 12px; color: var(--green);">SİSTEM: BEKLEMEDE</div>
 </header>
 
 <div class="layout">
     <div class="panel">
-        <h3><i class="fa-solid fa-crosshairs"></i> SAHA MODÜLLERİ</h3>
-        <div class="tool-btn" onclick="triggerTool('IP_SCAN')"><i class="fa-solid fa-globe"></i> Global IP & ISP Sorgu</div>
-        <div class="tool-btn" onclick="triggerTool('EXIF_GPS')"><i class="fa-solid fa-map-location-dot"></i> Fotoğraftan Adres (Bot DB)</div>
-        <div class="tool-btn" onclick="triggerTool('SQL_INJECT')"><i class="fa-solid fa-database"></i> Panel Açık Tarayıcı</div>
-        <div class="tool-btn" onclick="triggerTool('SNOWFLAKE')"><i class="fa-solid fa-snowflake"></i> Discord Hesap Analizi</div>
-        <div class="tool-btn" onclick="triggerTool('OSINT_USER')"><i class="fa-solid fa-search"></i> Sosyal Medya Tarama</div>
-        
-        <div id="tool-loading" class="loader"><i class="fa-solid fa-spinner fa-spin"></i> Veri Tabandan Sorgulanıyor...</div>
-        <div id="tool-result" class="result-box"></div>
+        <h3><i class="fa-solid fa-shield-halved"></i> MÜCADELE MODÜLLERİ</h3>
+        <div class="tool-btn" onclick="runTool('IP_TRACK')"><i class="fa-solid fa-location-crosshairs"></i> IP İz Sürücü</div>
+        <div class="tool-btn" onclick="window.open('https://ihbar.usom.gov.tr')"><i class="fa-solid fa-handcuffs"></i> USOM İhbar Hattı</div>
+        <div class="tool-btn" onclick="runTool('C31K_SCAN')"><i class="fa-solid fa-user-secret"></i> C31K Yapılanma Analizi</div>
+        <div class="tool-btn" onclick="runTool('DB_RESTORE')"><i class="fa-solid fa-cloud-arrow-down"></i> Verileri Bot'tan Çek</div>
     </div>
 
     <div class="panel">
-        <h3><i class="fa-solid fa-flag"></i> OPERASYON TAHTASI</h3>
-        <div id="op-list"></div>
-    </div>
-
-    <div class="panel">
-        <h3><i class="fa-solid fa-microchip"></i> SİSTEM DURUMU</h3>
-        <div style="font-size: 10px; color: #666;">DATABASE: TELEGRAM @hukum_pin_bot1</div>
+        <h3><i class="fa-solid fa-terminal"></i> OPERASYON LOGLARI</h3>
         <div id="console"></div>
+    </div>
+
+    <div class="panel">
+        <h3><i class="fa-solid fa-database"></i> BOT DATABASE DURUMU</h3>
+        <div id="db-status" style="font-size: 10px; color: #888;">Bot: @hukum_pin_bot1 <br> Durum: Senkronize</div>
     </div>
 </div>
 
 <script>
     const BOT_TOKEN = '8615703049:AAGCPGH59YdLkvCsHdr1WkYuSWGgyuEfBSQ';
-    const CHANNEL_ID = '@hukum_pin_bot1';
-    let currentAgent = localStorage.getItem("thit_agent") || "";
-    let lastUpdateId = 0;
+    const CHAT_ID = '@hukum_pin_bot1';
+    let currentAgent = "";
 
-    window.onload = function() {
-        if(currentAgent) loginSuccess(currentAgent);
-        setInterval(checkDatabaseUpdates, 3000); // Her 3 saniyede botu/database'i kontrol et
-    };
+    // 1. GİRİŞ VE BOT DATABASE'E IP ATMA
+    async function tstmLogin() {
+        const name = document.getElementById('agent-name').value;
+        const pass = document.getElementById('agent-pass').value;
+
+        if (name && pass === "HÜKÜM_V45") { // Şifreyi buradan değiştirebilirsin
+            currentAgent = name;
+            localStorage.setItem("tstm_agent", name);
+            document.getElementById('login-gate').style.display = 'none';
+            document.getElementById('status-display').innerText = "AJAN: " + name.toUpperCase();
+            
+            // IP YAKALAMA VE BOTA ATMA
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipRes.json();
+            sendToBot(`🛑 GİRİŞ: Ajan ${name} bağlandı. \n🌐 IP: ${ipData.ip}\n🕒 Saat: ${new Date().toLocaleString()}`);
+            logToConsole(`Sisteme giriş yapıldı. Hoş geldin Ajan ${name}.`);
+        } else {
+            alert("KİMLİK DOĞRULANAMADI!");
+        }
+    }
+
+    // 2. BOTU DATABASE OLARAK KULLANMA (MESAJ GÖNDERME)
+    async function sendToBot(msg) {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
+        });
+    }
+
+    // 3. SİTEDEN ÇIKINCA VERİLERİ BOTA YEDEKLEME
+    window.addEventListener("beforeunload", function() {
+        const logs = document.getElementById('console').innerText;
+        if(currentAgent) {
+            // navigator.sendBeacon sayfa kapanırken bile veri gönderilmesini sağlar
+            const text = `#YEDEK\nAjan: ${currentAgent}\nSon Loglar: ${logs.slice(-200)}`;
+            navigator.sendBeacon(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`);
+        }
+    });
 
     function logToConsole(txt) {
         const c = document.getElementById('console');
@@ -82,75 +114,9 @@
         c.scrollTop = c.scrollHeight;
     }
 
-    async function systemLogin() {
-        const u = document.getElementById('codename').value;
-        if(!u) return;
-        localStorage.setItem("thit_agent", u);
-        loginSuccess(u);
-        sendToBot(`🛑 GİRİŞ: Ajan ${u} karargaha bağlandı.`);
-    }
-
-    function loginSuccess(u) {
-        currentAgent = u;
-        document.getElementById('auth-gate').style.display = 'none';
-        document.getElementById('user-tag').innerText = "AJAN: " + u.toUpperCase();
-        logToConsole("Sistem aktif. Database senkronize edildi.");
-    }
-
-    // BOTU DATABASE OLARAK KULLANAN FONKSİYON
-    async function sendToBot(msg) {
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ chat_id: CHANNEL_ID, text: msg })
-        });
-    }
-
-    // BOT'TAN VERİ ÇEKME (DATABASE OKUMA)
-    async function checkDatabaseUpdates() {
-        try {
-            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=-1`);
-            const data = await res.json();
-            if(data.result.length > 0) {
-                const latest = data.result[0];
-                const msg = latest.channel_post ? latest.channel_post.text : (latest.message ? latest.message.text : "");
-                
-                // Eğer mesaj bir sonuç (#SONUÇ) içeriyorsa ekrana bas
-                if(msg.includes("#SONUÇ") && latest.update_id !== lastUpdateId) {
-                    lastUpdateId = latest.update_id;
-                    showResult(msg);
-                }
-            }
-        } catch(e) {}
-    }
-
-    function triggerTool(name) {
-        const target = prompt(name + " için hedef girin (ID/Link/User):");
-        if(!target) return;
-
-        document.getElementById('tool-loading').style.display = 'block';
-        document.getElementById('tool-result').style.display = 'none';
-        
-        logToConsole(`${name} sorgusu database'e (Bot) iletildi...`);
-        sendToBot(`#SORGU\nTür: ${name}\nHedef: ${target}\nAjan: ${currentAgent}`);
-    }
-
-    function showResult(msg) {
-        document.getElementById('tool-loading').style.display = 'none';
-        const resBox = document.getElementById('tool-result');
-        resBox.style.display = 'block';
-        resBox.innerHTML = `<strong>📡 DATABASE'DEN GELEN VERİ:</strong><br>${msg.replace("#SONUÇ", "")}`;
-        logToConsole("Sorgu tamamlandı. Veri ekrana basıldı.");
-    }
-
-    // OPERASYON EKLEME (DATABASE'E YAZMA)
-    async function submitOp() {
-        const t = prompt("Hedef:");
-        const n = prompt("Not:");
-        if(t) {
-            sendToBot(`#OPERASYON\nHedef: ${t}\nNot: ${n}\nAjan: ${currentAgent}`);
-            logToConsole("Operasyon emri database'e işlendi.");
-        }
+    function runTool(type) {
+        logToConsole(`${type} modülü çalıştırıldı... Veriler bota işleniyor.`);
+        sendToBot(`#İŞLEM\nAjan: ${currentAgent}\nTür: ${type}\nDurum: Başarılı`);
     }
 </script>
 </body>
