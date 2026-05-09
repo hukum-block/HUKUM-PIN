@@ -3,86 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TSTM | STRATEJİK HAREKAT MERKEZİ V10.0</title>
+    <title>TSTM | SİBER SAVUNMA VE HAREKAT MERKEZİ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        :root { --r: #ff0000; --b: #020205; --p: #0d1117; --g: #00ff41; --y: #ffcc00; --br: #30363d; --bl: #0066ff; }
-        * { box-sizing: border-box; }
+        :root { --r: #ff0000; --b: #020205; --p: #0d1117; --g: #00ff41; --y: #ffcc00; --br: #30363d; --bl: #0066ff; --w: #ffffff; }
+        * { box-sizing: border-box; transition: all 0.2s ease; }
         body { background: var(--b); color: #e6edf3; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* ZORUNLU GİRİŞ VE KAYIT PANELİ */
-        #gate { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(circle, #200 0%, #000 100%); }
-        .secure-box { background: var(--p); border: 2px solid var(--r); padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 0 60px rgba(255,0,0,0.4); width: 90%; max-width: 400px; }
-        input { width: 100%; background: #000; border: 1px solid var(--br); padding: 12px; margin-bottom: 10px; color: var(--g); border-radius: 6px; outline: none; font-family: monospace; }
-        .gate-btn { width: 100%; padding: 14px; background: var(--r); color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        /* ZORUNLU GİRİŞ VE KAYIT EKRANI */
+        #gate { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(circle, #300 0%, #000 100%); }
+        .secure-box { background: var(--p); border: 2px solid var(--r); padding: 40px; border-radius: 15px; text-align: center; box-shadow: 0 0 80px rgba(255,0,0,0.5); width: 450px; }
+        input { width: 100%; background: #000; border: 1px solid var(--br); padding: 15px; margin-bottom: 12px; color: var(--g); border-radius: 8px; outline: none; font-family: monospace; font-size: 14px; }
+        .gate-btn { width: 100%; padding: 18px; background: var(--r); color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; letter-spacing: 2px; }
+        .gate-btn:hover { background: #cc0000; transform: scale(1.02); }
 
-        header { background: #000; border-bottom: 2px solid var(--r); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .grid { display: grid; grid-template-columns: 300px 1fr 300px; gap: 10px; padding: 10px; flex: 1; overflow: hidden; }
+        /* ANA ARAYÜZ */
+        header { background: #000; border-bottom: 3px solid var(--r); padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .grid { display: grid; grid-template-columns: 340px 1fr 380px; gap: 12px; padding: 12px; flex: 1; overflow: hidden; }
 
-        /* Mobil Uyumluluk Ayarı */
-        @media (max-width: 992px) {
+        /* MOBİL UYUMLULUK */
+        @media (max-width: 1100px) {
             .grid { grid-template-columns: 1fr; overflow-y: auto; }
-            body { overflow-y: auto; height: auto; }
-            .card { height: 400px; margin-bottom: 15px; }
+            body { overflow: auto; height: auto; }
+            .card { height: 500px; margin-bottom: 10px; }
         }
 
-        .card { background: var(--p); border: 1px solid var(--br); border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; }
-        .card-h { background: #161b22; padding: 10px; font-weight: bold; color: var(--y); border-bottom: 1px solid var(--br); font-size: 12px; display: flex; align-items: center; gap: 8px; }
+        .card { background: var(--p); border: 1px solid var(--br); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; }
+        .card-h { background: #161b22; padding: 15px; font-weight: bold; color: var(--y); border-bottom: 1px solid var(--br); font-size: 13px; display: flex; align-items: center; gap: 10px; letter-spacing: 1px; }
         
-        #map { height: 100%; background: #05050a; z-index: 1; }
-        .m-list { padding: 10px; overflow-y: auto; flex: 1; }
-        .m-btn { background: #0d1117; border: 1px solid var(--br); padding: 10px; margin-bottom: 5px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 11px; transition: 0.2s; }
-        .m-btn:hover { border-color: var(--r); background: #1c2128; transform: translateX(5px); }
-        .m-btn i { color: var(--r); width: 15px; }
+        #map { height: 100%; background: #05050a; }
+        .m-list { padding: 12px; overflow-y: auto; flex: 1; scrollbar-width: thin; }
+        .m-btn { background: #0d1117; border: 1px solid var(--br); padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 12px; }
+        .m-btn:hover { border-color: var(--r); background: #1c2128; transform: translateX(8px); }
+        .m-btn i { color: var(--r); width: 18px; text-align: center; }
 
-        #term { background: #000; color: var(--g); font-family: 'Consolas', monospace; font-size: 11px; padding: 10px; height: 150px; border-top: 1px solid var(--br); overflow-y: auto; }
-        #res-box { background: #010205; border: 1px dashed var(--g); padding: 10px; font-size: 11px; color: #fff; margin-top: 10px; min-height: 50px; }
+        #term { background: #000; color: var(--g); font-family: 'Consolas', monospace; font-size: 11px; padding: 15px; height: 180px; border-top: 2px solid var(--br); overflow-y: auto; }
+        #res-display { background: #000; border: 1px dashed var(--g); padding: 15px; border-radius: 8px; font-size: 12px; min-height: 100px; line-height: 1.6; }
+        .alert-flash { position: absolute; top: 20px; right: 20px; z-index: 2000; background: var(--r); color: #fff; padding: 10px 20px; border-radius: 5px; font-weight: bold; display: none; animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
 <div id="gate">
-    <div class="secure-box" id="auth-ui">
-        <h1 style="color:var(--r); margin:0; letter-spacing:5px;">T S T M</h1>
-        <p style="font-size:10px; color:#666; margin-bottom:20px;">SİBER SAVUNMA TEŞKİLATI V10.0</p>
-        <div id="login-form">
-            <input type="text" id="user-code" placeholder="KOMUTAN KOD ADI">
-            <input type="password" id="pass-code" placeholder="YETKİ ANAHTARI">
-            <button class="gate-btn" onclick="handleAuth()">SİSTEME SIZ</button>
-            <p style="font-size:9px; color:#444; margin-top:15px;">Yetkisiz erişimler Telegram üzerinden loglanır.</p>
+    <div class="secure-box">
+        <h1 style="color:var(--r); margin:0; letter-spacing:8px;">T S T M</h1>
+        <p style="font-size:11px; color:#888; margin-bottom:30px;">TÜRK SAVUNMA TEŞKİLATI MERKEZİ V12.0</p>
+        <div id="auth-panel">
+            <input type="text" id="ajan-adı" placeholder="KOMUTAN KOD ADI">
+            <input type="password" id="ajan-key" placeholder="HAREKAT ŞİFRESİ">
+            <button class="gate-btn" onclick="secureBoot()">KARARGAHI BAŞLAT</button>
+            <p style="font-size:10px; color:#555; margin-top:20px;">VERİLER TELEGRAM CLOUD'DAN ÇEKİLECEKTİR.</p>
         </div>
     </div>
 </div>
 
+<div class="alert-flash" id="siren">⚠️ KRİTİK SIZMA TESPİT EDİLDİ!</div>
+
 <header>
-    <div style="display:flex; align-items:center; gap:15px;">
-        <span style="color:var(--r); font-weight:bold; letter-spacing:2px;">TSTM | HAREKAT</span>
-        <div id="status-tag" style="font-size:9px; color:var(--g); border:1px solid var(--g); padding:2px 6px;">TELEGRAM SYNC: OK</div>
+    <div style="display:flex; align-items:center; gap:20px;">
+        <span style="color:var(--r); font-weight:bold; letter-spacing:3px;">TSTM | HQ</span>
+        <div style="font-size:9px; color:var(--g); border:1px solid var(--g); padding:2px 8px; border-radius:4px;">SYNC: ACTIVE</div>
     </div>
-    <div id="commander-name" style="color:var(--y); font-size:12px; font-weight:bold;">KOMUTAN: ---</div>
-    <div id="clock" style="color:#555; font-size:11px;"></div>
+    <div id="ajan-label" style="color:var(--y); font-size:13px; font-weight:bold;">BEKLENİYOR...</div>
+    <div id="live-clock" style="color:#fff; font-size:12px; font-family:monospace;"></div>
 </header>
 
 <div class="grid">
-    <!-- SOL: KOMUTLAR -->
+    <!-- SOL: 150+ POTANSİYEL KOMUT LİSTESİ -->
     <div class="card">
-        <div class="card-h"><i class="fa-solid fa-terminal"></i> STRATEJİK KOMUTLAR</div>
-        <div class="m-list">
-            <div class="m-btn" onclick="runOp('IP_TRACK')"><i class="fa-solid fa-location-dot"></i> IP İstihbaratı</div>
-            <div class="m-btn" onclick="runOp('WHOIS')"><i class="fa-solid fa-globe"></i> Domain Sorgu</div>
-            <div class="m-btn" onclick="runOp('PHONE')"><i class="fa-solid fa-phone"></i> Numara Analizi</div>
-            <div class="m-btn" onclick="runOp('DISCORD')"><i class="fa-brands fa-discord"></i> Discord ID Sorgu</div>
-            <div class="m-btn" onclick="runOp('BREACH')"><i class="fa-solid fa-envelope-open-text"></i> Sızıntı Taraması</div>
-            <div class="m-btn" onclick="runOp('SQL')"><i class="fa-solid fa-database"></i> SQL Açık Avcısı</div>
-            <div class="m-btn" onclick="runOp('XSS')"><i class="fa-solid fa-spider"></i> XSS Scanner</div>
-            <div class="m-btn" onclick="runOp('PORT')"><i class="fa-solid fa-network-wired"></i> Port Analizi</div>
-            <div class="m-btn" onclick="runOp('PROXY')"><i class="fa-solid fa-mask"></i> Proxy Mask Düşür</div>
-            <div class="m-btn" onclick="runOp('USOM')"><i class="fa-solid fa-shield-halved"></i> USOM Bildir</div>
+        <div class="card-h"><i class="fa-solid fa-list-check"></i> OPERASYONEL KOMUTLAR</div>
+        <div class="m-list" id="cmd-container">
+            <!-- Ana Komutlar -->
+            <div class="m-btn" onclick="execute('IP_INTEL')"><i class="fa-solid fa-crosshairs"></i> IP Adresi İstihbaratı</div>
+            <div class="m-btn" onclick="execute('WHOIS')"><i class="fa-solid fa-earth-americas"></i> Alan Adı (Whois) Analizi</div>
+            <div class="m-btn" onclick="execute('GSM_ANALYSIS')"><i class="fa-solid fa-mobile-retro"></i> GSM & Operatör Analizi</div>
+            <div class="m-btn" onclick="execute('DISCORD_OSINT')"><i class="fa-brands fa-discord"></i> Discord ID / Token Analiz</div>
+            <div class="m-btn" onclick="execute('LEAK_SCAN')"><i class="fa-solid fa-envelope-open-text"></i> Veri Sızıntısı (Leak) Tara</div>
+            <div class="m-btn" onclick="execute('SQL_INJECT')"><i class="fa-solid fa-database"></i> SQL Zafiyet Taraması</div>
+            <div class="m-btn" onclick="execute('XSS_ATTACK')"><i class="fa-solid fa-virus"></i> Gelişmiş XSS Analizi</div>
+            <div class="m-btn" onclick="execute('PORT_MAP')"><i class="fa-solid fa-network-wired"></i> Network Port Haritalama</div>
+            <div class="m-btn" onclick="execute('PROXY_DROP')"><i class="fa-solid fa-user-secret"></i> VPN/Proxy Maskesi Düşür</div>
+            <div class="m-btn" onclick="execute('USOM_SEND')"><i class="fa-solid fa-shield-virus"></i> USOM Hain Site Bildirimi</div>
+            <div class="m-btn" onclick="execute('REVERSE_DNS')"><i class="fa-solid fa-server"></i> Tersine DNS (Reverse)</div>
+            <div class="m-btn" onclick="execute('HASH_DECRYPT')"><i class="fa-solid fa-unlock-keyhole"></i> MD5/SHA Şifre Çözücü</div>
+            <div class="m-btn" onclick="execute('SUB_ENUM')"><i class="fa-solid fa-link"></i> Alt Alan Adı (Sub) Tespiti</div>
+            <div class="m-btn" onclick="execute('OSINT_NAME')"><i class="fa-solid fa-id-card"></i> İsim/Soyisim OSINT Araştırma</div>
+            <div class="m-btn" onclick="execute('META_DATA')"><i class="fa-solid fa-file-code"></i> Dosya Metadata Analizi</div>
+            <div class="m-btn" onclick="execute('BOT_SYNC')"><i class="fa-solid fa-cloud-arrow-down"></i> Bot Database Senkronize</div>
         </div>
     </div>
 
-    <!-- ORTA: HARİTA VE LOG -->
+    <!-- ORTA: HARİTA VE CANLI LOG -->
     <div class="card">
         <div style="flex:1; position:relative;">
             <div id="map"></div>
@@ -90,19 +103,18 @@
         <div id="term"></div>
     </div>
 
-    <!-- SAĞ: TELEGRAM VERİ MERKEZİ -->
+    <!-- SAĞ: DATABASE VE RAPOR -->
     <div class="card">
-        <div class="card-h"><i class="fa-solid fa-cloud-arrow-down"></i> BOT VERİ SENKRONİZE</div>
+        <div class="card-h"><i class="fa-solid fa-database"></i> TELEGRAM CLOUD DATABASE</div>
         <div class="m-list">
-            <div id="res-box">Operasyon bekleniyor...</div>
-            <div style="margin-top:20px; border-top:1px solid #333; padding-top:10px;">
-                <p style="font-size:10px; color:var(--y)">📊 EKİP DURUMU (90 AJAN)</p>
-                <div style="font-size:10px; line-height:1.6; color:#888;">
-                    - Karargah: Kurtalan/Siirt<br>
-                    - Veri Tabanı: @hukum_pin_bot1<br>
-                    - Güvenlik: 256-bit AES
+            <div id="res-display">Sistem hazıra bekliyor. Veri girişi yapın...</div>
+            <div style="margin-top:20px; border-top:1px solid #333; padding-top:15px;">
+                <p style="font-size:11px; color:var(--y)">⚔️ OPERASYONEL BİLGİ</p>
+                <div style="font-size:10px; color:#777; line-height:1.5;">
+                    Sitedeki her hareket <b>@hukum_pin_bot1</b> kanalına database kaydı olarak işlenir. 
+                    Sayfa yenilense dahi "Sync" butonu ile veriler geri yüklenir.
                 </div>
-                <button onclick="syncFromBot()" style="width:100%; padding:8px; margin-top:10px; background:var(--bl); border:none; color:#fff; cursor:pointer; font-size:10px; border-radius:4px;">BULUTTAN VERİ ÇEK</button>
+                <button onclick="cloudSync()" style="width:100%; padding:10px; margin-top:15px; background:var(--bl); border:none; color:#fff; cursor:pointer; font-weight:bold; border-radius:5px;">BULUTTAN VERİLERİ ÇEK</button>
             </div>
         </div>
     </div>
@@ -110,97 +122,94 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    const CONFIG = {
-        TOKEN: '8615703049:AAGCPGH59YdLkvCsHdr1WkYuSWGgyuEfBSQ',
-        CHAT: '@hukum_pin_bot1',
-        KEY: 'HÜKÜM_V45'
-    };
+    const TELEGRAM_TOKEN = '8615703049:AAGCPGH59YdLkvCsHdr1WkYuSWGgyuEfBSQ';
+    const CHANNEL_ID = '@hukum_pin_bot1';
+    let map, activeAjan = "";
 
-    let map, currentUser = "";
-
-    function initMap() {
-        map = L.map('map', { zoomControl: false }).setView([39.9334, 32.8597], 5);
+    // Harita Başlatma (Türk Dünyası Odaklı)
+    function startMap() {
+        map = L.map('map', { zoomControl: false }).setView([39.9334, 32.8597], 4);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
-        L.circleMarker([39.9, 32.8], {color: 'red', radius: 8}).addTo(map).bindTooltip("TSTM ANA KARARGAH");
+        
+        // Stratejik Noktalar
+        const nodes = [
+            {t: "ANKARA HQ", c: [39.9, 32.8]},
+            {t: "BAKU NODE", c: [40.4, 49.8]},
+            {t: "ASTANA EYE", c: [51.1, 71.4]}
+        ];
+        nodes.forEach(n => L.circleMarker(n.c, {color: 'red', radius: 6}).addTo(map).bindTooltip(n.t));
     }
 
-    async function handleAuth() {
-        const user = document.getElementById('user-code').value;
-        const pass = document.getElementById('pass-code').value;
-
-        if(pass === CONFIG.KEY) {
-            currentUser = user || "TSTM_AJANI";
+    async function secureBoot() {
+        const pass = document.getElementById('ajan-key').value;
+        if(pass === "HÜKÜM_V45") {
+            activeAjan = document.getElementById('ajan-adı').value || "BİLİNMEYEN_KOMUTAN";
             document.getElementById('gate').style.display = 'none';
-            document.getElementById('commander-name').innerText = "KOMUTAN: " + currentUser.toUpperCase();
-            initMap();
-            tLog("Sistem Başlatıldı. Telegram senkronizasyonu kuruluyor...");
+            document.getElementById('ajan-label').innerText = "KOMUTAN: " + activeAjan.toUpperCase();
+            startMap();
+            addLog("Sistem yükleniyor... Ajan doğrulandı.");
+            addLog("Telegram Cloud Database ile bağlantı kuruldu.");
             
-            // Giriş bilgisini Telegram'a database kaydı olarak at
-            sendToBot(`📌 [LOGIN_DB] | Ajan: ${currentUser} sisteme giriş yaptı.`);
+            // Giriş Kaydı
+            botSend(`🚩 [HAREKAT_GİRİŞ]\nAjan: ${activeAjan}\nZaman: ${new Date().toLocaleString()}\nDurum: Aktif Görevde.`);
+            cloudSync(); // Girişte verileri çek
         } else {
-            alert("YETKİ REDDEDİLDİ! ANAHTAR HATALI.");
+            alert("HAREKAT ŞİFRESİ HATALI! ERİŞİM REDDEDİLDİ.");
         }
     }
 
-    async function sendToBot(msg) {
+    async function botSend(msg) {
         try {
-            await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/sendMessage`, {
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ chat_id: CONFIG.CHAT, text: msg })
+                body: JSON.stringify({ chat_id: CHANNEL_ID, text: msg })
             });
-        } catch(e) { tLog("Hata: Bot bağlantısı koptu."); }
+        } catch(e) { console.log("Bot Hatası"); }
     }
 
-    // Telegram'dan veri çekme simülasyonu (Database işlevi)
-    async function syncFromBot() {
-        tLog("Bulut sunucusundan veriler çekiliyor...");
+    async function cloudSync() {
+        addLog("Bulut veritabanı taranıyor...");
         try {
-            const res = await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/getUpdates`);
-            const data = await res.json();
-            
-            if(data.result && data.result.length > 0) {
-                const lastOp = data.result[data.result.length - 1].message ? 
-                               data.result[data.result.length - 1].message.text : 
-                               "Yeni veri bulunamadı.";
-                document.getElementById('res-box').innerHTML = `<span style="color:var(--y)">SON KAYIT:</span><br>${lastOp}`;
-                tLog("Veri senkronizasyonu başarılı.");
-            } else {
-                tLog("Bot üzerinde henüz kayıtlı veri yok.");
+            const r = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/getUpdates`);
+            const d = await r.json();
+            if(d.result.length > 0) {
+                const sonMesaj = d.result[d.result.length - 1].message.text;
+                document.getElementById('res-display').innerHTML = `<span style='color:var(--g)'>[SON BULUT KAYDI]</span><br>${sonMesaj}`;
+                addLog("Veriler başarıyla senkronize edildi.");
             }
-        } catch(e) {
-            tLog("Sync hatası: Telegram API erişimi engellenmiş olabilir.");
-        }
+        } catch(e) { addLog("Sync Başarısız."); }
     }
 
-    async function runOp(type) {
-        let hedef = prompt(`${type} Operasyonu için hedef girin:`);
+    async function execute(opType) {
+        let hedef = prompt(`${opType} için hedef veriyi girin:`);
         if(!hedef) return;
 
-        tLog(`Operasyon Başlatıldı: ${type} >> ${hedef}`);
-        document.getElementById('res-box').innerHTML = "📡 Tarama yapılıyor...";
+        addLog(`Operasyon Başlatıldı: ${opType} -> Hedef: ${hedef}`);
+        document.getElementById('siren').style.display = 'block';
+        setTimeout(() => document.getElementById('siren').style.display = 'none', 3000);
 
-        if(type === 'IP_TRACK') {
+        // Operasyon Simülasyonu ve Veri Çekme
+        if(opType === 'IP_INTEL') {
             const r = await fetch(`https://ipapi.co/${hedef}/json/`);
-            const d = await r.json();
-            const resultText = `📍 IP ANALİZ: ${d.ip} | ${d.city}/${d.country_name} | ISP: ${d.org}`;
-            document.getElementById('res-box').innerText = resultText;
-            sendToBot(`📂 [IP_DATA] | ${currentUser} tarafından sorgulandı:\n${resultText}`);
+            const data = await r.json();
+            const intel = `IP: ${data.ip}\nKonum: ${data.city}/${data.country_name}\nISP: ${data.org}`;
+            document.getElementById('res-display').innerText = intel;
+            botSend(`#İSTİHBARAT\nAjan: ${activeAjan}\nHedef: ${hedef}\nVeri: ${intel}`);
         } else {
-            const resultText = `✅ İşlem Kaydı: ${type} - Hedef: ${hedef}`;
-            document.getElementById('res-box').innerText = resultText;
-            sendToBot(`⚔️ [OP_LOG] | Komutan: ${currentUser}\nTür: ${type}\nHedef: ${hedef}`);
+            document.getElementById('res-display').innerText = `İşlem Tamam: ${hedef}\nVeri Bot'a database kaydı olarak gönderildi.`;
+            botSend(`#OP_RAPOR\nAjan: ${activeAjan}\nTür: ${opType}\nHedef: ${hedef}`);
         }
     }
 
-    function tLog(msg) {
-        const t = document.getElementById('term');
-        t.innerHTML += `<div>[${new Date().toLocaleTimeString()}] > ${msg}</div>`;
-        t.scrollTop = t.scrollHeight;
+    function addLog(msg) {
+        const term = document.getElementById('term');
+        term.innerHTML += `<div><span style="color:#555">[${new Date().toLocaleTimeString()}]</span> ${msg}</div>`;
+        term.scrollTop = term.scrollHeight;
     }
 
     setInterval(() => {
-        document.getElementById('clock').innerText = new Date().toLocaleString('tr-TR');
+        document.getElementById('live-clock').innerText = new Date().toLocaleString('tr-TR');
     }, 1000);
 </script>
 </body>
