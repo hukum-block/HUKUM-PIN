@@ -130,8 +130,7 @@
 
         if(pass === CONFIG.KEY) {
             currentUser = user || "TSTM_AJANI";
-            document.getElementById('gate').style.fadeOut = 500;
-            setTimeout(() => { document.getElementById('gate').style.display = 'none'; }, 500);
+            document.getElementById('gate').style.display = 'none';
             document.getElementById('commander-name').innerText = "KOMUTAN: " + currentUser.toUpperCase();
             initMap();
             tLog("Sistem Başlatıldı. Telegram senkronizasyonu kuruluyor...");
@@ -156,14 +155,21 @@
     // Telegram'dan veri çekme simülasyonu (Database işlevi)
     async function syncFromBot() {
         tLog("Bulut sunucusundan veriler çekiliyor...");
-        const res = await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/getUpdates`);
-        const data = await res.json();
-        
-        // Telegram kanalındaki son operasyonu bulup ekrana getirir
-        if(data.result.length > 0) {
-            const lastOp = data.result[data.result.length - 1].channel_post.text;
-            document.getElementById('res-box').innerHTML = `<span style="color:var(--y)">SON KAYIT:</span><br>${lastOp}`;
-            tLog("Veri senkronizasyonu başarılı.");
+        try {
+            const res = await fetch(`https://api.telegram.org/bot${CONFIG.TOKEN}/getUpdates`);
+            const data = await res.json();
+            
+            if(data.result && data.result.length > 0) {
+                const lastOp = data.result[data.result.length - 1].message ? 
+                               data.result[data.result.length - 1].message.text : 
+                               "Yeni veri bulunamadı.";
+                document.getElementById('res-box').innerHTML = `<span style="color:var(--y)">SON KAYIT:</span><br>${lastOp}`;
+                tLog("Veri senkronizasyonu başarılı.");
+            } else {
+                tLog("Bot üzerinde henüz kayıtlı veri yok.");
+            }
+        } catch(e) {
+            tLog("Sync hatası: Telegram API erişimi engellenmiş olabilir.");
         }
     }
 
