@@ -1,237 +1,593 @@
-<div class="hukum-destek-paneli">
-    <div class="panel-ust-alan">
-        <h2>DESTEK HİZMETLERİ & İLETİŞİM MERKEZİ</h2>
-        <p>Bilgi almak, destek talebinde bulunmak veya topluluklarımıza katılmak için aşağıdaki 20 resmi kanalı kullanabilirsiniz.</p>
+<!-- ================================================================= -->
+<!-- HÜKÜM GLOBAL AKILLI DESTEK VE YARDIM SİSTEMİ - BAŞLANGICI         -->
+<!-- ================================================================= -->
+<div class="global-yardim-paneli">
+    <div class="panel-header-alan">
+        <h2>MERKEZİ DESTEK VE BİLGİ BANKASI</h2>
+        <p>Yaşadığınız sorunları çözmek, rehberlere ulaşmak veya topluluklarımıza katılmak için ilgili platformu seçiniz.</p>
         
-        <div class="arama-kutusu-alani">
-            <input type="text" id="panelArama" onkeyup="panelArafonksiyonu()" placeholder="Destek kanalı veya platform ara...">
+        <!-- Gelişmiş Filtreleme Arama Çubuğu -->
+        <div class="panel-arama-kutusu">
+            <input type="text" id="yardimAraInput" onkeyup="yardimFiltreleFonksiyonu()" placeholder="Soru, sorun veya platform adı yazın... (Örn: Rahatsız, Profesyonel, Discord)">
         </div>
     </div>
 
-    <div class="panel-kartlar-grid" id="panelKartlarListesi">
+    <!-- 30 Adet Gelişmiş İnteraktif Buton Listesi -->
+    <div class="yardim-grid-sistemi" id="yardimKartlariListesi">
         
-        <a href="https://discord.gg/LINK" target="_blank" class="p-kart" data-ad="discord destek topluluk">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/3670/3670157.png" alt="Discord"></div>
-            <div class="p-bilgi"><h4>Discord Destek</h4><p>Canlı destek talepleri ve topluluk.</p></div>
-        </a>
+        <!-- 1. Instagram -->
+        <div class="y-kart" data-tags="instagram sosyal medya rahatsiz profesyonel hesap" onclick="modalAc('instagram', 'Instagram Yardım Masası', 'Sosyal medya platformu destek ve ayarları.', 'rahatsiz', 'profesyonel')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="Instagram"></div>
+            <div class="y-metin"><h4>Instagram</h4><p>Destek ve Hesap Ayarları</p></div>
+        </div>
 
-        <a href="https://instagram.com/KULLANICI" target="_blank" class="p-kart" data-ad="instagram sosyal medya">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="Instagram"></div>
-            <div class="p-bilgi"><h4>Instagram</h4><p>Anlık duyurular ve mesaj hattı.</p></div>
-        </a>
+        <!-- 2. Discord -->
+        <div class="y-kart" data-tags="discord topluluk sunucu bot canli destek" onclick="modalAc('discord', 'Discord Destek', 'Topluluk sunucumuz ve canlı yardım odalarımız.', 'sunucu_kural', 'bot_sorun')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/3670/3670157.png" alt="Discord"></div>
+            <div class="y-metin"><h4>Discord Sunucusu</h4><p>Canlı Destek Hattı</p></div>
+        </div>
 
-        <a href="https://youtube.com/KANAL" target="_blank" class="p-kart" data-ad="youtube video içerik">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/174/174883.png" alt="YouTube"></div>
-            <div class="p-bilgi"><h4>YouTube</h4><p>Video rehberler ve güncellemeler.</p></div>
-        </a>
+        <!-- 3. YouTube -->
+        <div class="y-kart" data-tags="youtube video icerik rehber kanali" onclick="modalAc('youtube', 'YouTube Rehber Kanalı', 'Görüntülü eğitimler ve sistem güncellemeleri.', 'video_telif', 'kanal_katil')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/174/174883.png" alt="YouTube"></div>
+            <div class="y-metin"><h4>YouTube</h4><p>Video Rehberler</p></div>
+        </div>
 
-        <a href="https://t.me/LINK" target="_blank" class="p-kart" data-ad="telegram grup duyuru">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram"></div>
-            <div class="p-bilgi"><h4>Telegram Anasayfa</h4><p>Hızlı bilgi akışı ve duyuru odası.</p></div>
-        </a>
+        <!-- 4. Telegram -->
+        <div class="y-kart" data-tags="telegram grup duyuru kanal haber" onclick="modalAc('telegram', 'Telegram Haber Merkezi', 'Anlık duyurular ve hızlı bilgi akışı.', 'grup_rahatsiz', 'kanal_link')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram"></div>
+            <div class="y-metin"><h4>Telegram</h4><p>Duyuru ve Haber Grubu</p></div>
+        </div>
 
-        <a href="https://github.com/KULLANICI" target="_blank" class="p-kart" data-ad="github kod yazılım geliştirme">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="GitHub"></div>
-            <div class="p-bilgi"><h4>GitHub Geliştirici</h4><p>Açık kaynak kodlar ve hata bildirimleri.</p></div>
-        </a>
+        <!-- 5. GitHub -->
+        <div class="y-kart" data-tags="github kod yazilim repo hata bug" onclick="modalAc('github', 'GitHub Developer Masası', 'Açık kaynak kodlar, hata bildirimleri ve repolar.', 'hata_bildir', 'kod_lisans')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="GitHub"></div>
+            <div class="y-metin"><h4>GitHub Geliştirici</h4><p>Yazılım & Hata Bildirimi</p></div>
+        </div>
 
-        <a href="mailto:destek@mail.com" class="p-kart" data-ad="eposta mail destek iletişim">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" alt="E-Posta"></div>
-            <div class="p-bilgi"><h4>Resmi E-Posta</h4><p>Kurumsal ve resmi işbirlikleri için.</p></div>
-        </a>
+        <!-- 6. E-Posta -->
+        <div class="y-kart" data-tags="eposta mail kurumsal iletisim baskanlik" onclick="modalAc('mail', 'Resmi E-Posta Hattı', 'Kurumsal işbirlikleri ve resmi şikayet başvuruları.', 'kurumsal_mail', 'is_birligi')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" alt="E-Posta"></div>
+            <div class="y-metin"><h4>Resmi E-Posta</h4><p>Kurumsal Yazışmalar</p></div>
+        </div>
 
-        <a href="https://roblox.com" target="_blank" class="p-kart" data-ad="roblox oyun grup topluluk">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/4603/4603613.png" alt="Roblox"></div>
-            <div class="p-bilgi"><h4>Roblox Topluluğu</h4><p>Oyun içi destek ve klan merkezi.</p></div>
-        </a>
+        <!-- 7. Roblox -->
+        <div class="y-kart" data-tags="roblox oyun grup script klan" onclick="modalAc('roblox', 'Roblox Topluluk Merkezi', 'Oyun içi destek, klan alımları ve script yardımları.', 'grup_alim', 'script_hata')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/4603/4603613.png" alt="Roblox"></div>
+            <div class="y-metin"><h4>Roblox</h4><p>Oyun & Klan Grubu</p></div>
+        </div>
 
-        <a href="https://steamcommunity.com" target="_blank" class="p-kart" data-ad="steam oyun topluluk">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/220/220223.png" alt="Steam"></div>
-            <div class="p-bilgi"><h4>Steam Odası</h4><p>Oyuncular arası yardımlaşma alanı.</p></div>
-        </a>
+        <!-- 8. Steam -->
+        <div class="y-kart" data-tags="steam oyun topluluk sayfa id" onclick="modalAc('steam', 'Steam Oyuncu Odası', 'Steam topluluk sayfamız ve oyuncu yardımlaşma ağı.', 'oyun_davet', 'grup_odulleri')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/220/220223.png" alt="Steam"></div>
+            <div class="y-metin"><h4>Steam</h4><p>Oyuncu Topluluğu</p></div>
+        </div>
 
-        <a href="https://x.com" target="_blank" class="p-kart" data-ad="x twitter sosyal medya">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969020.png" alt="X"></div>
-            <div class="p-bilgi"><h4>X (Twitter)</h4><p>Sosyal ağ ve hızlı haberleşme.</p></div>
-        </a>
+        <!-- 9. WhatsApp -->
+        <div class="y-kart" data-tags="whatsapp mesaj canli iletisim numara" onclick="modalAc('whatsapp', 'WhatsApp Bilgi Hattı', 'Anlık ve hızlı mesajlaşma üzerinden teknik destek.', 'mesaj_engelle', 'grup_katilim')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp"></div>
+            <div class="y-metin"><h4>WhatsApp</h4><p>Hızlı İletişim Hattı</p></div>
+        </div>
 
-        <a href="https://tiktok.com" target="_blank" class="p-kart" data-ad="tiktok video sosyal">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/3046/3046124.png" alt="TikTok"></div>
-            <div class="p-bilgi"><h4>TikTok Medya</h4><p>Kısa videolar ve tanıtım içerikleri.</p></div>
-        </a>
+        <!-- 10. X / Twitter -->
+        <div class="y-kart" data-tags="x twitter sosyal medya gundem etiket" onclick="modalAc('twitter', 'X (Twitter) Masası', 'Gelişmeler, duyurular ve anlık global etiket paylaşımları.', 'tweet_sikayet', 'hesap_onay')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969020.png" alt="X"></div>
+            <div class="y-metin"><h4>X / Twitter</h4><p>Sosyal Ağ & Duyuru</p></div>
+        </div>
 
-        <a href="https://twitch.tv" target="_blank" class="p-kart" data-ad="twitch yayin canli">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968819.png" alt="Twitch"></div>
-            <div class="p-bilgi"><h4>Twitch Yayınları</h4><p>Canlı destek ve soru-cevap seansları.</p></div>
-        </a>
+        <!-- 11. TikTok -->
+        <div class="y-kart" data-tags="tiktok video edit akim sosyal" onclick="modalAc('tiktok', 'TikTok Medya Ofisi', 'Kısa video içerikleri, tasarım editleri ve telif hakları.', 'video_kaldir', 'kesfet_ayari')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/3046/3046124.png" alt="TikTok"></div>
+            <div class="y-metin"><h4>TikTok</h4><p>Kısa Video & Edit</p></div>
+        </div>
 
-        <a href="https://forms.google.com" target="_blank" class="p-kart" data-ad="google forms talep basvuru">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2965/2965327.png" alt="Form"></div>
-            <div class="p-bilgi"><h4>Destek Formu</h4><p>Yazılı başvuru ve şikayet kaydı.</p></div>
-        </a>
+        <!-- 12. Twitch -->
+        <div class="y-kart" data-tags="twitch canli yayin yayinci yayin odasi" onclick="modalAc('twitch', 'Twitch Canlı Yayın Destek', 'Yayın saatleri, moderatörlük başvuruları ve chat kuralları.', 'mod_basvuru', 'yayin_abone')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968819.png" alt="Twitch"></div>
+            <div class="y-metin"><h4>Twitch</h4><p>Canlı Yayın Masası</p></div>
+        </div>
 
-        <a href="https://wa.me/PROFIL" target="_blank" class="p-kart" data-ad="whatsapp mesaj destek iletisim">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp"></div>
-            <div class="p-bilgi"><h4>WhatsApp İletişim</h4><p>Hızlı ve anlık mesajlaşma hattı.</p></div>
-        </a>
+        <!-- 13. Google Forms -->
+        <div class="y-kart" data-tags="google forms form basvuru talep sikayet" onclick="modalAc('forms', 'Resmi Başvuru Formu', 'Yazılı destek talepleri ve detaylı şikayet formları.', 'form_doldur', 'basvuru_sonuc')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2965/2965327.png" alt="Form"></div>
+            <div class="y-metin"><h4>Destek Formu</h4><p>Resmi Talep Oluştur</p></div>
+        </div>
 
-        <a href="https://reddit.com" target="_blank" class="p-kart" data-ad="reddit forum topluluk">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111589.png" alt="Reddit"></div>
-            <div class="p-bilgi"><h4>Reddit Forumu</h4><p>Kullanıcı fikirleri ve tartışmalar.</p></div>
-        </a>
+        <!-- 14. Reddit -->
+        <div class="y-kart" data-tags="reddit forum topluluk baslik tartisma" onclick="modalAc('reddit', 'Reddit Forum Alanı', 'Kullanıcı fikirleri, makaleler ve topluluk tartışmaları.', 'post_kurallari', 'karma_puani')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111589.png" alt="Reddit"></div>
+            <div class="y-metin"><h4>Reddit</h4><p>Forum & Tartışma</p></div>
+        </div>
 
-        <a href="https://pinterest.com" target="_blank" class="p-kart" data-ad="pinterest gorsel galeri">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/145/145808.png" alt="Pinterest"></div>
-            <div class="p-bilgi"><h4>Pinterest Portfolyo</h4><p>Grafik, tasarım ve arayüz fikirleri.</p></div>
-        </a>
+        <!-- 15. Pinterest -->
+        <div class="y-kart" data-tags="pinterest gorsel galeri tasarim arayuz" onclick="modalAc('pinterest', 'Pinterest Grafik Deposu', 'Arayüz tasarımları, arka planlar ve görsel materyaller.', 'gorsel_telif', 'pano_paylasim')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/145/145808.png" alt="Pinterest"></div>
+            <div class="y-metin"><h4>Pinterest</h4><p>Görsel & Tasarım Fikirleri</p></div>
+        </div>
 
-        <a href="https://linkedin.com" target="_blank" class="p-kart" data-ad="linkedin is profesyonel">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn"></div>
-            <div class="p-bilgi"><h4>LinkedIn</h4><p>Profesyonel ağ ve resmi iletişim.</p></div>
-        </a>
+        <!-- 16. LinkedIn -->
+        <div class="y-kart" data-tags="linkedin is profesyonel sirket kariyer" onclick="modalAc('linkedin', 'LinkedIn Ofisi', 'Profesyonel iş ağları, kariyer fırsatları ve kurumsal kimlik.', 'is_ilani', 'sirket_dogrulama')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn"></div>
+            <div class="y-metin"><h4>LinkedIn</h4><p>Kurumsal Profil</p></div>
+        </div>
 
-        <a href="https://spotify.com" target="_blank" class="p-kart" data-ad="spotify muzik playlist">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/174/174872.png" alt="Spotify"></div>
-            <div class="p-bilgi"><h4>Resmi Playlist</h4><p>Geliştirici ve topluluk müzik listeleri.</p></div>
-        </a>
+        <!-- 17. Spotify -->
+        <div class="y-kart" data-tags="spotify muzik playlist liste sarki" onclick="modalAc('spotify', 'Spotify Müzik Odası', 'Projeler geliştirilirken dinlenecek resmi oynatma listeleri.', 'liste_oneri', 'sanatci_hesabi')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/174/174872.png" alt="Spotify"></div>
+            <div class="y-metin"><h4>Spotify</h4><p>Resmi Çalma Listeleri</p></div>
+        </div>
 
-        <a href="https://soundcloud.com" target="_blank" class="p-kart" data-ad="soundcloud ses muzik">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111620.png" alt="SoundCloud"></div>
-            <div class="p-bilgi"><h4>SoundCloud</h4><p>Ses kayıtları, efektler ve müzikler.</p></div>
-        </a>
+        <!-- 18. SoundCloud -->
+        <div class="y-kart" data-tags="soundcloud ses muzik efekt beat" onclick="modalAc('soundcloud', 'SoundCloud Ses Deposu', 'Telif içermeyen ses efektleri, müzikler ve beat altyapıları.', 'ses_yukle', 'telifsiz_muzik')">
+            <div class="y-icons"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111620.png" alt="SoundCloud"></div>
+            <div class="y-metin"><h4>SoundCloud</h4><p>Ses Altyapıları</p></div>
+        </div>
 
-        <a href="https://patreon.com" target="_blank" class="p-kart" data-ad="patreon bagis destek fon">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111551.png" alt="Patreon"></div>
-            <div class="p-bilgi"><h4>Patreon Fonu</h4><p>Projelerimize maddi destek sağlama alanı.</p></div>
-        </a>
+        <!-- 19. Patreon -->
+        <div class="y-kart" data-tags="patreon bagis destek fon bütçe" onclick="modalAc('patreon', 'Patreon Destek Fonu', 'Geliştirdiğimiz projelere maddi olarak sponsor olma alanı.', 'uyelik_paketleri', 'bagis_guvenligi')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111551.png" alt="Patreon"></div>
+            <div class="y-metin"><h4>Patreon</h4><p>Sponsorluk & Bağış</p></div>
+        </div>
 
-        <a href="#sss" class="p-kart" data-ad="sss soru cevap bilgi bankasi">
-            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/1828/1828940.png" alt="SSS"></div>
-            <div class="p-bilgi"><h4>Sıkça Sorulanlar</h4><p>Bilgi bankası ve sık sorulan sorular.</p></div>
-        </a>
+        <!-- 20. SSS (Sıkça Sorulanlar) -->
+        <div class="y-kart" data-tags="sss soru cevap bilgi bankasi genel" onclick="modalAc('sss', 'Sıkça Sorulan Sorular', 'Sistemlerimiz hakkında en çok merak edilen genel sorular.', 'genel_soru', 'guvenlik_ayari')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/1828/1828940.png" alt="SSS"></div>
+            <div class="y-metin"><h4>Sıkça Sorulanlar</h4><p>Genel Bilgi Bankası</p></div>
+        </div>
+
+        <!-- 21. Epic Games -->
+        <div class="y-kart" data-tags="epic games oyun mağaza kupon sunucu" onclick="modalAc('epic', 'Epic Games Destek Masası', 'Oyun kütüphaneleri, kupon kodları ve sunucu entegrasyonları.', 'oyun_hata', 'kupon_kullanim')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968644.png" alt="Epic Games"></div>
+            <div class="y-metin"><h4>Epic Games</h4><p>Oyun & Kütüphane</p></div>
+        </div>
+
+        <!-- 22. Trello -->
+        <div class="y-kart" data-tags="trello is plan proje takip gorev" onclick="modalAc('trello', 'Trello Proje Takip Kartı', 'Yazılım ve içerik geliştirme süreçlerimizin canlı iş planı kartları.', 'gorev_durumu', 'is_plani')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111664.png" alt="Trello"></div>
+            <div class="y-metin"><h4>Trello</h4><p>Proje Yol Haritası</p></div>
+        </div>
+
+        <!-- 23. Slack -->
+        <div class="y-kart" data-tags="slack ekip calisma toplantı mesaj" onclick="modalAc('slack', 'Slack Ekip İletişimi', 'Geliştirici ekibimizin iç yazışma ve koordinasyon kanalları.', 'ekip_katilim', 'kanal_izni')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968929.png" alt="Slack"></div>
+            <div class="y-metin"><h4>Slack</h4><p>Ekip İçi Çalışma</p></div>
+        </div>
+
+        <!-- 24. Zoom -->
+        <div class="y-kart" data-tags="zoom toplanti konferans canli gorusme video" onclick="modalAc('zoom', 'Zoom Konferans Salonu', 'Haftalık online toplantılar ve canlı topluluk seminerleri.', 'link_baglanti', 'toplanti_saati')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/4406/4406164.png" alt="Zoom"></div>
+            <div class="y-metin"><h4>Zoom</h4><p>Online Toplantı Odası</p></div>
+        </div>
+
+        <!-- 25. Opera GX -->
+        <div class="y-kart" data-tags="opera gx tarayici internet web mod" onclick="modalAc('opera', 'Opera GX Entegrasyonu', 'Sitemizin tarayıcı modları, özel temaları ve optimizasyonu.', 'tarayici_hata', 'gx_corner')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/732/732230.png" alt="Opera"></div>
+            <div class="y-metin"><h4>Opera GX</h4><p>Tarayıcı Optimizasyonu</p></div>
+        </div>
+
+        <!-- 26. Google Drive -->
+        <div class="y-kart" data-tags="google drive dosya bulut depolama indirme" onclick="modalAc('drive', 'Google Drive Dosya Merkezi', 'Güvenli dosya indirme linkleri, şablonlar ve veri depoları.', 'dosya_erisim', 'kota_sorunu')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2965/2965306.png" alt="Drive"></div>
+            <div class="y-metin"><h4>Google Drive</h4><p>Bulut Dosya Deposu</p></div>
+        </div>
+
+        <!-- 27. Microsoft Teams -->
+        <div class="y-kart" data-tags="microsoft teams proje calisma sunum" onclick="modalAc('teams', 'Microsoft Teams İstasyonu', 'Ortak çalışma alanları, kurumsal sunumlar ve ders ödev odaları.', 'ekip_kodu', 'dosya_paylasim')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/906/906349.png" alt="Teams"></div>
+            <div class="y-metin"><h4>MS Teams</h4><p>Ortak Çalışma Alanı</p></div>
+        </div>
+
+        <!-- 28. DevianArt -->
+        <div class="y-kart" data-tags="deviantart sanat cizim logo tasarim" onclick="modalAc('deviantart', 'DeviantArt Sanat Galerisi', 'Projelerimize ait orijinal logo, çizim ve sanatsal tasarımlar.', 'cizim_izni', 'logo_indirme')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111394.png" alt="DeviantArt"></div>
+            <div class="y-metin"><h4>DeviantArt</h4><p>Sanatsal Tasarımlar</p></div>
+        </div>
+
+        <!-- 29. PayPal -->
+        <div class="y-kart" data-tags="paypal odeme fatura transfer guvenlik" onclick="modalAc('paypal', 'PayPal Güvenli Ödeme Masası', 'Yurtdışı işlemler, lisans ödemeleri ve güvenli faturalandırma.', 'iade_talebi', 'odeme_kaniti')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/174/174861.png" alt="PayPal"></div>
+            <div class="y-metin"><h4>PayPal</h4><p>Ödeme & Lisans İşlemleri</p></div>
+        </div>
+
+        <!-- 30. Medium -->
+        <div class="y-kart" data-tags="medium makale blog yazi egitim kaynak" onclick="modalAc('medium', 'Medium Blog & Makale', 'Yazılım geliştirme süreçlerimiz hakkında teknik dökümanlar ve makaleler.', 'makale_izni', 'yazar_basvurusu')">
+            <div class="y-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111505.png" alt="Medium"></div>
+            <div class="y-metin"><h4>Medium Blog</h4><p>Teknik Makaleler</p></div>
+        </div>
 
     </div>
 </div>
 
+<!-- Dinamik Açılır Pencere Modalı (Tüm platformları tek elden yöneten ana mekanizma) -->
+<div id="globalDestekModali" class="modal-katman-arkaplan">
+    <div class="modal-govde">
+        <span class="pencere-kapat-btn" onclick="modalKapat()">&times;</span>
+        <h2 id="modalBaslik">Platform Başlığı</h2>
+        <p id="modalAcıklama" class="modal-acıklama-alt">Platform açıklaması burada görünecek.</p>
+        
+        <div class="modal-secenek-kutulari">
+            <!-- Dinamik Buton 1 (Arkadaşının istediği DESTEK mantığı) -->
+            <div class="secenek-buton" id="btnSol" onclick="altIcerikGoster('sol')">
+                <span class="btn-emoji">⚠️</span>
+                <h4 id="btnSolBaslik">Destek Al</h4>
+                <p>Şikayet ve anlık problemler.</p>
+            </div>
+
+            <!-- Dinamik Buton 2 (Arkadaşının istediği SORU SOR mantığı) -->
+            <div class="secenek-buton" id="btnSag" onclick="altIcerikGoster('sag')">
+                <span class="btn-emoji">❓</span>
+                <h4 id="btnSagBaslik">Soru Sor</h4>
+                <p>Ayarlar ve teknik rehberler.</p>
+            </div>
+        </div>
+
+        <!-- Seçim Yapılınca Tetiklenen Bilgi Paneli -->
+        <div id="altIcerikSonucPaneli" class="alt-icerik-sonuc" style="display: none;">
+            <h3 id="altSonucBaslik">Detay Başlığı</h3>
+            <p id="altSonucMetin">Detay rehber içeriği...</p>
+            <div id="aksiyonButonAlani"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================= -->
+<!-- Gelişmiş CSS Mimarisi                                             -->
+<!-- ================================================================= -->
 <style>
-.hukum-destek-paneli {
-    background-color: #0f1115;
-    color: #e2e8f0;
-    padding: 40px 20px;
-    border-radius: 16px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    max-width: 1200px;
-    margin: 30px auto;
-    border: 1px solid #1f2937;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+.global-yardim-paneli {
+    background-color: #0b0f17;
+    color: #f1f5f9;
+    padding: 50px 25px;
+    border-radius: 20px;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    max-width: 1300px;
+    margin: 40px auto;
+    border: 1px solid #1e293b;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
 }
 
-.panel-ust-alan {
+.panel-header-alan {
     text-align: center;
-    margin-bottom: 35px;
+    margin-bottom: 45px;
 }
 
-.panel-ust-alan h2 {
+.panel-header-alan h2 {
     color: #38bdf8;
-    font-size: 28px;
-    letter-spacing: 2px;
-    margin-bottom: 10px;
+    font-size: 32px;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
     text-transform: uppercase;
+    font-weight: 800;
 }
 
-.panel-ust-alan p {
+.panel-header-alan p {
     color: #94a3b8;
-    font-size: 15px;
-    max-width: 600px;
-    margin: 0 auto 25px auto;
+    font-size: 16px;
+    max-width: 700px;
+    margin: 0 auto 30px auto;
 }
 
-.arama-kutusu-alani input {
+.panel-arama-kutusu input {
     width: 100%;
-    max-width: 450px;
-    padding: 12px 20px;
+    max-width: 550px;
+    padding: 15px 25px;
     background-color: #1e293b;
     border: 2px solid #334155;
-    border-radius: 30px;
+    border-radius: 40px;
     color: #fff;
-    font-size: 15px;
+    font-size: 16px;
     outline: none;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: center;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
 }
 
-.arama-kutusu-alani input:focus {
+.panel-arama-kutusu input:focus {
     border-color: #38bdf8;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
 }
 
-.panel-kartlar-grid {
+.yardim-grid-sistemi {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
 }
 
-.p-kart {
+.y-kart {
     display: flex;
     align-items: center;
-    background-color: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 12px;
-    padding: 15px;
-    text-decoration: none;
-    color: #fff;
+    background-color: #151b26;
+    border: 1px solid #222f43;
+    border-radius: 14px;
+    padding: 18px;
+    cursor: pointer;
     transition: all 0.25s ease;
 }
 
-.p-kart:hover {
+.y-kart:hover {
     transform: translateY(-5px);
-    background-color: #1e293b;
     border-color: #38bdf8;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    background-color: #1e293b;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
 }
 
-.p-ikon img {
-    width: 40px;
-    height: 40px;
+.y-ikon img {
+    width: 44px;
+    height: 44px;
     object-fit: contain;
-    margin-right: 15px;
+    margin-right: 18px;
 }
 
-.p-bilgi h4 {
-    margin: 0 0 5px 0;
-    font-size: 16px;
+.y-metin h4 {
+    margin: 0 0 4px 0;
+    font-size: 17px;
     color: #f8fafc;
+    font-weight: 600;
 }
 
-.p-bilgi p {
+.y-metin p {
     margin: 0;
-    font-size: 12px;
-    color: #94a3b8;
+    font-size: 13px;
+    color: #64748b;
     line-height: 1.4;
 }
 
+/* Devasa Açılır Pencere Tasarımı */
+.modal-katman-arkaplan {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(4, 6, 10, 0.85);
+    backdrop-filter: blur(8px);
+}
+
+.modal-govde {
+    background-color: #111622;
+    color: #fff;
+    margin: 8% auto;
+    padding: 35px;
+    border: 1px solid #2d3748;
+    width: 90%;
+    max-width: 650px;
+    border-radius: 20px;
+    position: relative;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+    text-align: center;
+    animation: yukariFirla 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes yukariFirla {
+    from { opacity: 0; transform: translateY(50px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.pencere-kapat-btn {
+    color: #64748b;
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.pencere-kapat-btn:hover {
+    color: #f43f5e;
+}
+
+.modal-acıklama-alt {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.modal-secenek-kutulari {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.secenek-buton {
+    flex: 1;
+    background-color: #1e2533;
+    border: 1px solid #334155;
+    padding: 22px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.secenek-buton:hover {
+    border-color: #38bdf8;
+    background-color: #242f42;
+    transform: scale(1.02);
+}
+
+.btn-emoji {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.secenek-buton h4 {
+    margin: 0 0 6px 0;
+    font-size: 16px;
+    color: #fff;
+}
+
+.secenek-buton p {
+    margin: 0;
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* Detay Sonuç Paneli */
+.alt-icerik-sonuc {
+    margin-top: 30px;
+    padding: 25px;
+    background-color: #090d14;
+    border-left: 4px solid #38bdf8;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.alt-icerik-sonuc h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #38bdf8;
+}
+
+.alt-icerik-sonuc p {
+    margin: 0;
+    font-size: 14px;
+    color: #cbd5e1;
+    line-height: 1.6;
+}
+
+.aksiyon-link-btn {
+    display: inline-block;
+    margin-top: 20px;
+    background-color: #38bdf8;
+    color: #0b0f17;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    transition: background 0.2s;
+}
+
+.aksiyon-link-btn:hover {
+    background-color: #0ea5e9;
+}
+
 @media (max-width: 768px) {
-    .panel-kartlar-grid {
-        grid-template-columns: 1fr;
-    }
+    .yardim-grid-sistemi { grid-template-columns: 1fr; }
+    .modal-secenek-kutulari { flex-direction: column; }
 }
 </style>
 
+<!-- ================================================================= -->
+<!-- Gelişmiş JavaScript Mühendislik Mekanizmaları                      -->
+<!-- ================================================================= -->
 <script>
-function panelArafonksiyonu() {
-    var input = document.getElementById("panelArama");
-    var filtre = input.value.toLowerCase();
-    var grid = document.getElementById("panelKartlarListesi");
-    var kartlar = grid.getElementsByClassName("p-kart");
+// Global durum değişkenleri
+let mevcutPlatformKey = "";
+let solAksiyonModu = "";
+let sagAksiyonModu = "";
 
-    for (var i = 0; i < kartlar.length; i++) {
-        var aramaEtiketi = kartlar[i].getAttribute("data-ad");
-        if (aramaEtiketi.indexOf(filtre) > -1) {
+// Arama Motoru Filtreleme Fonksiyonu
+function yardimFiltreleFonksiyonu() {
+    const input = document.getElementById("yardimAraInput");
+    const filtre = input.value.toLowerCase();
+    const grid = document.getElementById("yardimKartlariListesi");
+    const kartlar = grid.getElementsByClassName("y-kart");
+
+    for (let i = 0; i < kartlar.length; i++) {
+        const etiketler = kartlar[i].getAttribute("data-tags");
+        if (etiketler.indexOf(filtre) > -1) {
             kartlar[i].style.display = "flex";
         } else {
             kartlar[i].style.display = "none";
         }
     }
 }
+
+// Modalı Dinamik Verilerle Açma Fonksiyonu
+function modalAc(key, baslik, aciklama, solMod, sagMod) {
+    mevcutPlatformKey = key;
+    solAksiyonModu = solMod;
+    sagAksiyonModu = sagMod;
+
+    document.getElementById("modalBaslik").innerText = baslik;
+    document.getElementById("modalAcıklama").innerText = aciklama;
+    
+    // Buton başlıklarını dinamik ayarla
+    if(solMod === 'rahatsiz') {
+        document.getElementById("btnSolBaslik").innerText = "Destek Al";
+    } else {
+        document.getElementById("btnSolBaslik").innerText = "Sorun Bildir";
+    }
+
+    if(sagMod === 'profesyonel') {
+        document.getElementById("btnSagBaslik").innerText = "Soru Sor";
+    } else {
+        document.getElementById("btnSagBaslik").innerText = "Kılavuzu Aç";
+    }
+
+    // Alt içerik alanını gizle (yeni temiz açılış için)
+    document.getElementById("altIcerikSonucPaneli").style.display = "none";
+    document.getElementById("globalDestekModali").style.display = "block";
+}
+
+// Modalı Kapatma Fonksiyonu
+function modalKapat() {
+    document.getElementById("globalDestekModali").style.display = "none";
+}
+
+// Alt Seçeneklere Tıklanınca Tetiklenen Algoritma Yapısı (Büyük İcraat Alanı)
+function altIcerikGoster(taraf) {
+    const baslik = document.getElementById("altSonucBaslik");
+    const metin = document.getElementById("altSonucMetin");
+    const butonAlani = document.getElementById("aksiyonButonAlani");
+    const panel = document.getElementById("altIcerikSonucPaneli");
+
+    panel.style.display = "block";
+    let aktifMod = (taraf === 'sol') ? solAksiyonModu : sagAksiyonModu;
+
+    // Platform bağımsız akıllı içerik kontrol mekanizması
+    switch(aktifMod) {
+        case 'rahatsiz':
+            baslik.innerText = "⚠️ Güvenlik & Rahatsızlık Bildirimi";
+            metin.innerHTML = "Instagram üzerinde biri sizi taciz veya rahatsız ediyorsa; ilgili hesabın profiline girip sağ üstteki üç noktaya dokunarak <b>Şikayet Et</b> adımlarını uygulayın. Sistem otomatik olarak hesabı incelemeye alacaktır.";
+            butonAlani.innerHTML = '<a href="https://instagram.com" target="_blank" class="aksiyon-link-btn">Instagram\'a Git</a>';
+            break;
+        case 'profesyonel':
+            baslik.innerText = "❓ Profesyonel Hesaba Geçiş İşlemi";
+            metin.innerHTML = "Profilinizi profesyonel/işletme hesabına geçirmek için: Ayarlar menüsüne girin, alt kısımdan <b>'Hesap Türü ve Araçları'</b> sekmesini seçin ve <b>'Profesyonel Hesaba Geç'</b> butonuna basarak adımları takip edin.";
+            butonAlani.innerHTML = '<a href="https://help.instagram.com" target="_blank" class="aksiyon-link-btn">Resmi Kılavuz</a>';
+            break;
+        case 'sunucu_kural':
+            baslik.innerText = "⚖️ Discord Sunucu Kuralları";
+            metin.innerHTML = "Sunucumuz içerisinde küfür, reklam ve topluluğu rahatsız edici her türlü eylem yasaktır. Destek odalarındaki yetkililere bildirim yapabilirsiniz.";
+            butonAlani.innerHTML = '<a href="https://discord.com" target="_blank" class="aksiyon-link-btn">Sunucuya Katıl</a>';
+            break;
+        case 'bot_sorun':
+            baslik.innerText = "🤖 Bot ve Altyapı Arızaları";
+            metin.innerHTML = "Sunucudaki botların çalışmaması durumunda yetkililerimiz anlık müdahale etmektedir. Hata kodunu kopyalayıp destek talebi açabilirsiniz.";
+            butonAlani.innerHTML = '<a href="#destek" class="aksiyon-link-btn">Destek Bildir</a>';
+            break;
+        case 'video_telif':
+            baslik.innerText = "🎬 Telif Hakları ve Kullanım";
+            metin.innerHTML = "Yayınlanan video rehberlerin ve müziklerin izinsiz ticari amaçla kullanımı yasaktır. Telif talepleri için e-posta kanalı üzerinden başvuru yapınız.";
+            butonAlani.innerHTML = '<a href="https://youtube.com" target="_blank" class="aksiyon-link-btn">Kanalı İncele</a>';
+            break;
+        case 'genel_soru':
+            baslik.innerText = "💡 Sıkça Sorulan Genel Sorular";
+            metin.innerHTML = "Sistemlerimiz tamamen güvenli olup, açık kaynak kodludur. Sitedeki projelerin tamamı aktif koruma protokolleri ile korunmaktadır.";
+            butonAlani.innerHTML = '<a href="#" class="aksiyon-link-btn">Dökümantasyon</a>';
+            break;
+        default:
+            baslik.innerText = "⚙️ Bilgi Bankası Kaydı";
+            metin.innerHTML = "Seçtiğiniz platform ile ilgili operasyonel işlemler ve teknik rehber dökümanları hazırlanmaktadır. Doğrudan erişim için aşağıdaki bağlantıyı kullanabilirsiniz.";
+            butonAlani.innerHTML = '<a href="#" class="aksiyon-link-btn">Resmi Bağlantı</a>';
+            break;
+    }
+}
+
+// Boşluğa tıklayınca modalın kapanması güvenlik kontrolü
+window.onclick = function(event) {
+    const modal = document.getElementById("globalDestekModali");
+    if (event.target == modal) {
+        modalKapat();
+    }
+}
 </script>
+<!-- ================================================================= -->
+<!-- HÜKÜM GLOBAL AKILLI DESTEK VE YARDIM SİSTEMİ - BİTİŞİ            -->
+<!-- ================================================================= -->
 
