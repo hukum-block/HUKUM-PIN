@@ -1,446 +1,237 @@
-```html
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TSTM | STRATEJİK HAREKAT VE ANALİZ MERKEZİ</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        /* Modern Siber Tasarım Temelleri */
-        :root {
-            --red: #ff0000;
-            --dark-bg: #020205;
-            --panel-bg: #0d1117;
-            --green: #00ff41;
-            --yellow: #ffcc00;
-            --border: #30363d;
-            --blue: #0066ff;
-            --text: #e6edf3;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            background: var(--dark-bg); 
-            color: var(--text); 
-            font-family: 'Consolas', 'Courier New', monospace; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
-        }
-
-        /* Güvenlik Kapısı (Giriş) */
-        #gate {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 100000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-image: radial-gradient(circle, #400 0%, #000 100%);
-        }
-
-        .secure-box {
-            background: var(--panel-bg);
-            border: 2px solid var(--red);
-            padding: 60px;
-            border-radius: 5px;
-            text-align: center;
-            box-shadow: 0 0 150px rgba(255, 0, 0, 0.5);
-            width: 550px;
-        }
-
-        .secure-box h1 {
-            color: var(--red);
-            letter-spacing: 20px;
-            font-size: 32px;
-            margin-bottom: 20px;
-        }
-
-        input {
-            width: 100%;
-            background: #000;
-            border: 1px solid var(--border);
-            padding: 18px;
-            margin-bottom: 15px;
-            color: var(--green);
-            border-radius: 3px;
-            outline: none;
-            font-size: 16px;
-            border-left: 5px solid var(--red);
-        }
-
-        .gate-btn {
-            width: 100%;
-            padding: 20px;
-            background: var(--red);
-            color: #fff;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            letter-spacing: 5px;
-            font-size: 20px;
-            text-transform: uppercase;
-        }
-
-        /* Ana Arayüz Düzeni */
-        header {
-            background: #000;
-            border-bottom: 3px solid var(--red);
-            padding: 15px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 0 20px rgba(255,0,0,0.3);
-        }
-
-        .main-grid {
-            display: grid;
-            grid-template-columns: 450px 1fr 500px;
-            gap: 10px;
-            padding: 10px;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .card {
-            background: var(--panel-bg);
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .card-header {
-            background: #161b22;
-            padding: 15px;
-            font-size: 13px;
-            color: var(--yellow);
-            font-weight: bold;
-            border-bottom: 2px solid var(--red);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* 500+ Komut Listesi Tasarımı */
-        .cmd-container {
-            overflow-y: auto;
-            flex: 1;
-            padding: 15px;
-            scrollbar-width: thin;
-        }
-
-        .cmd-cat {
-            color: var(--red);
-            font-size: 12px;
-            margin: 25px 0 10px 5px;
-            text-transform: uppercase;
-            border-bottom: 1px solid #333;
-            padding-bottom: 5px;
-            letter-spacing: 2px;
-        }
-
-        .cmd-item {
-            background: #0d1117;
-            border: 1px solid #222;
-            padding: 14px;
-            margin-bottom: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 12px;
-            transition: all 0.3s;
-        }
-
-        .cmd-item:hover {
-            background: #1c2128;
-            border-color: var(--red);
-            padding-left: 20px;
-            color: var(--red);
-        }
-
-        .cmd-item i { width: 20px; text-align: center; font-size: 16px; }
-
-        /* Rapor ve Veri Ekranı */
-        #map { flex: 1; background: #000; border-bottom: 1px solid var(--border); }
+<div class="hukum-destek-paneli">
+    <div class="panel-ust-alan">
+        <h2>DESTEK HİZMETLERİ & İLETİŞİM MERKEZİ</h2>
+        <p>Bilgi almak, destek talebinde bulunmak veya topluluklarımıza katılmak için aşağıdaki 20 resmi kanalı kullanabilirsiniz.</p>
         
-        #terminal-logs {
-            background: #000;
-            color: var(--green);
-            padding: 15px;
-            height: 180px;
-            font-size: 11px;
-            overflow-y: auto;
-            border-top: 2px solid var(--border);
-        }
+        <div class="arama-kutusu-alani">
+            <input type="text" id="panelArama" onkeyup="panelArafonksiyonu()" placeholder="Destek kanalı veya platform ara...">
+        </div>
+    </div>
 
-        #full-report-area {
-            flex: 1;
-            background: #000;
-            padding: 20px;
-            overflow-y: auto;
-            border: 1px solid #111;
-        }
+    <div class="panel-kartlar-grid" id="panelKartlarListesi">
+        
+        <a href="https://discord.gg/LINK" target="_blank" class="p-kart" data-ad="discord destek topluluk">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/3670/3670157.png" alt="Discord"></div>
+            <div class="p-bilgi"><h4>Discord Destek</h4><p>Canlı destek talepleri ve topluluk.</p></div>
+        </a>
 
-        .intel-report {
-            border: 2px solid #333;
-            padding: 20px;
-            margin-bottom: 25px;
-            background: #090c10;
-            border-left: 10px solid var(--red);
-            animation: slideIn 0.4s ease-out;
-        }
+        <a href="https://instagram.com/KULLANICI" target="_blank" class="p-kart" data-ad="instagram sosyal medya">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="Instagram"></div>
+            <div class="p-bilgi"><h4>Instagram</h4><p>Anlık duyurular ve mesaj hattı.</p></div>
+        </a>
 
-        .intel-report h3 {
-            color: var(--red);
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--red);
-            display: inline-block;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+        <a href="https://youtube.com/KANAL" target="_blank" class="p-kart" data-ad="youtube video içerik">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/174/174883.png" alt="YouTube"></div>
+            <div class="p-bilgi"><h4>YouTube</h4><p>Video rehberler ve güncellemeler.</p></div>
+        </a>
 
-        .intel-row {
-            display: flex;
-            margin-bottom: 8px;
-            font-size: 13px;
-        }
+        <a href="https://t.me/LINK" target="_blank" class="p-kart" data-ad="telegram grup duyuru">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram"></div>
+            <div class="p-bilgi"><h4>Telegram Anasayfa</h4><p>Hızlı bilgi akışı ve duyuru odası.</p></div>
+        </a>
 
-        .intel-label { color: #888; width: 150px; font-weight: bold; }
-        .intel-value { color: var(--text); flex: 1; word-break: break-all; }
-        .intel-value.link { color: var(--blue); text-decoration: underline; cursor: pointer; }
-        .intel-value.critical { color: var(--yellow); font-weight: bold; }
+        <a href="https://github.com/KULLANICI" target="_blank" class="p-kart" data-ad="github kod yazılım geliştirme">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="GitHub"></div>
+            <div class="p-bilgi"><h4>GitHub Geliştirici</h4><p>Açık kaynak kodlar ve hata bildirimleri.</p></div>
+        </a>
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
+        <a href="mailto:destek@mail.com" class="p-kart" data-ad="eposta mail destek iletişim">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" alt="E-Posta"></div>
+            <div class="p-bilgi"><h4>Resmi E-Posta</h4><p>Kurumsal ve resmi işbirlikleri için.</p></div>
+        </a>
 
-        /* Animasyonlu Bildirim */
-        .threat-alert {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--red);
-            color: #fff;
-            padding: 15px 30px;
-            font-weight: bold;
-            z-index: 5000;
-            display: none;
-            border-radius: 5px;
-            box-shadow: 0 0 30px rgba(255,0,0,0.8);
-        }
-    </style>
-</head>
-<body>
+        <a href="https://roblox.com" target="_blank" class="p-kart" data-ad="roblox oyun grup topluluk">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/4603/4603613.png" alt="Roblox"></div>
+            <div class="p-bilgi"><h4>Roblox Topluluğu</h4><p>Oyun içi destek ve klan merkezi.</p></div>
+        </a>
 
-<div id="threat-alert">⚠️ KRİTİK VERİ ANALİZİ BAŞLATILDI</div>
+        <a href="https://steamcommunity.com" target="_blank" class="p-kart" data-ad="steam oyun topluluk">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/220/220223.png" alt="Steam"></div>
+            <div class="p-bilgi"><h4>Steam Odası</h4><p>Oyuncular arası yardımlaşma alanı.</p></div>
+        </a>
 
-<!-- GİRİŞ SİSTEMİ -->
-<div id="gate">
-    <div class="secure-box">
-        <h1>T S T M</h1>
-        <p style="color:#666; margin-bottom:40px; font-size:11px;">HÜKÜM KOMUTA MERKEZİ V30.0 | SIIRT/KURTALAN HQ</p>
-        <input type="text" id="commander-id" placeholder="KOMUTAN KOD ADI">
-        <input type="password" id="commander-key" placeholder="HAREKAT ŞİFRESİ">
-        <button class="gate-btn" onclick="authorizeAccess()">KARARGAHI AKTİF ET</button>
-        <p style="margin-top:20px; font-size:10px; color:#444;">Erişim kayıtları @hukum_pin_bot1 üzerinden izlenmektedir.</p>
+        <a href="https://x.com" target="_blank" class="p-kart" data-ad="x twitter sosyal medya">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/5969/5969020.png" alt="X"></div>
+            <div class="p-bilgi"><h4>X (Twitter)</h4><p>Sosyal ağ ve hızlı haberleşme.</p></div>
+        </a>
+
+        <a href="https://tiktok.com" target="_blank" class="p-kart" data-ad="tiktok video sosyal">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/3046/3046124.png" alt="TikTok"></div>
+            <div class="p-bilgi"><h4>TikTok Medya</h4><p>Kısa videolar ve tanıtım içerikleri.</p></div>
+        </a>
+
+        <a href="https://twitch.tv" target="_blank" class="p-kart" data-ad="twitch yayin canli">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/5968/5968819.png" alt="Twitch"></div>
+            <div class="p-bilgi"><h4>Twitch Yayınları</h4><p>Canlı destek ve soru-cevap seansları.</p></div>
+        </a>
+
+        <a href="https://forms.google.com" target="_blank" class="p-kart" data-ad="google forms talep basvuru">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2965/2965327.png" alt="Form"></div>
+            <div class="p-bilgi"><h4>Destek Formu</h4><p>Yazılı başvuru ve şikayet kaydı.</p></div>
+        </a>
+
+        <a href="https://wa.me/PROFIL" target="_blank" class="p-kart" data-ad="whatsapp mesaj destek iletisim">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp"></div>
+            <div class="p-bilgi"><h4>WhatsApp İletişim</h4><p>Hızlı ve anlık mesajlaşma hattı.</p></div>
+        </a>
+
+        <a href="https://reddit.com" target="_blank" class="p-kart" data-ad="reddit forum topluluk">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111589.png" alt="Reddit"></div>
+            <div class="p-bilgi"><h4>Reddit Forumu</h4><p>Kullanıcı fikirleri ve tartışmalar.</p></div>
+        </a>
+
+        <a href="https://pinterest.com" target="_blank" class="p-kart" data-ad="pinterest gorsel galeri">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/145/145808.png" alt="Pinterest"></div>
+            <div class="p-bilgi"><h4>Pinterest Portfolyo</h4><p>Grafik, tasarım ve arayüz fikirleri.</p></div>
+        </a>
+
+        <a href="https://linkedin.com" target="_blank" class="p-kart" data-ad="linkedin is profesyonel">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn"></div>
+            <div class="p-bilgi"><h4>LinkedIn</h4><p>Profesyonel ağ ve resmi iletişim.</p></div>
+        </a>
+
+        <a href="https://spotify.com" target="_blank" class="p-kart" data-ad="spotify muzik playlist">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/174/174872.png" alt="Spotify"></div>
+            <div class="p-bilgi"><h4>Resmi Playlist</h4><p>Geliştirici ve topluluk müzik listeleri.</p></div>
+        </a>
+
+        <a href="https://soundcloud.com" target="_blank" class="p-kart" data-ad="soundcloud ses muzik">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111620.png" alt="SoundCloud"></div>
+            <div class="p-bilgi"><h4>SoundCloud</h4><p>Ses kayıtları, efektler ve müzikler.</p></div>
+        </a>
+
+        <a href="https://patreon.com" target="_blank" class="p-kart" data-ad="patreon bagis destek fon">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111551.png" alt="Patreon"></div>
+            <div class="p-bilgi"><h4>Patreon Fonu</h4><p>Projelerimize maddi destek sağlama alanı.</p></div>
+        </a>
+
+        <a href="#sss" class="p-kart" data-ad="sss soru cevap bilgi bankasi">
+            <div class="p-ikon"><img src="https://cdn-icons-png.flaticon.com/512/1828/1828940.png" alt="SSS"></div>
+            <div class="p-bilgi"><h4>Sıkça Sorulanlar</h4><p>Bilgi bankası ve sık sorulan sorular.</p></div>
+        </a>
+
     </div>
 </div>
 
-<header>
-    <div>
-        <span style="color:var(--red); font-weight:bold; font-size:24px;">TSTM | HQ</span>
-        <span style="color:#555; margin-left:20px; font-size:12px;">DURUM: OPERASYONEL</span>
-    </div>
-    <div id="active-user" style="color:var(--yellow); font-weight:bold;">AJAN: BEKLENİYOR</div>
-    <div id="realtime-clock" style="color:var(--green); font-size:14px;"></div>
-</header>
+<style>
+.hukum-destek-paneli {
+    background-color: #0f1115;
+    color: #e2e8f0;
+    padding: 40px 20px;
+    border-radius: 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1200px;
+    margin: 30px auto;
+    border: 1px solid #1f2937;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
 
-<div class="main-grid">
-    <!-- SOL PANEL: 500+ KOMUT VE FONKSİYON -->
-    <div class="card">
-        <div class="card-header">SİBER TAARRUZ & ANALİZ MODÜLLERİ (500+)</div>
-        <div class="cmd-container" id="module-list">
-            <!-- Dinamik Olarak JavaScript Tarafından Doldurulacak -->
-        </div>
-    </div>
+.panel-ust-alan {
+    text-align: center;
+    margin-bottom: 35px;
+}
 
-    <!-- ORTA PANEL: HARİTA VE CANLI LOG -->
-    <div class="card">
-        <div id="map"></div>
-        <div id="terminal-logs"></div>
-    </div>
+.panel-ust-alan h2 {
+    color: #38bdf8;
+    font-size: 28px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
 
-    <!-- SAĞ PANEL: TAM VERİ RAPORU -->
-    <div class="card">
-        <div class="card-header">TAM İSTİHBARAT VE SIZINTI VERİLERİ</div>
-        <div id="full-report-area">
-            <div style="text-align:center; color:#222; margin-top:150px;">
-                <i class="fa-solid fa-satellite-dish fa-5x"></i><br><br>
-                HEDEFE KİLİTLENİLMESİ BEKLENİYOR...
-            </div>
-        </div>
-        <div style="background:#161b22; padding:15px; border-top:1px solid var(--border);">
-            <button onclick="clearReports()" style="width:100%; background:transparent; border:1px solid #444; color:#666; padding:10px; cursor:pointer;">Ekranı Temizle</button>
-        </div>
-    </div>
-</div>
+.panel-ust-alan p {
+    color: #94a3b8;
+    font-size: 15px;
+    max-width: 600px;
+    margin: 0 auto 25px auto;
+}
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+.arama-kutusu-alani input {
+    width: 100%;
+    max-width: 450px;
+    padding: 12px 20px;
+    background-color: #1e293b;
+    border: 2px solid #334155;
+    border-radius: 30px;
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.arama-kutusu-alani input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+
+.panel-kartlar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.p-kart {
+    display: flex;
+    align-items: center;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 15px;
+    text-decoration: none;
+    color: #fff;
+    transition: all 0.25s ease;
+}
+
+.p-kart:hover {
+    transform: translateY(-5px);
+    background-color: #1e293b;
+    border-color: #38bdf8;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.p-ikon img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-right: 15px;
+}
+
+.p-bilgi h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    color: #f8fafc;
+}
+
+.p-bilgi p {
+    margin: 0;
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .panel-kartlar-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
 <script>
-    const TG_TOKEN = '8615703049:AAGCPGH59YdLkvCsHdr1WkYuSWGgyuEfBSQ';
-    const TG_CHANNEL = '@hukum_pin_bot1';
-    let map, currentUser = "";
+function panelArafonksiyonu() {
+    var input = document.getElementById("panelArama");
+    var filtre = input.value.toLowerCase();
+    var grid = document.getElementById("panelKartlarListesi");
+    var kartlar = grid.getElementsByClassName("p-kart");
 
-    // 500+ Komut Kategorizasyonu
-    const moduller = [
-        { cat: "Sanal Terörle Mücadele", icon: "fa-user-ninja", items: ["Terör İsim/Soyisim Sorgu", "Hücre Analizi", "Propaganda Tespit", "Gizli Yazışma Dekoderi", "İllegal Forum Taraması", "Telegram Grup Sızıntısı"] },
-        { cat: "OSINT & Full Veri", icon: "fa-database", items: ["Full Kimlik Analizi", "Adres & Konum Geçmişi", "TC Bağlantılı Numara Sorgu", "MERNİS Veri Karşılaştırma", "Instagram Gizli Veri", "Facebook Veri Sızıntısı"] },
-        { cat: "Siber Taarruz", icon: "fa-shield-virus", items: ["SQL Injection Master", "XSS Payload Üretici", "DDOS Saldırı Filtresi", "Proxy Zinciri Kur", "Zombi Ağ Tespiti", "Admin Panel Tarayıcı"] },
-        { cat: "Ağ İstihbaratı", icon: "fa-network-wired", items: ["IP Master Geolocate", "Port Servis Tespiti", "DNS Zehirleme Kontrol", "Subdomain Enumeration", "Server Fiziksel Analiz"] }
-    ];
-
-    function buildModules() {
-        const list = document.getElementById('module-list');
-        moduller.forEach(m => {
-            const label = document.createElement('div');
-            label.className = 'cmd-cat';
-            label.innerText = m.cat;
-            list.appendChild(label);
-            m.items.forEach(item => {
-                const btn = document.createElement('div');
-                btn.className = 'cmd-item';
-                btn.innerHTML = `<i class="fa-solid ${m.icon}"></i> ${item}`;
-                btn.onclick = () => launchOperation(item);
-                list.appendChild(btn);
-            });
-        });
-
-        // 500 sayısına tamamlamak için otomatik modüller
-        for(let i=1; i<=300; i++) {
-            const btn = document.createElement('div');
-            btn.className = 'cmd-item';
-            btn.innerHTML = `<i class="fa-solid fa-microchip"></i> İleri Düzey Modül #${i + 200}`;
-            btn.onclick = () => launchOperation(`Gelişmiş Analiz Modülü #${i + 200}`);
-            list.appendChild(btn);
-        }
-    }
-
-    function authorizeAccess() {
-        const key = document.getElementById('commander-key').value;
-        if(key === "HÜKÜM_V45") {
-            currentUser = document.getElementById('commander-id').value || "EYMEN_PAŞA";
-            document.getElementById('gate').style.display = 'none';
-            document.getElementById('active-user').innerText = "AJAN: " + currentUser.toUpperCase();
-            initMap();
-            buildModules();
-            addLog("TSTM Karargahı tam yetkiyle erişime açıldı.");
-            tgLog(`🚀 **TSTM TAM YETKİ BAŞLATILDI**\nKomutan: ${currentUser}\nKonum: Kurtalan HQ\nSistem: V30.0 Full Access`);
+    for (var i = 0; i < kartlar.length; i++) {
+        var aramaEtiketi = kartlar[i].getAttribute("data-ad");
+        if (aramaEtiketi.indexOf(filtre) > -1) {
+            kartlar[i].style.display = "flex";
         } else {
-            alert("YETKİSİZ ERİŞİM: ŞİFRE HATALI!");
+            kartlar[i].style.display = "none";
         }
     }
-
-    function initMap() {
-        map = L.map('map', {zoomControl: false}).setView([39.9, 32.8], 5);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
-        L.circleMarker([39.9, 32.8], {color: 'red', radius: 12, fillOpacity: 0.6}).addTo(map).bindTooltip("TSTM ANA SUNUCU");
-    }
-
-    async function tgLog(msg) {
-        try {
-            await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ chat_id: TG_CHANNEL, text: msg, parse_mode: 'Markdown' })
-            });
-        } catch(e) { console.error("Bot Error"); }
-    }
-
-    async function launchOperation(opName) {
-        const target = prompt(`${opName} için hedef veriyi (İsim, TC, IP veya URL) girin:`);
-        if(!target) return;
-
-        document.getElementById('threat-alert').style.display = 'block';
-        setTimeout(() => document.getElementById('threat-alert').style.display = 'none', 2000);
-        addLog(`Sorgu başlatıldı: ${opName} >> HEDEF: ${target}`);
-
-        let reportData = [];
-        
-        // --- GERÇEK VERİ ANALİZ MOTORU ---
-        if(opName.includes("IP")) {
-            try {
-                const res = await fetch(`https://ipapi.co/${target}/json/`);
-                const d = await res.json();
-                reportData = [
-                    {k: "HEDEF IP", v: d.ip},
-                    {k: "ÜLKE / ŞEHİR", v: `${d.country_name} / ${d.city}`},
-                    {k: "KOORDİNATLAR", v: `${d.latitude}, ${d.longitude}`, critical: true},
-                    {k: "ISP (SAĞLAYICI)", v: d.org},
-                    {k: "HARİTA KONUMU", v: `https://www.google.com/maps?q=${d.latitude},${d.longitude}`, isLink: true}
-                ];
-                if(d.latitude) L.marker([d.latitude, d.longitude]).addTo(map).bindPopup(target).openPopup();
-            } catch(e) { reportData = [{k: "HATA", v: "Geçersiz IP adresi veya veri çekilemedi."}]; }
-        } else {
-            // TERÖR VE FULL OSINT İÇİN GERÇEK VERİ SİMÜLASYONU (HER ŞEYİ DÖKER)
-            reportData = [
-                {k: "SORGULANAN HEDEF", v: target.toUpperCase()},
-                {k: "TC KİMLİK BAĞLANTISI", v: "TSTM-992-XXXXX (Veri Maskelenmedi)", critical: true},
-                {k: "SABIKA / ARŞİV", v: "Sanal Terör ve Bölücü Faaliyet Kaydı Mevcut"},
-                {k: "GİZLİ PROFİL LİNK", v: `https://instagram.com/${target.toLowerCase().replace(/ /g,'')}`, isLink: true},
-                {k: "GİRİŞ YAPILAN IP", v: "176.234.XX.XX (Dinamik)"},
-                {k: "DİJİTAL AYAK İZİ", v: "Telegram, Discord ve Twitter üzerinde aktif hücre bağlantısı tespit edildi."},
-                {k: "OPERASYONEL NOT", v: "Hedefin tüm bilgileri HÜKÜM ekibi tarafından Telegram kanalına raporlanmıştır."}
-            ];
-        }
-
-        renderReport(opName, reportData);
-    }
-
-    function renderReport(title, data) {
-        const area = document.getElementById('full-report-area');
-        if(area.innerHTML.includes("BEKLENİYOR")) area.innerHTML = "";
-
-        const reportDiv = document.createElement('div');
-        reportDiv.className = 'intel-report';
-        let html = `<h3>${title}</h3>`;
-        let tgMsg = `📊 **OPERASYONEL RAPOR: ${title}**\n\n`;
-
-        data.forEach(item => {
-            html += `<div class="intel-row">
-                <div class="intel-label">${item.k}:</div>
-                <div class="intel-value ${item.isLink ? 'link' : ''} ${item.critical ? 'critical' : ''}">${item.v}</div>
-            </div>`;
-            tgMsg += `🔹 **${item.k}:** ${item.v}\n`;
-        });
-
-        reportDiv.innerHTML = html;
-        area.prepend(reportDiv);
-        tgLog(tgMsg + `\n👤 **OPERATÖR:** ${currentUser}`);
-        addLog("Rapor başarıyla oluşturuldu ve bota iletildi.");
-    }
-
-    function addLog(m) {
-        const t = document.getElementById('terminal-logs');
-        t.innerHTML += `<div>[${new Date().toLocaleTimeString()}] > ${m}</div>`;
-        t.scrollTop = t.scrollHeight;
-    }
-
-    function clearReports() { document.getElementById('full-report-area').innerHTML = ""; }
-
-    setInterval(() => {
-        document.getElementById('realtime-clock').innerText = new Date().toLocaleString('tr-TR');
-    }, 1000);
+}
 </script>
-</body>
-</html>
-
-```
 
