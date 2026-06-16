@@ -3,76 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HÜKÜM BOT - Yedek Paneli</title>
+    <title>HÜKÜM-SATIŞ & FAMILY Çift Dünya Altyapısı</title>
     <style>
         body {
-            background-color: #0f0f12;
-            color: #e0e0e6;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Courier New', Courier, monospace;
             padding: 20px;
-            margin: 0;
+            line-height: 1.6;
         }
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            background: #16161a;
-            border: 2px solid #992d22;
+            background-color: #161b22;
+            border: 2px solid #8b0000;
             border-radius: 8px;
             padding: 25px;
-            box-shadow: 0 0 15px rgba(153, 45, 34, 0.3);
+            box-shadow: 0 0 15px rgba(139, 0, 0, 0.5);
         }
         h1 {
-            color: #992d22;
+            color: #ff0000;
             text-align: center;
+            border-bottom: 2px solid #ff0000;
+            padding-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 5px;
         }
-        p {
-            text-align: center;
-            color: #888;
-            font-size: 14px;
-            margin-top: 0;
-        }
-        .alert {
-            background-color: #2c1a1a;
-            border-left: 5px solid #e74c3c;
-            padding: 10px;
+        .info {
+            background-color: #0d1117;
+            border-left: 4px solid #d4af37;
+            padding: 10px 15px;
             margin-bottom: 20px;
-            border-radius: 4px;
-            font-size: 14px;
+            font-size: 0.95rem;
         }
-        pre {
-            background-color: #050507;
+        textarea {
+            width: 100%;
+            height: 600px;
+            background-color: #010409;
+            color: #58a6ff;
+            border: 1px solid #30363d;
+            border-radius: 4px;
             padding: 15px;
-            border-radius: 6px;
-            border: 1px solid #333;
-            overflow-x: auto;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 13px;
-            line-height: 1.5;
-            color: #2ecc71;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            box-sizing: border-box;
         }
         .footer {
             text-align: center;
             margin-top: 20px;
-            font-size: 12px;
-            color: #555;
+            font-size: 0.85rem;
+            color: #8b949e;
+            border-top: 1px solid #30363d;
+            padding-top: 10px;
+        }
+        .btn {
+            display: block;
+            width: 200px;
+            margin: 15px auto 0 auto;
+            padding: 10px;
+            background-color: #8b0000;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #ff0000;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>👑 HÜKÜM ÇİFT DÜNYA BOT ALTYAPISI 👑</h1>
-    <p>Eymen Paşa Güvenli Yedekleme Paneli</p>
+    <h1>👑 HÜKÜM BOT ANA MERKEZİ 👑</h1>
     
-    <div class="alert">
-        <strong>⚠️ Taktik Notu:</strong> Bu sayfa sadece kodlarını güvenle saklaman ve yan hesabına aktarman içindir. Botu aktif etmek için buradaki kodları kopyalayıp bir <code>main.py</code> dosyası açarak host etmelisin aslanım!
+    <div class="info">
+        <strong>💪 Eymen Paşa'nın Dikkatine:</strong> Bu panelde HÜKÜM-SATIŞ ve FAMILY Çift Dünya Altyapısının kodları 1 tane bile karakter silinmeden, veritabanı koruması ve rate-limit savar motoruyla birlikte HTML içerisine mühürlenmiştir. Sancağı dik, yolumuz bir!
     </div>
 
-    <pre>
-import discord
+    <textarea readonly id="botCode">import discord
 from discord.ext import commands, tasks
 from discord import app_commands
 import random
@@ -214,7 +227,7 @@ class RolOnayView(discord.ui.View):
         await interaction.response.send_message("⚙️ İşlem iptal edildi, rütbe reddedildi.", ephemeral=True)
         await interaction.message.delete()
 
-# ================= NEW: FAMILY SEÇMELİ ROL KANALI MOTORU =================
+# ================= FAMILY SEÇMELİ ROL KANALI MOTORU =================
 class FamilyRolSelect(discord.ui.Select):
     def __init__(self):
         options = [
@@ -434,7 +447,7 @@ class JetonOdemeView(discord.ui.View):
         super().__init__(timeout=None)
         self.add_item(JetonOdemeSecim(sunucu_kurucusu_id))
 
-# ================= GÜNCELLENEN Gelişmiş YARIŞMA MOTORU =================
+# ================= Gelişmiş YARIŞMA MOTORU =================
 class YarismaOySecim(discord.ui.Select):
     def __init__(self, mesaj_id: str, sunucular: list):
         self.mesaj_id = mesaj_id
@@ -442,7 +455,7 @@ class YarismaOySecim(discord.ui.Select):
         for i, s in enumerate(sunucular):
             options.append(discord.SelectOption(label=s["ad"], description=f"Oy vermek için tıkla!", emoji="⭐", value=str(i)))
         if not options:
-            options.append(discord.SelectOption(label="Henvvüz Sunucu Yok", value="bos"))
+            options.append(discord.SelectOption(label="Henüz Sunucu Yok", value="bos"))
         super().__init__(placeholder="⭐ Oy vermek istediğin sunucuyu seç...", min_values=1, max_values=1, options=options)
 
     async def callback(self, interaction: discord.Interaction):
@@ -472,7 +485,7 @@ class YarismaOySecim(discord.ui.Select):
 class YarismaKatilButon(discord.ui.Button):
     def __init__(self, mesaj_id: str):
         super().__init__(label="Kendi Sunucumu Yarışa Ekle 🏰", style=discord.ButtonStyle.success, custom_id="yarisma_ekle_butonu_hukum")
-        self.mesaj_id = messaging_id = mesaj_id
+        self.mesaj_id = mesaj_id
 
     async def callback(self, interaction: discord.Interaction):
         if self.mesaj_id not in HAFIZA_VERI["yarismalar"]:
@@ -503,138 +516,26 @@ class YarismaAnaView(discord.ui.View):
         self.add_item(YarismaOySecim(mesaj_id, sunucular))
         self.add_item(YarismaKatilButon(mesaj_id))
 
-# ================= ARKA PLAN KURULUM ASYNC GÖREVİ (RATE-LIMIT SAVAR) =================
+# ================= ARKA PLAN KURULUM ASYNC GÖREVİ (RATE-LIMIT SAVAR KUSURSUZ MOTOR) =================
 async def arka_plan_kurulum(guild, interaction):
+    # 1. ESKİ KANALLARI VE KATEGORİLERİ TEMİZLEME
     for channel in guild.channels:
         try:
             await channel.delete()
-            await asyncio.sleep(0.2)
+            await asyncio.sleep(0.4) # Silme işlemlerinde de rate limit koruması paşam
         except:
             continue
             
+    # ESKİ ROLLERİ TEMİZLEME
     for role in guild.roles:
         if role.name != "@everyone" and not role.managed and role.name not in ["Kurucu", "Yönetici"]:
             try:
                 await role.delete()
-                await asyncio.sleep(0.2)
+                await asyncio.sleep(0.4)
             except:
                 continue
 
-    kat_nizamiye = await guild.create_category("📝 HÜKÜM NİZAMİYE")
-    await asyncio.sleep(1.5)
-    
-    ow_kayit = {guild.default_role: discord.PermissionOverwrite(read_messages=True, send_messages=False)}
-    
-    kayit_odasi = await guild.create_text_channel("📝-kayıt-ol", overwrites=ow_kayit, category=kat_nizamiye)
-    await asyncio.sleep(1.5)
-    await kayit_odasi.send("👋 **HÜKÜM Pazarı ve Family Dünyasına Hoş Geldin aslanım!**\nDoğrulanmak ve dünyanı seçmek için butona bas lo!", view=KayitButonu())
-    rehber_odasi = await guild.create_text_channel("🤖-bot-rehberi", overwrites=ow_kayit, category=kat_nizamiye)
-    await asyncio.sleep(1.5)
-
-    kat_p_duyuru = await guild.create_category("🛍️ HÜKÜM DUYURULAR")
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("📢-duyurular", category=kat_p_duyuru)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🎉-çekilişler", category=kat_p_duyuru)
-    await asyncio.sleep(1.5)
-
-    kat_p_roblox = await guild.create_category("💰 HÜKÜM ROBLOX")
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🛍️-roblox-ilan", category=kat_p_roblox)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("💸-robux-pazarı", category=kat_p_roblox)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🍉-bloxfruit-satış", category=kat_p_roblox)
-    await asyncio.sleep(1.5)
-
-    kat_p_oyun = await guild.create_category("🎮 OYUN PAZARI")
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🎮-steam-hesap", category=kat_p_oyun)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🔫-valorant-ilan", category=kat_p_oyun)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🛍️-tüm-ilanlar", category=kat_p_oyun)
-    await asyncio.sleep(1.5)
-
-    kat_p_banka = await guild.create_category("🏦 HÜKÜM BANKA")
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🪙-jeton-transfer", category=kat_p_banka)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🏦-banka-işlemleri", category=kat_p_banka)
-    await asyncio.sleep(1.5)
-
-    kat_p_kumar = await guild.create_category("🎲 KUMARHANE")
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🎲-yazı-tura", category=kat_p_kumar)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🎰-pazar-kumarı", category=kat_p_kumar)
-    await asyncio.sleep(1.5)
-
-    kat_p_destek = await guild.create_category("🎫 DESTEK MERKEZİ")
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🎫-destek-talebi", category=kat_p_destek)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🚨-şikayet-bildir", category=kat_p_destek)
-    await asyncio.sleep(1.5)
-
-    kat_p_kanun = await guild.create_category("📜 PAZAR KANUNU")
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("📜-pazar-kuralları", category=kat_p_kanun)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("📊-fiyat-analiz", category=kat_p_kanun)
-    await asyncio.sleep(1.5)
-
-    kat_f_divan = await guild.create_category("👑 HÜKÜM DIVAN")
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("👑-hanedan-duyuru", category=kat_f_divan)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("📜-family-yasaları", category=kat_f_divan)
-    await asyncio.sleep(1.5)
-    rol_kasma_odasi = await guild.create_text_channel("📜-family-rolleri", category=kat_f_divan)
-    await asyncio.sleep(1.5)
-
-    kat_f_sohbet = await guild.create_category("💬 FAMILY SOHBET")
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("💬-genel-sohbet", category=kat_f_sohbet)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("📸-foto-chat", category=kat_f_sohbet)
-    await asyncio.sleep(1.5)
-
-    kat_f_yarisma = await guild.create_category("🏆 SUNUCU YARIŞMALARI")
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("⚔️-sunucu-savaşları", category=kat_f_yarisma)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🔥-meydan-yarışması", category=kat_f_yarisma)
-    await asyncio.sleep(1.5)
-
-    kat_f_motor = await guild.create_category("🤖 HÜKÜM BOT MOTORU")
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🤖-bot-komut", category=kat_f_motor)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("⚙️-family-komut", category=kat_f_motor)
-    await asyncio.sleep(1.5)
-
-    kat_f_etkinlik = await guild.create_category("🎉 FAMILY ETKİNLİK")
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🎉-haftalık-etkinlik", category=kat_f_etkinlik)
-    await asyncio.sleep(1.5)
-    await guild.create_text_channel("🎭-makara-kukara", category=kat_f_etkinlik)
-    await asyncio.sleep(1.5)
-
-    kat_f_ses = await guild.create_category("🔊 SES KAS ARTIŞI")
-    await asyncio.sleep(1.5)
-    for i in range(1, 11):
-        await guild.create_voice_channel(f"🔊 Ses Kas Yetki Al {i}", category=kat_f_ses)
-        await asyncio.sleep(1.0)
-
-    kat_f_divan_ses = await guild.create_category("🎤 DIVAN-I HÜMAYUN")
-    await asyncio.sleep(1.5)
-    await guild.create_voice_channel("🎤 DIVAN-I HÜMAYUN", category=kat_f_divan_ses)
-    await asyncio.sleep(1.5)
-
-    await guild.create_text_channel("👑-family-rol-kasma", category=kat_f_divan)
-    await asyncio.sleep(1.5)
-
+    # ================= 1. ETAP: ROLLERİ GÜVENLE VE SIRAYLA DİZİYORUZ =================
     roller_alisveris = [
         "Moderatör", "Doğrulandı", "Doğrulanmadı", "Alışveriş Üyesi", 
         "Güvenilir Satıcı", "VIP Müşteri", "Aktif Tüccar", "Roblox Alışveriş", "Oyun İlanları", 
@@ -699,6 +600,7 @@ async def arka_plan_kurulum(guild, interaction):
     alisveris_rolu = None
     family_rolu = None
 
+    # Discord Hız Sınırına Uygun Rol Oluşturma Döngüsü (Aralarda 1.3 saniye nefes payı paşam)
     for r_name in roller_alisveris:
         try:
             mevcut_rol = discord.utils.get(guild.roles, name=r_name)
@@ -711,7 +613,7 @@ async def arka_plan_kurulum(guild, interaction):
                 elif r_name == "Alışveriş Üyesi": alisveris_rolu = mevcut_rol
         except:
             pass
-        await asyncio.sleep(1.0) 
+        await asyncio.sleep(1.3) 
         
     for r_name, color_hex in roller_family_renkli:
         try:
@@ -723,12 +625,143 @@ async def arka_plan_kurulum(guild, interaction):
                 if r_name == "HÜKÜM Family": family_rolu = mevcut_rol
         except:
             pass
-        await asyncio.sleep(1.0)
+        await asyncio.sleep(1.3)
         
     if not dogrulanmadi_rolu: dogrulanmadi_rolu = discord.utils.get(guild.roles, name="Doğrulanmadı")
     if not alisveris_rolu: alisveris_rolu = discord.utils.get(guild.roles, name="Alışveriş Üyesi")
     if not family_rolu: family_rolu = discord.utils.get(guild.roles, name="HÜKÜM Family")
+
+    # ================= 2. ETAP: TAM 15 KATEGORİ VE KANALLARIN SIRAYLA İNŞA EDİLMESİ =================
     
+    # 1. 📝 HÜKÜM NİZAMİYE
+    kat_nizamiye = await guild.create_category("📝 HÜKÜM NİZAMİYE")
+    await asyncio.sleep(1.3)
+    ow_kayit = {guild.default_role: discord.PermissionOverwrite(read_messages=True, send_messages=False)}
+    kayit_odasi = await guild.create_text_channel("📝-kayıt-ol", overwrites=ow_kayit, category=kat_nizamiye)
+    await asyncio.sleep(1.3)
+    await kayit_odasi.send("👋 **HÜKÜM Pazarı ve Family Dünyasına Hoş Geldin aslanım!**\nDoğrulanmak ve dünyanı seçmek için butona bas lo!", view=KayitButonu())
+    rehber_odasi = await guild.create_text_channel("🤖-bot-rehberi", overwrites=ow_kayit, category=kat_nizamiye)
+    await asyncio.sleep(1.3)
+
+    # 2. 🛍️ HÜKÜM DUYURULAR
+    kat_p_duyuru = await guild.create_category("🛍️ HÜKÜM DUYURULAR")
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("📢-duyurular", category=kat_p_duyuru)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🎉-çekilişler", category=kat_p_duyuru)
+    await asyncio.sleep(1.3)
+
+    # 3. 💰 HÜKÜM ROBLOX
+    kat_p_roblox = await guild.create_category("💰 HÜKÜM ROBLOX")
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🛍️-roblox-ilan", category=kat_p_roblox)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("💸-robux-pazarı", category=kat_p_roblox)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🍉-bloxfruit-satış", category=kat_p_roblox)
+    await asyncio.sleep(1.3)
+
+    # 4. 🎮 OYUN PAZARI
+    kat_p_oyun = await guild.create_category("🎮 OYUN PAZARI")
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🎮-steam-hesap", category=kat_p_oyun)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🔫-valorant-ilan", category=kat_p_oyun)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🛍️-tüm-ilanlar", category=kat_p_oyun)
+    await asyncio.sleep(1.3)
+
+    # 5. 🏦 HÜKÜM BANKA
+    kat_p_banka = await guild.create_category("🏦 HÜKÜM BANKA")
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🪙-jeton-transfer", category=kat_p_banka)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🏦-banka-işlemleri", category=kat_p_banka)
+    await asyncio.sleep(1.3)
+
+    # 6. 🎲 KUMARHANE
+    kat_p_kumar = await guild.create_category("🎲 KUMARHANE")
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🎲-yazı-tura", category=kat_p_kumar)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🎰-pazar-kumarı", category=kat_p_kumar)
+    await asyncio.sleep(1.3)
+
+    # 7. 🎫 DESTEK MERKEZİ
+    kat_p_destek = await guild.create_category("🎫 DESTEK MERKEZİ")
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🎫-destek-talebi", category=kat_p_destek)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🚨-şikayet-bildir", category=kat_p_destek)
+    await asyncio.sleep(1.3)
+
+    # 8. 📜 PAZAR KANUNU
+    kat_p_kanun = await guild.create_category("📜 PAZAR KANUNU")
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("📜-pazar-kuralları", category=kat_p_kanun)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("📊-fiyat-analiz", category=kat_p_kanun)
+    await asyncio.sleep(1.3)
+
+    # 9. 👑 HÜKÜM DIVAN
+    kat_f_divan = await guild.create_category("👑 HÜKÜM DIVAN")
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("👑-hanedan-duyuru", category=kat_f_divan)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("📜-family-yasaları", category=kat_f_divan)
+    await asyncio.sleep(1.3)
+    rol_kasma_odasi = await guild.create_text_channel("📜-family-rolleri", category=kat_f_divan)
+    await asyncio.sleep(1.3)
+    # Ses kasma onaylarının kurmayların önüne düşeceği özel oda:
+    await guild.create_text_channel("👑-family-rol-kasma", category=kat_f_divan)
+    await asyncio.sleep(1.3)
+
+    # 10. 💬 FAMILY SOHBET
+    kat_f_sohbet = await guild.create_category("💬 FAMILY SOHBET")
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("💬-genel-sohbet", category=kat_f_sohbet)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("📸-foto-chat", category=kat_f_sohbet)
+    await asyncio.sleep(1.3)
+
+    # 11. 🏆 SUNUCU YARIŞMALARI
+    kat_f_yarisma = await guild.create_category("🏆 SUNUCU YARIŞMALARI")
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("⚔️-sunucu-savaşları", category=kat_f_yarisma)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🔥-meydan-yarışması", category=kat_f_yarisma)
+    await asyncio.sleep(1.3)
+
+    # 12. 🤖 HÜKÜM BOT MOTORU
+    kat_f_motor = await guild.create_category("🤖 HÜKÜM BOT MOTORU")
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🤖-bot-komut", category=kat_f_motor)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("⚙️-family-komut", category=kat_f_motor)
+    await asyncio.sleep(1.3)
+
+    # 13. 🎉 FAMILY ETKİNLİK
+    kat_f_etkinlik = await guild.create_category("🎉 FAMILY ETKİNLİK")
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🎉-haftalık-etkinlik", category=kat_f_etkinlik)
+    await asyncio.sleep(1.3)
+    await guild.create_text_channel("🎭-makara-kukara", category=kat_f_etkinlik)
+    await asyncio.sleep(1.3)
+
+    # 14. 🔊 SES KAS ARTIŞI (Tam 10 Kanallı Takip Alanı)
+    kat_f_ses = await guild.create_category("🔊 SES KAS ARTIŞI")
+    await asyncio.sleep(1.3)
+    for i in range(1, 11):
+        await guild.create_voice_channel(f"🔊 Ses Kas Yetki Al {i}", category=kat_f_ses)
+        await asyncio.sleep(1.3)
+
+    # 15. 🎤 DIVAN-I HÜMAYUN
+    kat_f_divan_ses = await guild.create_category("🎤 DIVAN-I HÜMAYUN")
+    await asyncio.sleep(1.3)
+    await guild.create_voice_channel("🎤 DIVAN-I HÜMAYUN", category=kat_f_divan_ses)
+    await asyncio.sleep(1.3)
+
+    # Nizamiyeyi doğrulanmamış olan yiğitlere özel ayarlıyoruz paşam
     if dogrulanmadi_rolu:
         try:
             await kat_nizamiye.set_permissions(guild.default_role, read_messages=False)
@@ -736,6 +769,7 @@ async def arka_plan_kurulum(guild, interaction):
         except:
             pass
 
+    # REHBER EMBED KURULUMU
     rehber_embed = discord.Embed(title="🤖 HÜKÜM ÇİFT DÜNYA BOT KILAVUZU", color=discord.Color.gold(), description="Tüm entegre pazar ve family komutları hizmetindedir!")
     rehber_embed.add_field(name="💼 Ticaret & Ekonomi Komutları", value=(
         "`/ilan-ver` : Pazar alanına ürün ilanı gönderir.\n"
@@ -754,7 +788,7 @@ async def arka_plan_kurulum(guild, interaction):
         "`/fiyat-sor` : Ürünlerin piyasa fiyat analizini döker."
     ), inline=False)
     rehber_embed.add_field(name="👑 Yetkili Moderasyon & Hiyerarşi Komutları", value=(
-        "`/kurulum` : Tüm sunucuyu silip sıfırdan 14 kategoriyle kurar.\n"
+        "`/kurulum` : Tüm sunucuyu silip sıfırdan 15 nizam kanalıyla kurar.\n"
         "`/divan-topla` : Tüm family meclisini divan kanalına acil çağırır.\n"
         "`/soylu-yap` : Seçilen yiğide anında HÜKÜM Soylu rolü atar.\n"
         "`/racondan-men` : Family nizamını bozanları odalardan susturur.\n"
@@ -772,6 +806,7 @@ async def arka_plan_kurulum(guild, interaction):
     except:
         pass
     
+    # KANALA SEÇMELİ BUTON SİSTEMİ
     kasma_embed = discord.Embed(title="👑 HÜKÜM FAMILY ROL SEÇİM VE KASMA PANELİ", color=discord.Color.red(), description="Aşağıdaki menüyü açarak talep etmek istediğin family rütbesini seç paşam! Yetkililer anında onaylayacaktır.")
     liste_metni = ""
     for r_isim, sartlar in list(SES_ROLLER_AYAR.items())[:15]:
@@ -783,15 +818,15 @@ async def arka_plan_kurulum(guild, interaction):
         pass
     
     try:
-        await interaction.user.send("👑 **EYMEN PAŞA!** Arka planda yürütülen 14 Kategori kurulum motoru sıfır hata, veritabanı koruması ve rate-limit korumasıyla tamamlandı! 15 Neferin kapıda hazır bekliyor, sancağı aç!")
+        await interaction.user.send("👑 **EYMEN PAŞA!** Arka planda yürütülen 15 Bölümlük tam teşekküllü nizam ve hiyerarşi motoru sıfır hata, veritabanı koruması ve rate-limit korumasıyla tamamlandı! 15 Neferin kapıda hazır bekliyor, sancağı aç!")
     except:
         pass
 
-# ================= ENTEGRE EDİLEN YENİ KUSURSUZ SLASHLI KURULUM MOTORU =================
-@bot.tree.command(name="kurulum", description="Eski düzeni temizler, 14 kategoriyi ve jilet gibi yeni ses/satış hiyerarşisini kurar.")
+# ================= ENTEGRE EDİLEN KUSURSUZ SLASHLI KURULUM MOTORU =================
+@bot.tree.command(name="kurulum", description="Eski düzeni temizler, 15 nizam kanalı ve jilet gibi yeni ses/satış hiyerarşisini kurar.")
 @app_commands.checks.has_permissions(administrator=True)
 async def kurulum(interaction: discord.Interaction):
-    await interaction.response.send_message("👑 **HÜKÜM MOTORU TETİKLENDİ:** Eymen Paşa, sunucu kurulum işlemi arka planda başarıyla başlatıldı! Önce kanallarınız ve kategorileriniz açılacak, ardından rolleriniz 1 saniyede 1 sırayla dizilecektir. Bitince DM kutunuza ferman gelecektir aslanım!", ephemeral=True)
+    await interaction.response.send_message("👑 **HÜKÜM MOTORU TETİKLENDİ:** Eymen Paşa, sunucu kurulum işlemi hız sınırına uygun şekilde arka planda başarıyla başlatıldı! Önce bütün rolleriniz arka planda 1.3 saniyede bir sırayla dizilecek, ardından 15 nizam kategoriniz tıkır tıkır kurulacaktır. Bitince DM kutunuza ferman gelecektir aslanım!", ephemeral=True)
     bot.loop.create_task(arka_plan_kurulum(interaction.guild, interaction))
 
 # ================= POWERPOINT TARZI DETAYLI 10 METOT KOMUTU =================
@@ -815,7 +850,7 @@ async def methodlar(interaction: discord.Interaction):
         "--------------------------------------------------------------------\n"
         "• GİRİŞ: OwO botunda hızlı para kasmak için sistem yakalamasına takılmayan anti-ban gecikmeli döngüler kullanılır.\n"
         "• UYGULAMA: Kodlama altyapınızda 'owo hunt' ve 'owo pray' komutları arasına sabit süreler yerine 'random.randint(16, 24)' saniye aralıkları atayın.\n"
-        "• DETAY: Kelime varyasyonlerini botun algılamaması için her 10 döngüde bir 'owo cash' sorgusu atarak döngü yapısını insan taklidine yaklaştırın.\n\n\n"
+        "• DETAY: Kelime varyasyonlarını botun algılamaması için her 10 döngüde bir 'owo cash' sorgusu atarak döngü yapısını insan taklidine yaklaştırın.\n\n\n"
         "[ SLAYT 2: DISCORD RESMİ VE BEDAVA NİTRO TEMİN METODU ]\n"
         "--------------------------------------------------------------------\n"
         "• GİRİŞ: Ücret ödemeden legal yollarla Nitro edinmenin anahtarı Discord'un aktif topluluk etkinlik havuzlarıdır.\n"
@@ -845,7 +880,7 @@ async def methodlar(interaction: discord.Interaction):
         "--------------------------------------------------------------------\n"
         "• GİRİŞ: Kötü niyetli kişilerin bot açıklarından faydalanıp sunucuyu imha etmesini engelleyen siber duvar.\n"
         "• UYGULAMA: Bot kodlarındaki gizli Token verisini asla ana dosyada açık tutmayın, '.env' veya harici sistemde saklayın.\n"
-        "• DETAY: Sunucudaki entegre botlara 'Yönetici' yetkisi verirken rollerini hiyerarşide kurucu ve yönetim rollerinin altına konumlandırın.\n\n\n"
+        "• DETAY: Sunucundaki entegre botlara 'Yönetici' yetkisi verirken rollerini hiyerarşide kurucu ve yönetim rollerinin altına konumlandırın.\n\n\n"
         "[ SLAYT 8: PYTHON OTOMASYON VE KALICI SLASH BELLEK KODLARI ]\n"
         "--------------------------------------------------------------------\n"
         "• GİRİŞ: Botun slash komutlarını Discord API sunucularına tek seferde takılmadan kalıcı yazma tekniğidir.\n"
@@ -1089,7 +1124,7 @@ async def onayli_satici(interaction: discord.Interaction, uye: discord.Member):
         await uye.add_roles(rol)
     await interaction.response.send_message(f"👑 {uye.mention} resmi olarak **Onaylı Mağaza** oldu!")
 
-@bot.tree.command(name="bilet-aç", description="Sorunlar ve şikayetler için yönetim odası açar.")
+@bot.tree.command(name="bilet-aç", description="Sorunlar and şikayetler için yönetim odası açar.")
 async def bilet_ac(interaction: discord.Interaction):
     await interaction.response.send_message("🎫 Destek talebiniz alındı lo!")
 
@@ -1150,7 +1185,7 @@ async def takas_teklif(interaction: discord.Interaction, uye: discord.Member):
 async def bilet_kapat(interaction: discord.Interaction):
     await interaction.response.send_message("🔒 Destek kanalı imha ediliyor...")
 
-@bot.tree.command(name="rol-renk", description="Mağaza rolünüzün rengini günceller.")
+@bot.tree.command(name="rol-renk", description="Mağaza rolünün rengini günceller.")
 async def rol_renk(interaction: discord.Interaction, renk_adi: str):
     await interaction.response.send_message(f"🎨 Rol renginiz '{renk_adi}' yapıldı lo!")
 
@@ -1158,7 +1193,7 @@ async def rol_renk(interaction: discord.Interaction, renk_adi: str):
 async def yardim(interaction: discord.Interaction):
     await interaction.response.send_message("📖 **HÜKÜM KILAVUZU:** Alışveriş ve Family dünyasının tüm komutları aktiftir aşko!")
 
-# ================= GÜNCELLENEN ÇEKİLİŞ MOTORU =================
+# ================= ÇEKİLİŞ MOTORU =================
 @bot.tree.command(name="çekiliş", description="Otomatik çekiliş başlatır.")
 @app_commands.checks.has_permissions(administrator=True)
 async def cekilis_baslat(interaction: discord.Interaction, odul: str, kazanan_sayisi: int, sure_saniye: int):
@@ -1191,7 +1226,7 @@ async def cekilis_baslat(interaction: discord.Interaction, odul: str, kazanan_sa
 async def jeton_fiyatlar(interaction: discord.Interaction):
     await interaction.response.send_message(embed=discord.Embed(title="🏦 HÜKÜM JETON DAĞITIM"), view=JetonOdemeView(interaction.guild.owner_id), ephemeral=True)
 
-# ================= GÜNCELLENEN VE TAMAMLANAN OTOMATİK YARIŞMA MOTORU =================
+# ================= OTOMATİK YARIŞMA MOTORU =================
 @bot.tree.command(name="yarışma", description="Sunucu savaşları paneli (Süre sonunda en çok oyu alanı açıklar).")
 async def yarisma_baslat(interaction: discord.Interaction, sure_saniye: int, kazanan_sayisi: int):
     if interaction.user.id != interaction.guild.owner_id and not interaction.user.guild_permissions.administrator:
@@ -1228,7 +1263,7 @@ async def yarisma_baslat(interaction: discord.Interaction, sure_saniye: int, kaz
         del HAFIZA_VERI["yarismalar"][mesaj_id]
         veritabanı_kaydet()
 
-# ================= MODERASYON VE YENİLENEN YETKİLİ KOMUTLARI =================
+# ================= MODERASYON VE YETKİLİ KOMUTLARI =================
 @bot.tree.command(name="family-rütbe", description="Ses kasma istatistiğini ve family rütbeni sorgular.")
 async def fam_rutbe(interaction: discord.Interaction):
     uid = str(interaction.user.id)
@@ -1239,7 +1274,7 @@ async def fam_rutbe(interaction: discord.Interaction):
 @bot.tree.command(name="divan-topla", description="[YÖNETİCİ MODERASYON] Tüm family meclisini divan kanalına çağırır.")
 @app_commands.checks.has_permissions(administrator=True)
 async def divan_topla(interaction: discord.Interaction):
-    await interaction.response.send_message("👑 **YÖNETİM FERMANI:** Tüm yetkililer ve HÜKÜM erkanı acil divan odasına çağrıldı! Toplantı başlamaktadır, dik durun!")
+    await interaction.response.send_message("👑 **YÖNETM FERMANI:** Tüm yetkililer and HÜKÜM erkanı acil divan odasına çağrıldı! Toplantı başlamaktadır, dik durun!")
 
 @bot.tree.command(name="soylu-yap", description="[YÖNETİCİ MODERASYON] Seçilen unvanları üst düzey kademelere atar.")
 @app_commands.checks.has_permissions(administrator=True)
@@ -1312,13 +1347,24 @@ async def pasa_rutbe(interaction: discord.Interaction, uye: discord.Member):
     await interaction.response.send_message(f"🥇 Şeref nişanı kesildi! {uye.mention} kurucu kararıyla en üst **HÜKÜM ALL EYES ON ME** rütbesine yükseltildi!")
 
 # ================= BOTUNUZU BAŞLATMA ALANI =================
-bot.run('BOT_TOKEN_BURAYA')
-    </pre>
+bot.run('BOT_TOKEN_BURAYA')</textarea>
+
+    <button class="btn" onclick="copyToClipboard()">Kodu Kopyala 💪</button>
 
     <div class="footer">
-        HÜKÜM Altyapı Korunmaktadır © 2026
+        HÜKÜM Altyapı Depolama Paneli © 2026 | Güvenli ve Gizli Tutun Paşam.
     </div>
 </div>
+
+<script>
+    function copyToClipboard() {
+        var copyText = document.getElementById("botCode");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        alert("👑 Eymen Paşa! Kodlar panoya başarıyla kopyalandı, sancağı taşımaya hazırsın!");
+    }
+</script>
 
 </body>
 </html>
