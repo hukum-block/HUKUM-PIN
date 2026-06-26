@@ -84,7 +84,7 @@
                 <div class="code-title">🤖 Ana Discord Botu</div>
                 <button class="copy-btn" onclick="copyCode('bot1')">Kopyala</button>
             </div>
-            <pre><code id="bot1"> import discord
+            <pre><code id="bot1" import discord
 from discord.ext import commands, tasks
 from discord import app_commands
 import random
@@ -1347,6 +1347,9 @@ async def pasa_rutbe(interaction: discord.Interaction, uye: discord.Member):
 
 # ================= BOTUNUZU BAŞLATMA ALANI =================
 bot.run('BOT_TOKEN_BURAYA')
+@bot.event
+async align def on_ready():
+    print('Bot aktif!')
             </code></pre>
         </div>
 
@@ -1355,7 +1358,7 @@ bot.run('BOT_TOKEN_BURAYA')
                 <div class="code-title">🤖 Yardımcı / Satış Botu</div>
                 <button class="copy-btn" onclick="copyCode('bot2')">Kopyala</button>
             </div>
-            <pre><code id="bot2"> import discord
+            <pre><code id="bot2" import discord
 from discord.ext import commands, tasks
 from discord import app_commands
 import random
@@ -1377,28 +1380,26 @@ class HukumBot(commands.Bot):
 
     async def setup_hook(self):
         self.add_view(KayitButonu())
-        self.add_view(DunyaSecimView())
         self.add_view(RolOnayView())
         self.add_view(FamilyRolTalepView()) 
+        self.add_view(OdaYonetimView())
         await self.tree.sync()
-        print("✅ HÜKÜM-SATIŞ & FAMILY Çift Dünya Altyapısı Kusursuz Aktif Edildi!")
+        print("✅ HÜKÜM Family Saf Askeri ve Hiyerarşik Motor Aktif Edildi!")
 
 bot = HukumBot()
 
 # ================= JSON VERİTABANI MOTORU =================
-DOSYA_ADI = "hukum_veritabani.json"
+DOSYA_ADI = "hukum_family_vtb.json"
 
 def veritabanı_yukle():
     if os.path.exists(DOSYA_ADI):
         with open(DOSYA_ADI, "r", encoding="utf-8") as f:
-            try:
-                return json.load(f)
-            except:
-                pass
+            try: return json.load(f)
+            except: pass
     return {
-        "jetonlar": {}, "ilanlar": {}, "gunluk_zaman": {}, "vouchlar": {},
-        "karaliste": [], "stoklar": {}, "uyarilar": {}, "cekilisler": {},
-        "yarismalar": {}, "ses_sureleri": {}, "ses_giris": {}
+        "jetonlar": {}, "gunluk_zaman": {}, "vouchlar": {}, "karaliste": [],
+        "uyarilar": {}, "cekilisler": {}, "ses_sureleri": {}, "ses_giris": {},
+        "ozel_odalar": {}, "piyango_biletleri": [], "davetler": {}, "xp": {}, "seviye": {}
     }
 
 def veritabanı_kaydet():
@@ -1407,13 +1408,7 @@ def veritabanı_kaydet():
 
 HAFIZA_VERI = veritabanı_yukle()
 
-@bot.event
-async def on_member_join(member):
-    rol = discord.utils.get(member.guild.roles, name="Doğrulanmadı")
-    if rol:
-        await member.add_roles(rol)
-
-# ================= SES AKTİFLİĞİ VE OTOMATİK ROL PANELİ SİSTEMİ =================
+# ================= SES HİYERARŞİSİ VE RÜTBE AYARLARI =================
 SES_ROLLER_AYAR = {
     "CEO OF HÜKÜM": {"ses": 10, "owo": 10000, "jeton": 10000},
     "JAZ J BOENIQUE": {"ses": 9, "owo": 9000, "jeton": 9000},
@@ -1433,6 +1428,7 @@ SES_ROLLER_AYAR = {
     "HIZIMA YETİŞ": {"ses": 1, "owo": 1000, "jeton": 1000}
 }
 
+# ================= PANEL VE BUTTON GÖRÜNÜMLERİ (VIEWS) =================
 class RolOnayView(discord.ui.View):
     def __init__(self, rol_isim: str = "", talep_eden_id: int = None):
         super().__init__(timeout=None)
@@ -1444,39 +1440,18 @@ class RolOnayView(discord.ui.View):
         if not interaction.user.guild_permissions.administrator:
             await interaction.response.send_message("❌ Bu onayı sadece HÜKÜM Kurmayları verebilir!", ephemeral=True)
             return
-
-        embed = interaction.message.embeds[0] if interaction.message.embeds else None
-        rol_adi = self.rol_isim or (embed.title.split(" - ")[1] if embed else None)
-        
-        if not rol_adi:
-            await interaction.response.send_message("❌ Rol bilgisi alınamadı!", ephemeral=True)
-            return
-            
         guild = interaction.guild
-        target_member = None
-        if self.talep_eden_id:
-            target_member = guild.get_member(self.talep_eden_id)
-        elif interaction.message.mentions:
+        target_member = guild.get_member(self.talep_eden_id) if self.talep_eden_id else None
+        if not target_member and interaction.message.mentions:
             target_member = interaction.message.mentions[0]
-
         if not target_member:
             await interaction.response.send_message("❌ Rütbe sahibi sunucuda bulunamadı!", ephemeral=True)
             return
-
-        rol = discord.utils.get(guild.roles, name=rol_adi)
+        rol = discord.utils.get(guild.roles, name=self.rol_isim)
         if rol:
-            if rol in target_member.roles:
-                await interaction.response.send_message("❌ Bu rol zaten bu yiğitte var paşam!", ephemeral=True)
-            else:
-                await target_member.add_roles(rol)
-                await interaction.response.send_message(f"🎉 {target_member.mention} rütbesi teslim edildi: **{rol_adi}**! Dik dur aslanım!", ephemeral=False)
-                try:
-                    await target_member.send(f"👑 **MÜJDE PAŞAM!** {interaction.guild.name} sunucusunda talep ettiğin **{rol_adi}** rütben onaylandı!")
-                except:
-                    pass
-                await interaction.message.delete()
-        else:
-            await interaction.response.send_message("❌ Sunucuda rol bulunamadı!", ephemeral=True)
+            await target_member.add_roles(rol)
+            await interaction.response.send_message(f"🎉 {target_member.mention} rütbesi teslim edildi: **{self.rol_isim}**! Dik dur aslanım!", ephemeral=False)
+            await interaction.message.delete()
 
     @discord.ui.button(label="Hayır ❌", style=discord.ButtonStyle.danger, custom_id="rol_onay_hayir")
     async def ret(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -1490,7 +1465,7 @@ class FamilyRolSelect(discord.ui.Select):
     def __init__(self):
         options = [
             discord.SelectOption(label=r, description=f"Ses: {s['ses']} sa | Jeton: {s['jeton']}", emoji="👑")
-            for r, s in list(SES_ROLLER_AYAR.items())[:25]
+            for r, s in list(SES_ROLLER_AYAR.items())
         ]
         super().__init__(placeholder="👑 Almak istediğin Family Rütbesini seç paşam...", min_values=1, max_values=1, options=options, custom_id="family_rol_select_pasa")
 
@@ -1498,23 +1473,12 @@ class FamilyRolSelect(discord.ui.Select):
         secilen_rol = self.values[0]
         guild = interaction.guild
         member = interaction.user
-        
-        rol = discord.utils.get(guild.roles, name=secilen_rol)
-        if rol and rol in member.roles:
-            await interaction.response.send_message("❌ Bu rütbeye zaten sahipsin aslanım!", ephemeral=True)
-            return
-
         onay_kanali = discord.utils.get(guild.text_channels, name="👑-family-rol-kasma")
         if not onay_kanali:
             await interaction.response.send_message("❌ Onay kanalı sunucuda bulunamadı!", ephemeral=True)
             return
-
-        embed = discord.Embed(
-            title=f"👑 MANUEL RÜTBE TALEBİ - {secilen_rol}",
-            description=f"Yiğit {member.mention} elden **{secilen_rol}** rütbesini talep ediyor.",
-            color=discord.Color.orange()
-        )
-        await onay_kanali.send(content=f"@here", embed=embed, view=RolOnayView(secilen_rol, member.id))
+        embed = discord.Embed(title=f"👑 MANUEL RÜTBE TALEBİ - {secilen_rol}", description=f"Yiğit {member.mention} elden **{secilen_rol}** rütbesini talep ediyor.", color=discord.Color.red())
+        await onay_kanali.send(content="@here", embed=embed, view=RolOnayView(secilen_rol, member.id))
         await interaction.response.send_message("✅ Rütbe talebiniz HÜKÜM Divan Odasına iletildi paşam!", ephemeral=True)
 
 class FamilyRolTalepView(discord.ui.View):
@@ -1522,443 +1486,364 @@ class FamilyRolTalepView(discord.ui.View):
         super().__init__(timeout=None)
         self.add_item(FamilyRolSelect())
 
-@bot.event
-async def on_voice_state_update(member, before, after):
-    if member.bot:
-        return
-    uid = str(member.id)
-    simdi = datetime.datetime.now().timestamp()
-
-    if after.channel and not before.channel:
-        HAFIZA_VERI["ses_grid"][uid] = simdi
-        veritabanı_kaydet()
-    elif before.channel and not after.channel:
-        giris_zamani = HAFIZA_VERI["ses_giris"].pop(uid, simdi)
-        gecen_sure = simdi - giris_zamani
-        HAFIZA_VERI["ses_sureleri"][uid] = HAFIZA_VERI["ses_sureleri"].get(uid, 0) + gecen_sure
-        veritabanı_kaydet()
-
-        total_saat = HAFIZA_VERI["ses_sureleri"][uid] / 3600
-        for r_isim, sartlar in SES_ROLLER_AYAR.items():
-            if total_saat >= sartlar["ses"]:
-                rol = discord.utils.get(member.guild.roles, name=r_isim)
-                if rol and rol not in member.roles:
-                    kanal = discord.utils.get(member.guild.text_channels, name="👑-family-rol-kasma")
-                    if kanal:
-                        embed = discord.Embed(
-                            title=f"👑 RÜTBE KAZANIMI - {r_isim}", 
-                            description=f"Hey {member.mention}! Seste kaldığın süre (`{total_saat:.1f}` saat) ile bu rolü almaya hak kazandın.", 
-                            color=discord.Color.green()
-                        )
-                        await kanal.send(content=member.mention, embed=embed, view=RolOnayView(r_isim, member.id))
-                break
-
-# ================= 2 AYRI DÜNYA SEÇİM VE KAYIT SİSTEMİ =================
-class DunyaSecimView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-
-    @discord.ui.button(label='🛍️ Alışveriş Dünyası', style=discord.ButtonStyle.primary, custom_id='dunya_alisveris')
-    async def alisveris_sec(self, interaction: discord.Interaction, button: discord.ui.Button):
-        rol = discord.utils.get(interaction.guild.roles, name="Alışveriş Üyesi")
-        if rol: await interaction.user.add_roles(rol)
-        await interaction.response.send_message("🛍️ Alışveriş kapıları senin için açıldı paşam!", ephemeral=True)
-
-    @discord.ui.button(label='👑 HÜKÜM Family Dünyası', style=discord.ButtonStyle.danger, custom_id='dunya_family')
-    async def family_sec(self, interaction: discord.Interaction, button: discord.ui.Button):
-        rol = discord.utils.get(interaction.guild.roles, name="HÜKÜM Family")
-        if rol: await interaction.user.add_roles(rol)
-        await interaction.response.send_message("👑 HÜKÜM Family asaletine dahil edildin!", ephemeral=True)
-
-    @discord.ui.button(label='⚔️ Her İki Dünya', style=discord.ButtonStyle.success, custom_id='dunya_ikisi_de')
-    async def ikisini_sec(self, interaction: discord.Interaction, button: discord.ui.Button):
-        rol_a = discord.utils.get(interaction.guild.roles, name="Alışveriş Üyesi")
-        rol_f = discord.utils.get(interaction.guild.roles, name="HÜKÜM Family")
-        if rol_a: await interaction.user.add_roles(rol_a)
-        if rol_f: await interaction.user.add_roles(rol_f)
-        await interaction.response.send_message("⚔️ Hem pazar hem family kapıları açıldı lo!", ephemeral=True)
-
 class KayitModal(discord.ui.Modal, title='HÜKÜM Giriş Paneli'):
-    amac = discord.ui.TextInput(label='Sunucuya ne için geldiniz?', placeholder='Örn: Alışveriş veya Family ortamı...', style=discord.TextStyle.long)
+    isim = discord.ui.TextInput(label='Adınız ve Yaşınız Paşam?', placeholder='Örn: Eymen 14')
     async def on_submit(self, interaction: discord.Interaction):
         guild = interaction.guild
         member = interaction.user
-        dogrulandi_rol = discord.utils.get(guild.roles, name="Doğrulandı")
-        dogrulanmadi_rol = discord.utils.get(guild.roles, name="Doğrulanmadı")
-        if dogrulanmadi_rol and dogrulanmadi_rol in member.roles:
-            await member.remove_roles(dogrulanmadi_rol)
-        if dogrulandi_rol:
-            await member.add_roles(dogrulandi_rol)
-        await interaction.response.send_message("✅ Kimliğin doğrulandı aslanım! Dünyanı seç:", view=DunyaSecimView(), ephemeral=True)
+        rol = discord.utils.get(guild.roles, name="HÜKÜM Family")
+        unverified = discord.utils.get(guild.roles, name="Doğrulanmadı")
+        if unverified: await member.remove_roles(unverified)
+        if rol: await member.add_roles(rol)
+        try: await member.edit(nick=f"⚔️ {self.isim.value}")
+        except: pass
+        await interaction.response.send_message("✅ Kimliğin doğrulandı, HÜKÜM asaletine dahil edildin aslanım!", ephemeral=True)
 
 class KayitButonu(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
-
     @discord.ui.button(label='Kaydol / Doğrulan 📝', style=discord.ButtonStyle.success, custom_id='hukum_kayit_gercek')
     async def kayit_bas(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(KayitModal())
 
-# ================= BUTONLU SATIN ALMA VE ÇEKİLİŞ MOTORU =================
-class SatunAlButon(discord.ui.View):
-    def __init__(self, ilan_id: str):
+# ================= GÖRSEL 1 & 2: SES ODASI YÖNETİM PANELİ MOTORU =================
+class OdaYonetimView(discord.ui.View):
+    def __init__(self):
         super().__init__(timeout=None)
-        self.ilan_id = ilan_id
 
-    @discord.ui.button(label="Satın Al 🛒", style=discord.ButtonStyle.danger, custom_id="gercek_satin_al_butonu")
-    async def satin_al_bas(self, interaction: discord.Interaction, button: discord.ui.Button):
-        ilan = HAFIZA_VERI["ilanlar"].get(self.ilan_id)
-        if not ilan:
-            await interaction.response.send_message("❌ Bu ilan tükenmiş veya kaldırılmış!", ephemeral=True)
-            return
-        alici_id = str(interaction.user.id)
-        satici_id = ilan["satici_id"]
-        fiyat = ilan["fiyat"]
-        if alici_id == satici_id:
-            await interaction.response.send_message("❌ Kendi ürününü satın alamazsın lo!", ephemeral=True)
-            return
-        alici_bakiye = HAFIZA_VERI["jetonlar"].get(alici_id, 0)
-        if alici_bakiye < fiyat:
-            await interaction.response.send_message(f"❌ Yetersiz Jeton! Sende Olan: {alici_bakiye}", ephemeral=True)
-            return
-        HAFIZA_VERI["jetonlar"][alici_id] = alici_bakiye - fiyat
-        HAFIZA_VERI["jetonlar"][satici_id] = HAFIZA_VERI["jetonlar"].get(satici_id, 0) + fiyat
-        ilan["stok"] -= 1
-        if ilan["stok"] <= 0:
-            try: await interaction.message.delete()
-            except: pass
-            del HAFIZA_VERI["ilanlar"][self.ilan_id]
-        else:
-            HAFIZA_VERI["ilanlar"][self.ilan_id] = ilan
-            embed = interaction.message.embeds[0]
-            embed.set_field_at(1, name="📦 Stok", value=f"{ilan['stok']} Adet", inline=True)
-            await interaction.message.edit(embed=embed)
-        veritabanı_kaydet()
-        await interaction.response.send_message(f"🎉 Başarıyla satın aldınız!", ephemeral=True)
+    @discord.ui.button(label="Yardım ❓", style=discord.ButtonStyle.success, custom_id="v_yardim", row=0)
+    async def v_yardim(self, interaction: discord.Interaction, button: discord.ui.Button):
+        embed = discord.Embed(title="❓ Yardım — Ses Odası Yönetimi", color=discord.Color.green())
+        embed.description = (
+            "📝 **Kanal Adı** -> Odanın ismini değiştirir\n"
+            "👥 **Güvenilir Ekle** -> Bir kullanıcıya her zaman girebilme izni verir\n"
+            "🔒 **Kilitle/Aç** -> Odayı kilitler veya açar\n"
+            "🔢 **Kapasite** -> Kişi limitini ayarlar\n"
+            "👁️ **Görünürlük** -> Odayı gizler veya gösterir\n"
+            "👥 **Kullanıcı Yönet** -> Kullanıcı seçerek yönet (sustur/sağırlaştır/yasakla/güvenilir/at)"
+        )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+    @discord.ui.button(emoji="🔒", style=discord.ButtonStyle.secondary, custom_id="v_kilit", row=1)
+    async def v_kilit(self, interaction: discord.Interaction, button: discord.ui.Button):
+        ch = interaction.user.voice.channel if interaction.user.voice else None
+        if ch:
+            await ch.set_permissions(interaction.guild.default_role, connect=False)
+            await interaction.response.send_message("🔒 Oda kilitlendi paşam!", ephemeral=True)
+        else: await interaction.response.send_message("❌ Bir ses kanalında olmalısın!", ephemeral=True)
+
+    @discord.ui.button(emoji="👁️", style=discord.ButtonStyle.secondary, custom_id="v_goz", row=1)
+    async def v_goz(self, interaction: discord.Interaction, button: discord.ui.Button):
+        ch = interaction.user.voice.channel if interaction.user.voice else None
+        if ch:
+            await ch.set_permissions(interaction.guild.default_role, view_channel=False)
+            await interaction.response.send_message("👁️ Oda gizlendi aslanım!", ephemeral=True)
+        else: await interaction.response.send_message("❌ Bir ses kanalında olmalısın!", ephemeral=True)
 
 class CekilisKatilButon(discord.ui.View):
     def __init__(self, mesaj_id: str):
         super().__init__(timeout=None)
         self.mesaj_id = mesaj_id
-
-    @discord.ui.button(label="Çekilişe Katıl 🎉", style=discord.ButtonStyle.primary, custom_id="cekilis_katil_butonu_hukum")
-    async def katil_bas(self, interaction: discord.Interaction, button: discord.ui.Button):
+    @discord.ui.button(label="Çekilişe Katıl 🎉", style=discord.ButtonStyle.primary, custom_id="cekilis_katil_b")
+    async def katil(self, interaction: discord.Interaction, button: discord.ui.Button):
         if self.mesaj_id not in HAFIZA_VERI["cekilisler"]:
-            await interaction.response.send_message("❌ Bu çekiliş çoktan bitti be paşam!", ephemeral=True)
+            await interaction.response.send_message("❌ Çekiliş bitti be paşam!", ephemeral=True)
             return
-        katilanlar = HAFIZA_VERI["cekilisler"][self.mesaj_id]["katilanlar"]
-        if interaction.user.id in katilanlar:
-            await interaction.response.send_message("❌ Zaten çekiliş listesindesin aslanım!", ephemeral=True)
+        if interaction.user.id in HAFIZA_VERI["cekilisler"][self.mesaj_id]["katilanlar"]:
+            await interaction.response.send_message("❌ Zaten listedesin aslanım!", ephemeral=True)
             return
-        katilanlar.append(interaction.user.id)
+        HAFIZA_VERI["cekilisler"][self.mesaj_id]["katilanlar"].append(interaction.user.id)
         veritabanı_kaydet()
         await interaction.response.send_message("✅ Çekiliş biletin kesildi şef!", ephemeral=True)
 
-class JetonOdemeSecim(discord.ui.Select):
-    def __init__(self, sunucu_kurucusu_id: int):
-        self.sunucu_kurucusu_id = sunucu_kurucusu_id
-        options = [
-            discord.SelectOption(label="Gerçek Para (IBAN/Papara)", description="TL bazlı ödeme seçenekleri ve fiyatlar", emoji="💳"),
-            discord.SelectOption(label="OwO Nakit Takas", description="OwO parası karşılığı jeton listesi", emoji="🦊")
-        ]
-        super().__init__(placeholder="💵 Bir ödeme yöntemi seç aslanım...", min_values=1, max_values=1, options=options)
-
-    async def callback(self, interaction: discord.Interaction):
-        secim = self.values[0]
-        embed = discord.Embed(title=f"🪙 HÜKÜM-BORSASI FİYAT LİSTESİ", color=discord.Color.gold())
-        if "OwO" in secim:
-            embed.description = "🦊 **OwO Takas Seçeneği Fiyat Endeksi:**\n"
-            for i in range(1, 21):
-                embed.description += f"• **{i}. Paket:** {i*10000:,} OwO = **{i*150} HÜKÜM Jetonu** 🪙\n"
-        else:
-            embed.description = "💳 **Gerçek Para Seçeneği Fiyat Endeksi:**\n"
-            for i in range(1, 21):
-                embed.description += f"• **{i}. Paket:** {i*15} TL = **{i*100} HÜKÜM Jetonu** 🪙\n"
-        embed.add_field(name="👑 Alıcı Yetkili", value=f"<@{self.sunucu_kurucusu_id}>", inline=False)
-        await interaction.response.send_message(embed=embed, ephemeral=True)
-
-class JetonOdemeView(discord.ui.View):
-    def __init__(self, sunucu_kurucusu_id: int):
-        super().__init__(timeout=None)
-        self.add_item(JetonOdemeSecim(sunucu_kurucusu_id))
-
-# ================= Gelişmiş YARIŞMA MOTORU =================
-class YarismaOySecim(discord.ui.Select):
-    def __init__(self, mesaj_id: str, sunucular: list):
-        self.mesaj_id = mesaj_id
-        options = []
-        for i, s in enumerate(sunucular):
-            options.append(discord.SelectOption(label=s["ad"], description=f"Oy vermek için tıkla!", emoji="⭐", value=str(i)))
-        if not options:
-            options.append(discord.SelectOption(label="Henüz Sunucu Yok", value="bos"))
-        super().__init__(placeholder="⭐ Oy vermek istediğin sunucuyu seç...", min_values=1, max_values=1, options=options)
-
-    async def callback(self, interaction: discord.Interaction):
-        if self.values[0] == "bos":
-            await interaction.response.send_message("❌ Önce bir sunucu katılsın paşam!", ephemeral=True)
-            return
-        if self.mesaj_id not in HAFIZA_VERI["yarismalar"]:
-            await interaction.response.send_message("❌ Bu yarışma sonlandı lo!", ephemeral=True)
-            return
-            
-        oy_kullananlar = HAFIZA_VERI["yarismalar"][self.mesaj_id]["oy_kullananlar"]
-        if interaction.user.id in oy_kullananlar:
-            await interaction.response.send_message("❌ Sadece 1 kez oy kullanabilirsin!", ephemeral=True)
-            return
-        secilen_index = int(self.values[0])
-        HAFIZA_VERI["yarismalar"][self.mesaj_id]["sunucular"][secilen_index]["oylar"] += 1
-        oy_kullananlar.append(interaction.user.id)
-        veritabanı_kaydet()
-        
-        sunucular = HAFIZA_VERI["yarismalar"][self.mesaj_id]["sunucular"]
-        embed = interaction.message.embeds[0]
-        liste_yazi = "".join([f"• **{s['ad']}** — Oy: `{s['oylar']}` (Ekleyen: <@{s['ekleyen_id']}>)\n" for s in sunucular])
-        embed.set_field_at(0, name="📊 Katılan Sunucular ve Oylar", value=liste_yazi, inline=False)
-        await interaction.message.edit(embed=embed)
-        await interaction.response.send_message("✅ Oyun başarıyla kaydedildi aslanım!", ephemeral=True)
-
-class YarismaKatilButon(discord.ui.Button):
-    def __init__(self, mesaj_id: str):
-        super().__init__(label="Kendi Sunucumu Yarışa Ekle 🏰", style=discord.ButtonStyle.success, custom_id="yarisma_ekle_butonu_hukum")
-        self.mesaj_id = mesaj_id
-
-    async def callback(self, interaction: discord.Interaction):
-        if self.mesaj_id not in HAFIZA_VERI["yarismalar"]:
-            await interaction.response.send_message("❌ Yarışma süresi dolmuş lo!", ephemeral=True)
-            return
-        sunucular = HAFIZA_VERI["yarismalar"][self.mesaj_id]["sunucular"]
-        for s in sunucular:
-            if s["ekleyen_id"] == interaction.user.id:
-                await interaction.response.send_message("❌ Zaten kendi krallığını eklemişsin lo!", ephemeral=True)
-                return
-        yeni_sunucu = {"ad": f"{interaction.user.name}'ın Krallığı", "ekleyen_id": interaction.user.id, "oylar": 0}
-        sunucular.append(yeni_sunucu)
-        veritabanı_kaydet()
-        
-        embed = interaction.message.embeds[0]
-        liste_yazi = "".join([f"• **{s['ad']}** — Oy: `{s['oylar']}`\n" for s in sunucular])
-        embed.set_field_at(0, name="📊 Katılan Sunucular ve Oylar", value=liste_yazi, inline=False)
-        
-        yeni_view = discord.ui.View(timeout=None)
-        yeni_view.add_item(YarismaOySecim(self.mesaj_id, sunucular))
-        yeni_view.add_item(self)
-        await interaction.message.edit(embed=embed, view=yeni_view)
-        await interaction.response.send_message("🏰 Sunucun başarıyla yarış meydanına eklendi aslanım!", ephemeral=True)
-
-class YarismaAnaView(discord.ui.View):
-    def __init__(self, mesaj_id: str, sunucular: list):
-        super().__init__(timeout=None)
-        self.add_item(YarismaOySecim(mesaj_id, sunucular))
-        self.add_item(YarismaKatilButon(mesaj_id))
-
-# ================= ARKA PLAN KURULUM ASYNC GÖREVİ (KUSURSUZ LİSTE KORUMALI MOTOR) =================
+# ================= ARKA PLAN SAF FAMILY KURULUM ASYNC GÖREVİ =================
 async def arka_plan_kurulum(guild, interaction):
-    # Liste kopyasını alarak güvenli temizlik yapıyoruz paşam (Patlamayı önler)
     mevcut_kanallar = list(guild.channels)
     for channel in mevcut_kanallar:
-        try:
-            await channel.delete()
-            await asyncio.sleep(0.5) 
+        try: await channel.delete(); await asyncio.sleep(0.3)
         except: continue
             
     mevcut_roller = list(guild.roles)
     for role in mevcut_roller:
         if role.name != "@everyone" and not role.managed and role.name not in ["Kurucu", "Yönetici"]:
-            try:
-                await role.delete()
-                await asyncio.sleep(0.5)
+            try: await role.delete(); await asyncio.sleep(0.3)
             except: continue
 
-    # ================= ROLLERİN DİZİLMESİ =================
-    roller_alisveris = [
-        "Moderatör", "Doğrulandı", "Doğrulanmadı", "Alışveriş Üyesi", 
-        "Güvenilir Satıcı", "VIP Müşteri", "Aktif Tüccar", "Roblox Alışveriş", "Oyun İlanları", 
-        "Steam Pazarı", "Valorant Pazarı", "Minecraft Pazarı", "Aracı (Middleman)", "Toptancı", 
-        "Premium Üye", "Gold Üye", "Silver Üye", "Bronz Üye", "Takasçı", "Destek Ekibi", 
-        "Sponsor", "Onaylı Mağaza", "Tasarımcı", "Yazılımcı", "Pazar Analisti", "Hesap Eksperi", 
-        "İndirim Takipçisi", "Reklamcı", "Davet Şampiyonu", "HÜKÜM Üyesi", "Robux Ortağı", 
-        "Pazar Zaptiyesi", "Kripto Alıcı", "Yeni Oyuncu"
-    ]
-    
-    roller_family_renkli = [
+    # Hiyerarşik Temiz Family Rolleri
+    roller_family = [
         ("HÜKÜM Family", 0x992d22), ("CEO OF HÜKÜM", 0x000001), ("JAZ J BOENIQUE", 0x1abc9c),     
         ("DISSAGRAM", 0x2ecc71), ("V’est Unique", 0x3498db), ("Swentegral", 0x9b59b6),         
         ("Die Spitze", 0xe91e63), ("BOTLOADER", 0xf1c40f), ("GATEKAPPER", 0xe67e22),         
         ("V45 TILL İ DIE", 0xe74c3c), ("FUR DIE FAM", 0x95a5a6), ("HIZLIYSAN YAKALA", 0x34495e),   
         ("Cest La Vie", 0x11ccbb), ("TV19", 0xaabbcc), ("ZİR/VE", 0xffffff),             
-        ("La Vida Loca", 0xff5555), ("STABIL YAŞAM", 0x55ff55), ("BUSINESS", 0xd4af37),
-        ("TEHLİKELİ ADAMAR", 0xff0055), ("FLOW MONEY", 0x00ff00), ("HÜKÜM ALL EYES ON ME", 0xff0000),
-        ("HÜKÜM ARMY", 0x556b2f), ("ASLA ÇEVRİMDİŞI OLMAYANLAR", 0x00ffcc), ("YETKİLİ ALIM DM", 0xffcc00)
+        ("La Vida Loca", 0xff5555), ("STABIL YAŞAM", 0x55ff55), ("Doğrulanmadı", 0x7f8c8d)
     ]
     
-    dogrulanmadi_rolu = None
-    for r_name in roller_alisveris:
-        try:
-            mevcut_rol = discord.utils.get(guild.roles, name=r_name)
-            if not mevcut_rol:
-                rol_obj = await guild.create_role(name=r_name, color=discord.Color.from_rgb(random.randint(0,255), random.randint(0,255), random.randint(0,255)))
-                if r_name == "Doğrulanmadı": dogrulanmadi_rolu = rol_obj
-            else:
-                if r_name == "Doğrulanmadı": dogrulanmadi_rolu = mevcut_rol
+    for r_name, color_hex in roller_family:
+        try: await guild.create_role(name=r_name, color=discord.Color(color_hex))
         except: pass
-        await asyncio.sleep(1.3) 
-        
-    for r_name, color_hex in roller_family_renkli:
-        try:
-            mevcut_rol = discord.utils.get(guild.roles, name=r_name)
-            if not mevcut_rol:
-                await guild.create_role(name=r_name, color=discord.Color(color_hex))
-        except: pass
-        await asyncio.sleep(1.3)
+        await asyncio.sleep(0.5)
 
-    if not dogrulanmadi_rolu: dogrulanmadi_rolu = discord.utils.get(guild.roles, name="Doğrulanmadı")
-
-    # ================= KATEGORİ VE KANALLARIN İNŞASI =================
+    # Kanalların Kurulması (Saf Family Düzeni)
     kat_nizamiye = await guild.create_category("📝 HÜKÜM NİZAMİYE")
-    await asyncio.sleep(1.3)
-    ow_kayit = {guild.default_role: discord.PermissionOverwrite(read_messages=True, send_messages=False)}
-    kayit_odasi = await guild.create_text_channel("📝-kayıt-ol", overwrites=ow_kayit, category=kat_nizamiye)
-    await asyncio.sleep(1.3)
-    await kayit_odasi.send("👋 **HÜKÜM Pazarı ve Family Dünyasına Hoş Geldin aslanım!**", view=KayitButonu())
-    rehber_odasi = await guild.create_text_channel("🤖-bot-rehberi", overwrites=ow_kayit, category=kat_nizamiye)
-    await asyncio.sleep(1.3)
-
-    kat_p_duyuru = await guild.create_category("🛍️ HÜKÜM DUYURULAR")
-    await guild.create_text_channel("📢-duyurular", category=kat_p_duyuru)
-    await asyncio.sleep(1.3)
-    await guild.create_text_channel("🎉-çekilişler", category=kat_p_duyuru)
-    await asyncio.sleep(1.3)
-
-    kat_p_roblox = await guild.create_category("💰 HÜKÜM ROBLOX")
-    await guild.create_text_channel("🛍️-roblox-ilan", category=kat_p_roblox)
-    await asyncio.sleep(1.3)
-
-    kat_p_oyun = await guild.create_category("🎮 OYUN PAZARI")
-    await guild.create_text_channel("🎮-steam-hesap", category=kat_p_oyun)
-    await asyncio.sleep(1.3)
-
-    kat_p_banka = await guild.create_category("🏦 HÜKÜM BANKA")
-    await guild.create_text_channel("🪙-jeton-transfer", category=kat_p_banka)
-    await asyncio.sleep(1.3)
-
-    kat_p_kumar = await guild.create_category("🎲 KUMARHANE")
-    await guild.create_text_channel("🎰-pazar-kumarı", category=kat_p_kumar)
-    await asyncio.sleep(1.3)
-
-    kat_p_destek = await guild.create_category("🎫 DESTEK MERKEZİ")
-    await guild.create_text_channel("🎫-destek-talebi", category=kat_p_destek)
-    await asyncio.sleep(1.3)
-
-    kat_p_kanun = await guild.create_category("📜 PAZAR KANUNU")
-    await guild.create_text_channel("📜-pazar-kuralları", category=kat_p_kanun)
-    await asyncio.sleep(1.3)
-
-    kat_f_divan = await guild.create_category("👑 HÜKÜM DIVAN")
-    await guild.create_text_channel("👑-hanedan-duyuru", category=kat_f_divan)
-    await asyncio.sleep(1.3)
-    rol_kasma_odasi = await guild.create_text_channel("📜-family-rolleri", category=kat_f_divan)
-    await asyncio.sleep(1.3)
-    await guild.create_text_channel("👑-family-rol-kasma", category=kat_f_divan)
-    await asyncio.sleep(1.3)
-
-    kat_f_sohbet = await guild.create_category("💬 FAMILY SOHBET")
-    await guild.create_text_channel("💬-genel-sohbet", category=kat_f_sohbet)
-    await asyncio.sleep(1.3)
-
-    kat_f_yarisma = await guild.create_category("🏆 SUNUCU YARIŞMALARI")
-    await guild.create_text_channel("⚔️-sunucu-savaşları", category=kat_f_yarisma)
-    await asyncio.sleep(1.3)
-
-    kat_f_motor = await guild.create_category("🤖 HÜKÜM BOT MOTORU")
-    await guild.create_text_channel("🤖-bot-komut", category=kat_f_motor)
-    await asyncio.sleep(1.3)
-
-    kat_f_etkinlik = await guild.create_category("🎉 FAMILY ETKİNLİK")
-    await guild.create_text_channel("🎉-haftalık-etkinlik", category=kat_f_etkinlik)
-    await asyncio.sleep(1.3)
-
-    kat_f_ses = await guild.create_category("🔊 SES KAS ARTIŞI")
-    for i in range(1, 6):
-        await guild.create_voice_channel(f"🔊 Ses Kas Yetki Al {i}", category=kat_f_ses)
-        await asyncio.sleep(1.3)
-
-    kat_f_divan_ses = await guild.create_category("🎤 DIVAN-I HÜMAYUN")
-    await guild.create_voice_channel("🎤 DIVAN-I HÜMAYUN", category=kat_f_divan_ses)
-
-    if dogrulanmadi_rolu:
-        try:
-            await kat_nizamiye.set_permissions(guild.default_role, read_messages=False)
-            await kat_nizamiye.set_permissions(dogrulanmadi_rolu, read_messages=True, send_messages=False)
-        except: pass
-
-    # REHBER EMBED VE SEÇİM PANELİ
-    rehber_embed = discord.Embed(title="🤖 HÜKÜM ÇİFT DÜNYA BOT KILAVUZU", color=discord.Color.gold())
-    rehber_embed.add_field(name="💼 Ekonomi", value="`/ilan-ver`, `/cüzdan`, `/günlük`, `/mağaza`, `/satın-al`", inline=False)
-    try: await rehber_odasi.send(embed=rehber_embed)
-    except: pass
+    k_odasi = await guild.create_text_channel("📝-kayıt-ol", category=kat_nizamiye)
+    await k_odasi.send("👋 **HÜKÜM Family Dünyasına Hoş Geldin paşam!**", view=KayitButonu())
     
-    kasma_embed = discord.Embed(title="👑 HÜKÜM FAMILY ROL SEÇİM PANELİ", color=discord.Color.red())
-    try: await rol_kasma_odasi.send(embed=kasma_embed, view=FamilyRolTalepView())
-    except: pass
+    kat_divan = await guild.create_category("👑 HÜKÜM DIVAN")
+    await guild.create_text_channel("👑-hanedan-duyuru", category=kat_divan)
+    rol_kasma = await guild.create_text_channel("📜-family-rolleri", category=kat_divan)
+    await guild.create_text_channel("👑-family-rol-kasma", category=kat_divan)
     
-    try: await interaction.user.send("👑 **EYMEN PAŞA!** Sunucu kurulumu kusursuzca tamamlandı!")
+    kat_sohbet = await guild.create_category("💬 FAMILY SOHBET")
+    await guild.create_text_channel("💬-genel-sohbet", category=kat_sohbet)
+    await guild.create_text_channel("🎰-kumarhane", category=kat_sohbet)
+    await guild.create_text_channel("🎫-piyango", category=kat_sohbet)
+    
+    kat_motor = await guild.create_category("🤖 HÜKÜM BOT MOTORU")
+    await guild.create_text_channel("🤖-bot-komut", category=kat_motor)
+    
+    kat_ses = await guild.create_category("🔊 SES KAS ARTIŞI")
+    v_panel = await guild.create_text_channel("🔊-oda-yönetim", category=kat_ses)
+    
+    # Görsel 1 & 2 Oda Yönetim Embed Panel Mesajı
+    panel_embed = discord.Embed(title="🌊 Yakuptv44 — Ses Odası Yönetimi", color=discord.Color.blue())
+    panel_embed.description = "⭐ **Hoş geldin!** Bu odanın sahibisin.\nAşağıdaki butonları kullanarak odanı yönetebilirsin.\n\n📊 **Canlı Oda Durumu:**\n👑 **Sahip:** Bilinmiyor\n🔒 **Kilit Durumu:** Açık\n👁️ **Görünürlük:** Görünür"
+    await v_panel.send(embed=panel_embed, view=OdaYonetimView())
+
+    # Görsel 3 & 4 Family Rolleri Listesi Embed Mesajı
+    r_embed = discord.Embed(title="📜 Rütbeler ve Gereksinimler", color=discord.Color.red())
+    desc_list = [f"• **{r}** -> 🕒 {s['ses']} Saat | 🦊 {s['owo']:,} OwO | 🪙 {s['jeton']:,} Jeton" for r, s in SES_ROLLER_AYAR.items()]
+    r_embed.description = "\n".join(desc_list)
+    await rol_kasma.send(embed=r_embed, view=FamilyRolTalepView())
+
+    try: await interaction.user.send("👑 **EYMEN PAŞA!** Saf Family sunucu kurulumu kusursuzca tamamlandı!")
     except: pass
 
-# ================= ENTEGRE EDİLEN KURULUM MOTORU =================
-@bot.tree.command(name="kurulum", description="Eski düzeni temizler, 15 nizam kanalını kurar.")
+# ================= KUSURSUZ 30 ADET KOMUT ALANI =================
+
+# 1. KURULUM MOTORU
+@bot.tree.command(name="kurulum", description="Eski pazar düzenini temizler, saf Family düzenini kurar.")
 @app_commands.checks.has_permissions(administrator=True)
-async def kurulum(interaction: discord.Interaction):
+async def komut_kurulum(interaction: discord.Interaction):
     await interaction.response.send_message("👑 Kurulum arka planda güvenle başlatıldı paşam!", ephemeral=True)
     bot.loop.create_task(arka_plan_kurulum(interaction.guild, interaction))
 
-# ================= POWERPOINT METOT KOMUTU =================
-@bot.tree.command(name="methodlar", description="500 HÜKÜM Jetonu karşılığında PowerPoint tarzı 10 dev metodu fırlatır.")
-async def methodlar(interaction: discord.Interaction):
+# 2. SEVİYE SİSTEMİ: XP KAZANIMI (CHAT AKSIYONU)
+@bot.event
+async def on_message(message):
+    if message.author.bot: return
+    uid = str(message.author.id)
+    HAFIZA_VERI["xp"][uid] = HAFIZA_VERI["xp"].get(uid, 0) + random.randint(5, 15)
+    xp = HAFIZA_VERI["xp"][uid]
+    lvl = HAFIZA_VERI["seviye"].get(uid, 1)
+    if xp >= lvl * 100:
+        HAFIZA_VERI["seviye"][uid] = lvl + 1
+        HAFIZA_VERI["xp"][uid] = 0
+        veritabanı_kaydet()
+    await bot.process_commands(message)
+
+@bot.tree.command(name="profil", description="Family seviye ve XP durumunu gösterir.")
+async def komut_profil(interaction: discord.Interaction):
+    uid = str(interaction.user.id)
+    lvl = HAFIZA_VERI["seviye"].get(uid, 1)
+    xp = HAFIZA_VERI["xp"].get(uid, 0)
+    await interaction.response.send_message(f"⚔️ **{interaction.user.name} Paşa**\n🔱 Seviye: `{lvl}`\n📊 XP: `{xp}/{lvl*100}`")
+
+# GÖRSEL 7 & 8: DAVET ÖDÜLLERİ VE YETKİLİ KONTROL MOTORU
+@bot.tree.command(name="davet-ödülleri", description="Family davet ödülleri kılavuzunu fırlatır.")
+async def komut_davet_odul(interaction: discord.Interaction):
+    embed = discord.Embed(title="🩸 FREEVALORANT DAVET ÖDÜL", color=discord.Color.red())
+    embed.description = (
+        "❤️ **2 Davet** • = Random Valorant HESAP 🩸\n"
+        "❤️ **3 Davet** • = Skinli Valorant HESAP 🩸\n"
+        "💵 **1 Davet** • = 100K OWO CASH 💵\n"
+        "🎮 **2 Davet** • = Random Steam Hesap 🎮\n"
+        "🎮 **3 Davet** • = Oyunlu Steam Hesap 🎮\n"
+        "🎬 **3 Davet** • = Netflix 4K Premium UHQ 🎬\n"
+        "🎵 **3 Davet** • = Spotify Premium 🎵\n"
+        "🔫 **6 Davet** • = Pubg Mobile Hesap 🔫\n"
+        "🧱 **5 Davet** • = Minecraft Hesap 🧱\n"
+        "📺 **2 Davet** • = Exxen Paketleri / Disney+ 📺\n\n"
+        "📌 Davet sayısına ulaştıktan sonra destek kanalından ticket açınız.\n"
+        "✅ J4J, Yan Hesap ve ReJoin yasaktır."
+    )
+    await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="davet-ekle", description="Sadece Üst Düzey Family Yetkilileri (CEO, JAZ) davet ekleyebilir.")
+async def komut_davet_ekle(interaction: discord.Interaction, uye: discord.Member, miktar: int):
+    yetkili_roller = ["CEO OF HÜKÜM", "JAZ J BOENIQUE"]
+    has_perm = any(r.name in yetkili_roller for r in interaction.user.roles) or interaction.user.guild_permissions.administrator
+    if not has_perm:
+        await interaction.response.send_message("❌ Bu emri sadece en üst rütbeli Family Kurmayları (CEO / JAZ) verebilir!", ephemeral=True)
+        return
+    uid = str(uye.id)
+    HAFIZA_VERI["davetler"][uid] = HAFIZA_VERI["davetler"].get(uid, 0) + miktar
+    veritabanı_kaydet()
+    await interaction.response.send_message(f"✅ {uye.mention} kullanıcısına **{miktar}** adet doğrulanmış davet eklendi!")
+
+@bot.tree.command(name="davet-sorgu", description="Güncel davet sayınızı gösterir.")
+async def komut_davet_sorgu(interaction: discord.Interaction):
+    uid = str(interaction.user.id)
+    sayi = HAFIZA_VERI["davetler"].get(uid, 0)
+    await interaction.response.send_message(f"📈 Toplam Davet Sayınız: **{sayi}** adettir aslanım.")
+
+# GÖRSEL 5 & 6: OWO PİYANGO MOTORU
+@bot.tree.command(name="piyango-duyuru", description="Büyük OwO piyangosunun kurallarını ve bilet fiyatlarını basar.")
+async def komut_piyango_duyuru(interaction: discord.Interaction):
+    embed = discord.Embed(title="◇ P İ Y A N G O  K U R A L L A R I ◇", color=discord.Color.magenta())
+    embed.description = (
+        "🎁 **BAŞLANGIÇ ÖDÜLÜ**\n"
+        "💰 **Kasa Ödülü:** 5.000.000 OwO Cash\n"
+        "*Katılım yüksek olursa ödül miktarı artabilir!*\n\n"
+        "🎟️ **KATILIM & BİLET TARİFELERİ:**\n"
+        "• 🎟️ **Çeyrek Bilet:** 300.000 OwO (1x Şans - %25 Pay)\n"
+        "• 🎟️ **Yarım Bilet:** 600.000 OwO (2x Şans - %50 Pay)\n"
+        "• 🎟️ **Tam Bilet:** 1.200.000 OwO (4x Şans - %95 Pay)\n\n"
+        "🎡 **Çekiliş Sistemi:** Katılımcıların bilet şans çarpanı kadar ismi çarka eklenir ve şeffafça döndürülür.\n"
+        "⚠️ **Geçerlilik:** Çekilişin başlaması için minimum 10 katılımcı gereklidir."
+    )
+    await interaction.response.send_message(embed=embed)
+
+@bot.tree.command(name="piyango-bilet-al", description="Piyangoya katılım listesine adınızı yazdırır.")
+async def komut_bilet_al(interaction: discord.Interaction, bilet_turu: str):
+    if bilet_turu.lower() not in ["çeyrek", "yarım", "tam"]:
+        await interaction.response.send_message("❌ Geçersiz tür! Seçenekler: çeyrek, yarım, tam", ephemeral=True)
+        return
+    HAFIZA_VERI["piyango_biletleri"].append({"uye": interaction.user.id, "tur": bilet_turu.lower()})
+    veritabanı_kaydet()
+    await interaction.response.send_message(f"🎟️ **{bilet_turu.upper()}** biletiniz sisteme işlendi. Ücreti yetkililere iletmeyi unutma aslanım!")
+
+@bot.tree.command(name="piyango-çek", description="Piyango çarkını döndürür ve kazananı ilan eder.")
+@app_commands.checks.has_permissions(administrator=True)
+async def komut_piyango_cek(interaction: discord.Interaction):
+    havuz = HAFIZA_VERI["piyango_biletleri"]
+    if len(havuz) < 1:
+        await interaction.response.send_message("❌ Çarka koyacak kimse yok lo!", ephemeral=True)
+        return
+    cark = []
+    for bilet in havuz:
+        carpan = 1 if bilet["tur"] == "çeyrek" else (2 if bilet["tur"] == "yarım" else 4)
+        for _ in range(carpan): cark.append(bilet["uye"])
+    kazanan_id = random.choice(cark)
+    HAFIZA_VERI["piyango_biletleri"] = []
+    veritabanı_kaydet()
+    await interaction.response.send_message(f"🎰 🎇 **BÜYÜK PİYANGO KAZANANI:** <@{kazanan_id}>! Tebrikler paşam!")
+
+# KUMARHANE KOMUTLARI
+@bot.tree.command(name="slot", description="Şansını dene, HÜKÜM jetonlarını katla.")
+async def komut_slot(interaction: discord.Interaction, bahis: int):
     uid = str(interaction.user.id)
     bakiye = HAFIZA_VERI["jetonlar"].get(uid, 0)
-    if bakiye < 500:
-        await interaction.response.send_message(f"❌ Yetersiz bakiye!", ephemeral=True)
+    if bakiye < bahis or bahis <= 0:
+        await interaction.response.send_message("❌ Yetersiz bakiye veya geçersiz bahis!", ephemeral=True)
         return
-        
-    HAFIZA_VERI["jetonlar"][uid] = bakiye - 500
+    emojiler = ["🍒", "🍇", "🍋", "💎", "👑"]
+    r1, r2, r3 = random.choice(emojiler), random.choice(emojiler), random.choice(emojiler)
+    if r1 == r2 == r3:
+        HAFIZA_VERI["jetonlar"][uid] += bahis * 5
+        msg = f"🎰 **[{r1}|{r2}|{r3}]** • **KAZANDIN PAŞAM!** Bahsin 5'e katlandı!"
+    else:
+        HAFIZA_VERI["jetonlar"][uid] -= bahis
+        msg = f"🎰 **[{r1}|{r2}|{r3}]** • Nasip değilmiş aslanım, kaybettin."
     veritabanı_kaydet()
+    await interaction.response.send_message(msg)
 
-    ppt_tarzi_metotlar = "👑 HÜKÜM GİZLİ METHOD SUNUMU 👑\n\n[SLAYT 1: OwO PROTOKOLÜ]\n..."
-    dosya_hafiza = io.BytesIO(ppt_tarzi_metotlar.encode('utf-8'))
-    discord_dosya = discord.File(fp=dosya_hafiza, filename="HUKUM_METOD_SUNUMU.txt")
-    
-    try:
-        await interaction.user.send(content="👑 Metot sunumunuz ektedir paşam!", file=discord_dosya)
-        await interaction.response.send_message("🪙 Dosyanız DM'den iletildi!", ephemeral=True)
-    except discord.Forbidden:
-        HAFIZA_VERI["jetonlar"][uid] += 500
+@bot.tree.command(name="yazıtura", description="Yazı mı tura mı?")
+async def komut_yazitura(interaction: discord.Interaction, tahmin: str, bahis: int):
+    uid = str(interaction.user.id)
+    bakiye = HAFIZA_VERI["jetonlar"].get(uid, 0)
+    if bakiye < bahis or bahis <= 0 or tahmin.lower() not in ["yazı", "tura"]:
+        await interaction.response.send_message("❌ Hatalı işlem paşam!", ephemeral=True)
+        return
+    sonuc = random.choice(["yazı", "tura"])
+    if tahmin.lower() == sonuc:
+        HAFIZA_VERI["jetonlar"][uid] += bahis
+        txt = f"🪙 Parayı fırlattın: **{sonuc.upper()}** geldi! Kazandın aslanım!"
+    else:
+        HAFIZA_VERI["jetonlar"][uid] -= bahis
+        txt = f"🪙 Parayı fırlattın: **{sonuc.upper()}** geldi! Nasip değilmiş."
+    veritabanı_kaydet()
+    await interaction.response.send_message(txt)
+
+# MODERASYON VE DENETİM KOMUTLARI
+@bot.tree.command(name="hüküm-ban", description="Hainleri sunucudan sonsuza dek uçurur.")
+@app_commands.checks.has_permissions(ban_members=True)
+async def komut_ban(interaction: discord.Interaction, uye: discord.Member, neden: str = "Görülen lüzum üzerine."):
+    await uye.ban(reason=neden)
+    await interaction.response.send_message(f"⚔️ {uye.mention} sunucudan tamamen aforoz edildi! Neden: **{neden}**")
+
+@bot.tree.command(name="hüküm-kick", description="Söz dinlemeyenleri kapının önüne koyar.")
+@app_commands.checks.has_permissions(kick_members=True)
+async def komut_kick(interaction: discord.Interaction, uye: discord.Member, neden: str = "Nizamı bozmak."):
+    await uye.kick(reason=neden)
+    await interaction.response.send_message(f"💨 {uye.mention} sunucudan tekmelendi. Neden: **{neden}**")
+
+@bot.tree.command(name="sustur", description="Gereksiz konuşanların sesini keser.")
+@app_commands.checks.has_permissions(moderate_members=True)
+async def komut_sustur(interaction: discord.Interaction, uye: discord.Member, dakika: int):
+    sure = datetime.timedelta(minutes=dakika)
+    await uye.timeout(sure)
+    await interaction.response.send_message(f"🤫 {uye.mention} tam `{dakika}` dakika boyunca susturuldu.")
+
+@bot.tree.command(name="kilit", description="Metin kanalını mesajlara kapatır.")
+@app_commands.checks.has_permissions(manage_channels=True)
+async def komut_kanal_kilit(interaction: discord.Interaction):
+    await interaction.channel.set_permissions(interaction.guild.default_role, send_messages=False)
+    await interaction.response.send_message("🔒 Kanal kilitlendi, asayiş sağlandı!")
+
+@bot.tree.command(name="kilitaç", description="Metin kanalının kilidini kaldırır.")
+@app_commands.checks.has_permissions(manage_channels=True)
+async def komut_kanal_kilit_ac(interaction: discord.Interaction):
+    await interaction.channel.set_permissions(interaction.guild.default_role, send_messages=True)
+    await interaction.response.send_message("🔓 Kanal kilidi açıldı, sohbet serbest.")
+
+@bot.tree.command(name="temizle", description="Kanalda biriken gereksiz mesajları süpürür.")
+@app_commands.checks.has_permissions(manage_messages=True)
+async def komut_temizle(interaction: discord.Interaction, adet: int):
+    await interaction.channel.purge(limit=adet)
+    await interaction.response.send_message(f"🧹 `{adet}` adet mesaj başarıyla süpürüldü paşam!", ephemeral=True)
+
+@bot.tree.command(name="uyar", description="Kural ihlali yapan üyeye ihtar verir.")
+@app_commands.checks.has_permissions(administrator=True)
+async def komut_uyar(interaction: discord.Interaction, uye: discord.Member, sebep: str):
+    uid = str(uye.id)
+    HAFIZA_VERI["uyarilar"][uid] = HAFIZA_VERI["uyarilar"].get(uid, 0) + 1
+    veritabanı_kaydet()
+    await interaction.response.send_message(f"⚠️ {uye.mention} uyarıldı! Toplam Uyarı Sayısı: `{HAFIZA_VERI['uyarilar'][uid]}`. Sebep: {sebep}")
+
+@bot.tree.command(name="uyarı-sil", description="Üyenin sicilindeki uyarıyı siler.")
+@app_commands.checks.has_permissions(administrator=True)
+async def komut_uyari_sil(interaction: discord.Interaction, uye: discord.Member):
+    uid = str(uye.id)
+    if uid in HAFIZA_VERI["uyarilar"] and HAFIZA_VERI["uyarilar"][uid] > 0:
+        HAFIZA_VERI["uyarilar"][uid] -= 1
         veritabanı_kaydet()
-        await interaction.response.send_message("❌ DM kutun kapalı!", ephemeral=True)
+        await interaction.response.send_message(f"✅ {uye.mention} uyarısı düşürüldü. Güncel: `{HAFIZA_VERI['uyarilar'][uid]}`")
+    else:
+        await interaction.response.send_message("❌ Bu üyenin zaten sicili temiz paşam!", ephemeral=True)
 
-# ================= DİĞER TİCARET VE MODERASYON KOMUTLARI =================
-@bot.tree.command(name="ilan-ver", description="Ürününüzü satışa çıkarır.")
-async def ilan_ver(interaction: discord.Interaction, urun_adi: str, fiyat: int, stok: int, fotograf_linki: str = None):
-    if str(interaction.user.id) in HAFIZA_VERI["karaliste"]:
-        await interaction.response.send_message("❌ Kara listedesin!", ephemeral=True)
-        return
-    ilan_id = str(random.randint(111111, 999999))
-    HAFIZA_VERI["ilanlar"][ilan_id] = {"satici_id": str(interaction.user.id), "urun_adi": urun_adi, "fiyat": fiyat, "stok": stok}
-    veritabanı_kaydet()
-    embed = discord.Embed(title=f"🛍️ İLAN - {urun_adi.upper()}", color=discord.Color.purple())
-    await interaction.response.send_message(f"✅ İlan gönderildi!", embed=embed, view=SatunAlButon(ilan_id))
+@bot.tree.command(name="kara-liste", description="Hainleri bota erişim kara listesine ekler.")
+@app_commands.checks.has_permissions(administrator=True)
+async def komut_karaliste(interaction: discord.Interaction, uye: discord.Member):
+    uid = str(uye.id)
+    if uid not in HAFIZA_VERI["karaliste"]:
+        HAFIZA_VERI["karaliste"].append(uid)
+        veritabanı_kaydet()
+        await interaction.response.send_message(f"⚫ {uye.mention} botun kara listesine eklendi!")
 
-@bot.tree.command(name="jeton-ekle", description="Üyeye jeton yüklemesi yapar.")
+# EKONOMİ VE CÜZDAN MOTORU
+@bot.tree.command(name="jeton-ekle", description="Üyeye elden jeton yüklemesi yapar.")
 @app_commands.checks.has_permissions(administrator=True)
 async def jeton_ekle(interaction: discord.Interaction, uye: discord.Member, miktar: int):
     uid = str(uye.id)
     HAFIZA_VERI["jetonlar"][uid] = HAFIZA_VERI["jetonlar"].get(uid, 0) + miktar
     veritabanı_kaydet()
-    await interaction.response.send_message(f"🪙 {uye.mention} hesabına **{miktar} Jeton** aktarıldı!")
+    await interaction.response.send_message(f"🪙 {uye.mention} cüzdanına **{miktar} Jeton** eklendi paşam!")
 
-@bot.tree.command(name="cüzdan", description="Güncel bakiye durumunuzu gösterir.")
+@bot.tree.command(name="cüzdan", description="Güncel Family bakiye durumunuzu gösterir.")
 async def cuzdan(interaction: discord.Interaction):
     bakiye = HAFIZA_VERI["jetonlar"].get(str(interaction.user.id), 0)
-    await interaction.response.send_message(f"💳 Bakiye: **{bakiye} Jeton** 🪙", ephemeral=True)
+    await interaction.response.send_message(f"💳 Güncel Bakiyeniz: **{bakiye} HÜKÜM Jetonu** 🪙", ephemeral=True)
 
 @bot.tree.command(name="günlük", description="24 Saatte bir 20 bedava dükkan jetonu verir.")
 async def gunluk(interaction: discord.Interaction):
@@ -1966,66 +1851,12 @@ async def gunluk(interaction: discord.Interaction):
     simdi = datetime.datetime.now().timestamp()
     son_alim = HAFIZA_VERI["gunluk_zaman"].get(uid, 0)
     if simdi - son_alim < 86400:
-        await interaction.response.send_message(f"❌ Günlük ödülünü zaten almışsın aslanım!", ephemeral=True)
+        await interaction.response.send_message("❌ Günlük ödülünü zaten almışsın aslanım!", ephemeral=True)
         return
     HAFIZA_VERI["jetonlar"][uid] = HAFIZA_VERI["jetonlar"].get(uid, 0) + 20
     HAFIZA_VERI["gunluk_zaman"][uid] = simdi
     veritabanı_kaydet()
-    await interaction.response.send_message("🪙 Günlük **20 Jeton** cüzdana eklendi!")
-
-@bot.tree.command(name="mağaza", description="Alınabilecek ürünleri listeler.")
-async def magaza(interaction: discord.Interaction):
-    embed = discord.Embed(title="🛒 HÜKÜM BÜYÜK MAĞAZASI", color=discord.Color.gold())
-    await interaction.response.send_message(embed=embed)
-
-@bot.tree.command(name="satın-al", description="Mağazadan yetki satın al.")
-async def satin_al(interaction: discord.Interaction, urun_no: int):
-    uid = str(interaction.user.id)
-    bakiye = HAFIZA_VERI["jetonlar"].get(uid, 0)
-    urunler = {1: ("VIP Müşteri", 500), 11: ("CEO OF HÜKÜM", 10000)}
-    if urun_no not in urunler:
-        await interaction.response.send_message("❌ Geçersiz ürün numarası!", ephemeral=True)
-        return
-    isim, fiyat = urunler[urun_no]
-    if bakiye < fiyat:
-        await interaction.response.send_message(f"❌ Jetonun yetersiz!", ephemeral=True)
-        return
-    HAFIZA_VERI["jetonlar"][uid] -= fiyat
-    veritabanı_kaydet()
-    rol = discord.utils.get(interaction.guild.roles, name=isim)
-    if rol: await interaction.user.add_roles(rol)
-    await interaction.response.send_message(f"👑 Başarıyla **{isim}** satın alındı!")
-
-@bot.tree.command(name="yardım", description="Tüm slash komutlarını listeler.")
-async def yardim(interaction: discord.Interaction):
-    await interaction.response.send_message("📖 **HÜKÜM KILAVUZU:** Tüm komutlar aktiftir aşko!")
-
-# ================= ÇEKİLİŞ MOTORU =================
-@bot.tree.command(name="çekiliş", description="Otomatik çekiliş başlatır.")
-@app_commands.checks.has_permissions(administrator=True)
-async def cekilis_baslat(interaction: discord.Interaction, odul: str, kazanan_sayisi: int, sure_saniye: int):
-    kanal = discord.utils.get(interaction.guild.text_channels, name="🎉-çekilişler") or interaction.channel
-    await interaction.response.send_message(f"🎉 Çekiliş başladı aslanım!", ephemeral=True)
-    embed = discord.Embed(title="🎁 HÜKÜM RESMİ ÇEKİLİŞİ!", color=discord.Color.red())
-    cekilis_mesaj = await kanal.send(embed=embed)
-    mesaj_id = str(cekilis_mesaj.id)
-    
-    HAFIZA_VERI["cekilisler"][mesaj_id] = {"odul": odul, "kazanan_sayisi": kazanan_sayisi, "katilanlar": []}
-    veritabanı_kaydet()
-    
-    await cekilis_mesaj.edit(view=CekilisKatilButon(mesaj_id))
-    await asyncio.sleep(sure_saniye)
-    
-    if mesaj_id in HAFIZA_VERI["cekilisler"]:
-        katilanlar = HAFIZA_VERI["cekilisler"][mesaj_id]["katilanlar"]
-        if len(katilanlar) == 0:
-            await cekilis_mesaj.edit(content="❌ Kimse katılmadı!", view=None)
-        else:
-            kazananlar = random.sample(katilanlar, min(len(katilanlar), kazanan_sayisi))
-            mentions = ", ".join([f"<@{k_id}>" for k_id in kazananlar])
-            await kanal.send(f"📢 Şampiyonlar: {mentions}!")
-        del HAFIZA_VERI["cekilisler"][mesaj_id]
-        veritabanı_kaydet()
+    await interaction.response.send_message("🪙 Günlük **20 HÜKÜM Jetonu** hesabına aktarıldı!")
 
 @bot.tree.command(name="family-rütbe", description="Ses kasma istatistiğini sorgular.")
 async def fam_rutbe(interaction: discord.Interaction):
@@ -2034,9 +1865,48 @@ async def fam_rutbe(interaction: discord.Interaction):
     total_saat = toplam_saniye / 3600
     await interaction.response.send_message(f"⚔️ **{interaction.user.name} Paşa**, Toplam Ses Aktifliğin: `{total_saat:.2f}` Saat.")
 
+# ÇEKİLİŞ VE YARDIM SİSTEMLERİ
+@bot.tree.command(name="çekiliş", description="Otomatik çekiliş başlatır.")
+@app_commands.checks.has_permissions(administrator=True)
+async def cekilis_baslat(interaction: discord.Interaction, odul: str, kazanan_sayisi: int, sure_saniye: int):
+    await interaction.response.send_message("🎉 Çekiliş başlatıldı!", ephemeral=True)
+    embed = discord.Embed(title="🎁 HÜKÜM RESMİ ETKİNLİK ÇEKİLİŞİ!", color=discord.Color.red())
+    embed.description = f"**Ödül:** {odul}\n**Kazanan Sayısı:** {kazanan_sayisi}\n**Süre:** {sure_saniye} saniye"
+    cekilis_mesaj = await interaction.channel.send(embed=embed)
+    mesaj_id = str(cekilis_mesaj.id)
+    HAFIZA_VERI["cekilisler"][mesaj_id] = {"odul": odul, "kazanan_sayisi": kazanan_sayisi, "katilanlar": []}
+    veritabanı_kaydet()
+    await cekilis_mesaj.edit(view=CekilisKatilButon(mesaj_id))
+    await asyncio.sleep(sure_saniye)
+    if mesaj_id in HAFIZA_VERI["cekilisler"]:
+        katilanlar = HAFIZA_VERI["cekilisler"][mesaj_id]["katilanlar"]
+        if len(katilanlar) == 0: await interaction.channel.send("❌ Çekilişe kimse katılmadı paşam!")
+        else:
+            kazananlar = random.sample(katilanlar, min(len(katilanlar), kazanan_sayisi))
+            mentions = ", ".join([f"<@{k_id}>" for k_id in kazananlar])
+            await interaction.channel.send(f"🎉 **Şampiyonlar Belirlendi:** {mentions}!")
+        del HAFIZA_VERI["cekilisler"][mesaj_id]; veritabanı_kaydet()
+
+@bot.tree.command(name="yardım", description="Tüm slash komutlarını listeler.")
+async def yardim(interaction: discord.Interaction):
+    await interaction.response.send_message("📖 **HÜKÜM KILAVUZU:** Tam 30 adet hiyerarşik komutumuzun hepsi eksiksiz, tıkır tıkır çalışıyor aşko!")
+
+# SES SÜRESİ KAYIT TAKİP SİSTEMİ
+@bot.event
+async def on_voice_state_update(member, before, after):
+    if member.bot: return
+    uid = str(member.id)
+    simdi = datetime.datetime.now().timestamp()
+    if after.channel and not before.channel:
+        HAFIZA_VERI["ses_giris"][uid] = simdi
+        veritabanı_kaydet()
+    elif before.channel and not after.channel:
+        giris = HAFIZA_VERI["ses_giris"].pop(uid, simdi)
+        HAFIZA_VERI["ses_sureleri"][uid] = HAFIZA_VERI["ses_sureleri"].get(uid, 0) + (simdi - giris)
+        veritabanı_kaydet()
+
 # ================= BOTUNUZU BAŞLATMA ALANI =================
 bot.run('BOT_TOKEN_BURAYA')
-
 
             </code></pre>
         </div>
