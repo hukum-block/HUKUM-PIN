@@ -120,7 +120,6 @@ class HukumBot(commands.Bot):
         # Persistent Görünümler Kaydediliyor Paşam (Bot kapansa da butonlar çalışır)
         self.add_view(KayitButonu())
         self.add_view(DunyaSecimView())
-        self.add_view(RolOnayView())
         self.add_view(FamilyRolTalepView())
         self.add_view(OzelOdaGelismisView()) 
         self.add_view(OzelOdaKontrolButonlari())
@@ -224,7 +223,7 @@ async def hiyerarsi_komut_kontrol(interaction: discord.Interaction, gereken_rol:
     user_max = get_max_kademe(interaction.user)
     gereken_score = 0
     if gereken_rol in SES_ROLLER_AYAR:
-        gereken_score = SES_ROLLER_AYAR[generen_rol]["kademe"]
+        gereken_score = SES_ROLLER_AYAR[gereken_rol]["kademe"]
     elif gereken_rol in MOD_HİYERARŞİ:
         gereken_score = MOD_HİYERARŞİ[gereken_rol]
         
@@ -409,13 +408,14 @@ class DunyaSecimView(discord.ui.View):
 class KayitModal(discord.ui.Modal, title='HÜKÜM Giriş Paneli'):
     amac = discord.ui.TextInput(label='Sunucuya ne için geldiniz?', placeholder='Örn: Family ortamı...', style=discord.TextStyle.long)
     async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
         guild = interaction.guild
         member = interaction.user
         dogrulandi_rol = discord.utils.get(guild.roles, name="🔵 Doğrulandı")
         dogrulanmadi_rol = discord.utils.get(guild.roles, name="⚪ Doğrulanmadı")
         if dogrulanmadi_rol and dogrulanmadi_rol in member.roles: await member.remove_roles(dogrulanmadi_rol)
         if dogrulandi_rol: await member.add_roles(dogrulandi_rol)
-        await interaction.response.send_message("✅ Kimliğin doğrulandı aslanım! Şimdi aşağıdan dünyanı seç:", view=DunyaSecimView(), ephemeral=True)
+        await interaction.followup.send("✅ Kimliğin doğrulandı aslanım! Şimdi aşağıdan dünyanı seç:", view=DunyaSecimView(), ephemeral=True)
 
 class KayitButonu(discord.ui.View):
     def __init__(self): super().__init__(timeout=None)
@@ -517,7 +517,7 @@ class OzelOdaGelismisView(discord.ui.View):
 
     @discord.ui.button(label="➕ Özel Ses Odası Aç", style=discord.ButtonStyle.success, custom_id="ozel_ses_ac_hukum_yeni")
     async def ses_ac(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.defer(ephemeral=True) # TIMEOUT KESİNLİKLE ENGELLENDİ
+        await interaction.response.defer(ephemeral=True) # TIMEOUT ENGELLENDİ
         guild = interaction.guild
         uid = str(interaction.user.id)
         
@@ -631,11 +631,11 @@ class OzelOdaKontrolButonlari(discord.ui.View):
 
 # ================= 📝 ENTEGRE İSTEK-ÖNERİ MOTORU =================
 class IstekOneriModal(discord.ui.Modal, title="HÜKÜM İstek & Öneri Sunum Paneli"):
-    q1 = discord.ui.TextInput(label="Adınız ve Sloganınız nedir?", placeholder="Örn: Eymen Paşa - HÜKÜM Baş Eğmez", style=discord.TextStyle.short)
-    q2 = discord.ui.TextInput(label="Hangi Proje/Sistem için öneride bulunuyorsunuz?", placeholder="Örn: Altyapı, Bot, Discord Düzeni...", style=discord.TextStyle.short)
-    q3 = discord.ui.TextInput(label="Sistemde eksik gördüğünüz 3 şey nedir?", placeholder="Maddeler halinde yazın paşam...", style=discord.TextStyle.long)
-    q4 = discord.ui.TextInput(label="Eklenmesini istediğiniz ana vizyon nedir?", placeholder="Sistemi şahlandıracak fikriniz...", style=discord.TextStyle.long)
-    q5 = discord.ui.TextInput(label="Ekibe iletmek istediğiniz son söz fermanı?", placeholder="Mertçe fikrini beyan et lo...", style=discord.TextStyle.long)
+    q1 = discord.ui.TextInput(label="Adınız ve Sloganınız nedir?", placeholder="Eymen Paşa - HÜKÜM Baş Eğmez", style=discord.TextStyle.short)
+    q2 = discord.ui.TextInput(label="Hangi Proje/Sistem için?", placeholder="Altyapı, Bot, Discord Düzeni...", style=discord.TextStyle.short)
+    q3 = discord.ui.TextInput(label="Eksik gördüğünüz 3 şey nedir?", placeholder="Maddeler halinde yazın paşam...", style=discord.TextStyle.long)
+    q4 = discord.ui.TextInput(label="Eklenmesini istediğiniz ana vizyon?", placeholder="Sistemi şahlandıracak fikriniz...", style=discord.TextStyle.long)
+    q5 = discord.ui.TextInput(label="Ekibe son ferman mesajınız?", placeholder="Mertçe fikrini beyan et lo...", style=discord.TextStyle.long)
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
@@ -1429,4 +1429,3 @@ function copyCode() {
 
 </body>
 </html>
-
