@@ -137,23 +137,23 @@ def veritabanı_yukle():
     if os.path.exists(DOSYA_ADI):
         with open(DOSYA_ADI, "r", encoding="utf-8") as f:
             try:
-                return json.load(f)
+                data = json.load(f)
+                # Eksik anahtarlar varsa KeyError vermemesi için dinamik check atıyoruz paşam
+                varsayilanlar = {
+                    "jetonlar": {}, "gunluk_zaman": {}, "vouchlar": {}, "karaliste": [],
+                    "uyarilar": {}, "cekilisler": {}, "yarismalar": {}, "ses_sureleri": {},
+                    "ses_giris": {}, "ozel_odalar": {}, "piyangolar": {}, "davet_odulleri": {}, "istekler": {}
+                }
+                for k, v in varsayilanlar.items():
+                    if k not in data:
+                        data[k] = v
+                return data
             except:
                 pass
     return {
-        "jetonlar": {},
-        "gunluk_zaman": {},
-        "vouchlar": {},
-        "karaliste": [],
-        "uyarilar": {},
-        "cekilisler": {},
-        "yarismalar": {},
-        "ses_sureleri": {},
-        "ses_giris": {},
-        "ozel_odalar": {},  
-        "piyangolar": {},   
-        "davet_odulleri": {},
-        "istekler": {}
+        "jetonlar": {}, "gunluk_zaman": {}, "vouchlar": {}, "karaliste": [],
+        "uyarilar": {}, "cekilisler": {}, "yarismalar": {}, "ses_sureleri": {},
+        "ses_giris": {}, "ozel_odalar": {}, "piyangolar": {}, "davet_odulleri": {}, "istekler": {}
     }
 
 def veritabanı_kaydet():
