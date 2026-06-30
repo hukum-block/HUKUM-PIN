@@ -224,7 +224,7 @@ async def hiyerarsi_komut_kontrol(interaction: discord.Interaction, gereken_rol:
     user_max = get_max_kademe(interaction.user)
     gereken_score = 0
     if gereken_rol in SES_ROLLER_AYAR:
-        gereken_score = SES_ROLLER_AYAR[gereken_rol]["kademe"]
+        gereken_score = SES_ROLLER_AYAR[generen_rol]["kademe"]
     elif gereken_rol in MOD_HİYERARŞİ:
         gereken_score = MOD_HİYERARŞİ[gereken_rol]
         
@@ -271,7 +271,6 @@ async def on_member_join(member):
                     inviter = yeni_invite.inviter
                     if inviter:
                         uid_inviter = str(inviter.id)
-                        # Toplam geçerli davet sayısını hesapla
                         user_invites = sum(i.uses for i in yeni_davetler if i.inviter == inviter)
                         
                         if str(user_invites) in HAFIZA_VERI["davet_odulleri"]:
@@ -452,10 +451,10 @@ class YarismaOySecim(discord.ui.Select):
         super().__init__(placeholder="⭐ Oy vermek istediğin sunucuyu seç...", min_values=1, max_values=1, options=options)
 
     async def callback(self, interaction: discord.Interaction):
+        mid = str(interaction.message.id)
         if self.values[0] == "bos":
             await interaction.response.send_message("❌ Önce bir sunucu katılsın paşam!", ephemeral=True)
             return
-        mid = str(interaction.message.id)
         if mid not in HAFIZA_VERI["yarismalar"]:
             await interaction.response.send_message("❌ Bu yarışma sonlandı lo!", ephemeral=True)
             return
@@ -766,7 +765,6 @@ async def arka_plan_kurulum(guild, interaction):
         ("🔥 La Vida Loca", 0xff5555),
         ("⚡ HIZIMA YETİŞ", 0x2980b9),
         
-        # Moderasyon Hiyerarşi Ekibi
         ("👑 SY Sunucu Yöneticisi", 0x111111),
         ("👑 Mod Lideri", 0x9b59b6),
         ("📋 Mod Lider Yardımcısı", 0x8e44ad),
@@ -778,7 +776,6 @@ async def arka_plan_kurulum(guild, interaction):
         ("🛡️ Koruma Görevlisi", 0x34495e),
         ("💻 Geliştirici", 0x3498db),
 
-        # Perm / İzin Rolleri
         ("📢 Duyuru Perm", 0xffaa00),
         ("🔊 Ses Perm", 0x00ffcc),
         ("🎥 Yayın Perm", 0xcc00ff),
@@ -814,7 +811,6 @@ async def arka_plan_kurulum(guild, interaction):
         dogrulandi_rolu: discord.PermissionOverwrite(read_messages=True, view_channel=True) if dogrulandi_rolu else discord.PermissionOverwrite()
     }
 
-    # KANALLARI KURMA
     kat_nizamiye = await guild.create_category("📝 HÜKÜM NİZAMİYE")
     ow_kayit = {
         guild.default_role: discord.PermissionOverwrite(read_messages=True, send_messages=False),
@@ -824,7 +820,6 @@ async def arka_plan_kurulum(guild, interaction):
     await kayit_odasi.send("👋 **HÜKÜM Family Dünyasına Hoş Geldin aslanım!**\nDoğrulanmak için butona bas lo!", view=KayitButonu())
     rehber_odasi = await guild.create_text_channel("🤖-bot-rehberi", overwrites=ow_kayit, category=kat_nizamiye)
 
-    # İSTEK ÖNERİ MERKEZ KATEGORİSİ (YENİ KANALLAR EKLENDİ)
     kat_istekler = await guild.create_category("📝 HÜKÜM İSTEK MERKEZİ", overwrites=ow_herkese_kapali)
     istek_panel_odasi = await guild.create_text_channel("📝-istek-öneri-yaz", category=kat_istekler)
     await istek_panel_odasi.send("👑 **HÜKÜM PROJE GELİŞTİRME MERKEZİ**\nSistemimize yenilik katmak, eksikleri kapatmak için aşağıdaki butona basıp ferman doldur paşam!", view=IstekOneriButonu())
@@ -1434,3 +1429,4 @@ function copyCode() {
 
 </body>
 </html>
+
