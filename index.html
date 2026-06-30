@@ -95,7 +95,7 @@
     <p class="subtitle">Satın aldığınız kod aşağıdadır. Butona basarak kopyalayabilirsiniz.</p>
     
     <div class="code-box-container">
-        <pre id="product-code"> import discord
+        <pre id="product-code">import discord
 from discord.ext import commands, tasks
 from discord import app_commands
 import random
@@ -517,7 +517,7 @@ class OzelOdaGelismisView(discord.ui.View):
 
     @discord.ui.button(label="➕ Özel Ses Odası Aç", style=discord.ButtonStyle.success, custom_id="ozel_ses_ac_hukum_yeni")
     async def ses_ac(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.defer(ephemeral=True) # TIYLANMA VE ZAMAN AŞIMI ENGELLENDİ
+        await interaction.response.defer(ephemeral=True) # TIMEOUT ENGELLENDİ
         guild = interaction.guild
         uid = str(interaction.user.id)
         
@@ -736,7 +736,6 @@ class IstekOneriYonetimButonlari(discord.ui.View):
 
 # ================= ARKA PLAN KURULUM MOTORU =================
 async def arka_plan_kurulum(guild, interaction):
-    # KANALLARI SİLMEDEN ÖNCE VE SONRA DISCORD INTERACTION LİMİTLERİNE ÖZEN GÖSTERİLDİ
     for channel in guild.channels:
         try: await channel.delete(); await asyncio.sleep(0.1)
         except: continue
@@ -766,7 +765,7 @@ async def arka_plan_kurulum(guild, interaction):
         ("🔥 La Vida Loca", 0xff5555),
         ("⚡ HIZIMA YETİŞ", 0x2980b9),
         
-        # Yenilenmiş Moderasyon Hiyerarşi Ekibi
+        # Moderasyon Hiyerarşi Ekibi
         ("👑 SY Sunucu Yöneticisi", 0x111111),
         ("👑 Mod Lideri", 0x9b59b6),
         ("📋 Mod Lider Yardımcısı", 0x8e44ad),
@@ -910,7 +909,47 @@ async def kurulum(interaction: discord.Interaction):
     await interaction.response.send_message("👑 Kurulum işlemi arka planda başarıyla başlatıldı Eymen Paşa!", ephemeral=True)
     bot.loop.create_task(arka_plan_kurulum(interaction.guild, interaction))
 
-# ================= 🎰 GELİŞMİŞ PİYANGO MOTORU =================
+# ================= 🎰 GELİŞMİŞ PİYANGO MOTORU VE BUTONU =================
+class PiyangoBitirButonu(discord.ui.View):
+    def __init__(self, piyango_id: str):
+        super().__init__(timeout=None)
+        self.piyango_id = str(piyango_id)
+
+    @discord.ui.button(label="Piyangoyu Bitir 🎲", style=discord.ButtonStyle.danger, custom_id="hukum_piyango_bitir_buton_gercek")
+    async def piyango_bitir_click(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if not ozel_yetki_kontrol(interaction):
+            await interaction.response.send_message("❌ Bu kurayı sadece şerefli HÜKÜM Kurmayları bitirebilir!", ephemeral=True)
+            return
+        
+        pid = self.piyango_id
+        if pid not in HAFIZA_VERI["piyangolar"]:
+            await interaction.response.send_message("❌ Bu kura zaten çekilmiş veya geçersiz paşam!", ephemeral=True)
+            return
+            
+        await interaction.response.defer()
+        piyango = HAFIZA_VERI["piyangolar"].pop(pid)
+        veritabanı_kaydet()
+        
+        havuz = []
+        for user_id, biletler in piyango["biletler"].items():
+            toplam_sans = (biletler.get("ceyrek", 0) * 1) + (biletler.get("yarim", 0) * 2) + (biletler.get("tam", 0) * 4)
+            havuz.extend([user_id] * toplam_sans)
+            
+        if not havuz:
+            await interaction.followup.send("❌ Piyango vakti doldu fakat hiç bilet alan yiğit çıkmadı lo!")
+            return
+            
+        kazanan_id = int(random.choice(havuz))
+        HAFIZA_VERI["jetonlar"][str(kazanan_id)] = HAFIZA_VERI["jetonlar"].get(str(kazanan_id), 0) + piyango["kasa"]
+        veritabanı_kaydet()
+        
+        embed = interaction.message.embeds[0]
+        embed.color = discord.Color.gold()
+        embed.set_footer(text=f"Kura Çekildi! Kazanan: {kazanan_id}")
+        await interaction.message.edit(embed=embed, view=None)
+        
+        await interaction.followup.send(f"🎉 **HÜKÜM BÜYÜK PİYANGOSU SONUÇLANDI!**\n👑 **{piyango['ad']}** Talihlisi: <@{kazanan_id}>\n💰 **{piyango['kasa']} Jeton** doğrudan cüzdanına aktarıldı! Dik dur aslanım!")
+
 @bot.tree.command(name="piyango-başlat", description="[CEO/JAZ ÖZEL] Büyük ödüllü HÜKÜM piyangosu başlatır.")
 async def piyango_baslat(interaction: discord.Interaction, piyango_adi: str, kasa_odulu: int):
     if not ozel_yetki_kontrol(interaction):
@@ -929,7 +968,7 @@ async def piyango_baslat(interaction: discord.Interaction, piyango_adi: str, kas
                         "• 🎫 **Yarım Bilet** : 20.000 Jeton (2x Şans - %50 Pay)\n" \
                         "• 🎫 **Tam Bilet** : 40.000 Jeton (4x Şans - %95 Pay)\n\n" \
                         f"**Piyango ID:** `{pid}` | Bilet almak için `/piyango-bilet-seç` kullanın."
-    await interaction.followup.send(embed=embed)
+    await interaction.followup.send(embed=embed, view=PiyangoBitirButonu(pid))
 
 @bot.tree.command(name="piyango-bilet-seç", description="Aktif piyangodan Çeyrek, Yarım veya Tam bilet alırsınız.")
 @app_commands.choices(bilet_turu=[
@@ -960,7 +999,7 @@ async def piyango_bilet_sec(interaction: discord.Interaction, piyango_id: str, b
     veritabanı_kaydet()
     await interaction.response.send_message(f"✅ Aktif piyangodan {adet} adet **{bilet_turu.upper()}** bileti aldın!", ephemeral=True)
 
-@bot.tree.command(name="piyango-çek", description="[CEO/JAZ ÖZEL] Piyangoyu sonlandırır.")
+@bot.tree.command(name="piyango-çek", description="[CEO/JAZ ÖZEL] Piyangoyu manuel sonlandırır.")
 async def piyango_cek(interaction: discord.Interaction, piyango_id: str):
     if not ozel_yetki_kontrol(interaction):
         await interaction.response.send_message("❌ Bu yetki sadece kurmay kadrosuna özeldir!", ephemeral=True)
@@ -1009,7 +1048,7 @@ async def davetlerim(interaction: discord.Interaction):
     except:
         user_invites = 0
     
-    embed = discord.Embed(title="🦅 FREEVALORANT DAVET ODUL VE HÜKÜM TAKİP SİSTEMİ", color=discord.Color.red())
+    embed = discord.Embed(title="🦅 HÜKÜM DAVET TAKİP VE ÖDÜL SİSTEMİ", color=discord.Color.red())
     embed.description = f"Girdiğin cepheye kazandırdığın nefer sayısı: **{user_invites} Davet**\n\n" \
                         "🎁 **Ödül Cetveli Tanımı:**\n" \
                         "• 2 Davet = Random Valorant Hesap\n" \
@@ -1023,7 +1062,7 @@ async def davetlerim(interaction: discord.Interaction):
         durum = "✅ Ulaşıldı" if user_invites >= int(hedef) else "❌ Henüz Ulaşılmadı"
         odul_listesi += f"• **{hedef} Davet**: {odul} Jeton ({durum})\n"
         
-    embed.add_field(name="🎁 Entegre Jeton Hedefleri", value=odul_listesi or "Henüz özel hiyerarşik jeton hedefi eklenmemiş paşam lo!", inline=False)
+    embed.add_field(name="🎁 Entegre Jeton Hedefleri", value=odul_listesi or "Henüz özel hiyerarşik jeton hedefi ekmenemiş paşam lo!", inline=False)
     await interaction.response.send_message(embed=embed, ephemeral=True)
 
 # ================= HİYERARŞİK KUMAR MOTORLARI =================
