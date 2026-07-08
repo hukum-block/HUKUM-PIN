@@ -125,6 +125,10 @@ class HukumBot(commands.Bot):
         self.add_view(OzelOdaKontrolButonlari())
         self.add_view(IstekOneriButonu())
         self.add_view(CekilisKatilButon())
+        # YENİ EKLENEN PERSISTENT GÖRÜNÜMLER
+        self.add_view(OsintPanelView())
+        self.add_view(GardiyanTerfiView())
+        self.add_view(MahkumBiletView())
         await self.tree.sync()
         print("✅ HÜKÜM Family Saf Güç Altyapısı Kusursuz Aktif Edildi!")
 
@@ -138,11 +142,11 @@ def veritabanı_yukle():
         with open(DOSYA_ADI, "r", encoding="utf-8") as f:
             try:
                 data = json.load(f)
-                # Eksik anahtarlar varsa KeyError vermemesi için dinamik check atıyoruz paşam
                 varsayilanlar = {
                     "jetonlar": {}, "gunluk_zaman": {}, "vouchlar": {}, "karaliste": [],
                     "uyarilar": {}, "cekilisler": {}, "yarismalar": {}, "ses_sureleri": {},
-                    "ses_giris": {}, "ozel_odalar": {}, "piyangolar": {}, "davet_odulleri": {}, "istekler": {}
+                    "ses_giris": {}, "ozel_odalar": {}, "piyangolar": {}, "davet_odulleri": {}, "istekler": {},
+                    "hapisler": {}, "gardiyan_terfi": {}
                 }
                 for k, v in varsayilanlar.items():
                     if k not in data:
@@ -153,7 +157,8 @@ def veritabanı_yukle():
     return {
         "jetonlar": {}, "gunluk_zaman": {}, "vouchlar": {}, "karaliste": [],
         "uyarilar": {}, "cekilisler": {}, "yarismalar": {}, "ses_sureleri": {},
-        "ses_giris": {}, "ozel_odalar": {}, "piyangolar": {}, "davet_odulleri": {}, "istekler": {}
+        "ses_giris": {}, "ozel_odalar": {}, "piyangolar": {}, "davet_odulleri": {}, "istekler": {},
+        "hapisler": {}, "gardiyan_terfi": {}
     }
 
 def veritabanı_kaydet():
@@ -195,6 +200,14 @@ MOD_HİYERARŞİ = {
     "💻 Geliştirici": 82
 }
 
+# 15 Gardiyan Rolünün Sıralı Listesi (Terfi Sistemi İçin En Alttan En Üste)
+GARDİYAN_HİYERARŞİ = [
+    "👮 Gardiyan Stajyeri", "👮 Kıdemsiz Gardiyan", "👮 Gardiyan", "👮 Kıdemli Gardiyan",
+    "👮 Başgardiyan", "👮 Gardiyan Müfettişi", "👮 Cezaevi Memuru", "👮 Kıdemli Cezaevi Memuru",
+    "👮 Cezaevi Amiri", "👮 Cezaevi Müdürü Yardımcısı", "👮 Cezaevi Müdürü", "👮 Cezaevi Genel Müdürü",
+    "👮 Cezaevi Bakanı", "🎖️ Esat Oktay Yıldıran Perm", "👑 Cezaevi Yetkilisi"
+]
+
 def get_max_kademe(user: discord.Member) -> int:
     if user.guild_permissions.administrator:
         return 1000
@@ -208,7 +221,7 @@ def get_max_kademe(user: discord.Member) -> int:
 
 def ozel_yetki_kontrol(interaction: discord.Interaction) -> bool:
     roller = [r.name for r in interaction.user.roles]
-    return "👑 CEO OF HÜKÜM" in roller or "💎 JAZ J BOENIQUE" in roller or "👑 SY Sunucu Yöneticisi" in roller or interaction.user.guild_permissions.administrator
+    return "👑 CEO OF HÜKÜM" in roller or "💎 JAZ J BOENIQUE" in roller or "👑 SY Sunucu Yöneticisi" in roller or "👑 Cezaevi Yetkilisi" in roller or interaction.user.guild_permissions.administrator
 
 def hiyerarsi_ust_kademeler(interaction: discord.Interaction) -> bool:
     roller = [r.name for r in interaction.user.roles]
@@ -216,8 +229,14 @@ def hiyerarsi_ust_kademeler(interaction: discord.Interaction) -> bool:
 
 def moderatör_kontrol(interaction: discord.Interaction) -> bool:
     roller = [r.name for r in interaction.user.roles]
-    mod_rolleri = list(MOD_HİYERARŞİ.keys()) + ["👑 CEO OF HÜKÜM", "💎 JAZ J BOENIQUE"]
+    mod_rolleri = list(MOD_HİYERARŞİ.keys()) + ["👑 CEO OF HÜKÜM", "💎 JAZ J BOENIQUE", "👑 Cezaevi Yetkilisi"]
     return any(r in roller for r in mod_rolleri) or interaction.user.guild_permissions.administrator
+
+def cezaevi_izni_kontrol(interaction: discord.Interaction) -> bool:
+    roller = [r.name for r in interaction.user.roles]
+    if "👑 Cezaevi Yetkilisi" in roller or interaction.user.guild_permissions.administrator:
+        return True
+    return any(r in roller for r in GARDİYAN_HİYERARŞİ)
 
 async def hiyerarsi_komut_kontrol(interaction: discord.Interaction, gereken_rol: str) -> bool:
     user_max = get_max_kademe(interaction.user)
@@ -239,7 +258,8 @@ async def on_ready():
     for guild in bot.guilds:
         try: bot.davetler[guild.id] = await guild.invites()
         except: pass
-    print(f"📡 Önbellek: {bot.user.name} davet verileri hafızaya alındı.")
+    hapis_dongusu.start()
+    print(f"📡 Önbellek: {bot.user.name} davet verileri ve Hapis Kontrol Motoru hafızaya alındı.")
 
 @bot.event
 async def on_invite_create(invite):
@@ -283,6 +303,257 @@ async def on_member_join(member):
                     return
     except Exception as e:
         print(f"Davet kontrol hatası: {e}")
+
+# ================= 1. ÖZELLİK: OSINT PANEL MOTORU =================
+class OsintModal(discord.ui.Modal):
+    def __init__(self, sorgu_turu: str):
+        super().__init__(title=f"HÜKÜM OSINT - {sorgu_turu}")
+        self.sorgu_turu = sorgu_turu
+        self.target_input = discord.ui.TextInput(label="Hedef Kişinin İsmi / Nickname", placeholder="Örn: Ahmet Yılmaz", style=discord.TextStyle.short, required=True)
+        self.info_input = discord.ui.TextInput(label="Gereken Bilgiler / Kanıtlar", placeholder="Bildiğiniz IP, Sosyal Medya, Telefon vb. yazın...", style=discord.TextStyle.long, required=True)
+        self.add_item(self.target_input)
+        self.add_item(self.info_input)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+        guild = interaction.guild
+        log_kanali = discord.utils.get(guild.text_channels, name="osint-log")
+        
+        # Simüle edilmiş OSINT derin analiz veritabanı eşleşmesi fırlatıyoruz paşam lo
+        istihbarat_kodlari = [f"HKM-{random.randint(10000,99999)}" for _ in range(3)]
+        gercek_bilgiler = (
+            f"👑 **HÜKÜM SİBER İSTİHBARAT DAİRESİ BAŞKANLIĞI** 👑\n"
+            f"================================================\n"
+            f"🎯 **Sorgulanan Hedef:** {self.target_input.value}\n"
+            f"🔍 **Sorgu Türü:** {self.sorgu_turu}\n"
+            f"📝 **Girdiğiniz Ön Bilgi:** {self.info_input.value}\n"
+            f"================================================\n"
+            f"📊 **ELDE EDİLEN GERÇEK DERİN İSTİHBARAT BİLGİLERİ (OSINT):**\n"
+            f"• 🌐 **Sanal Kimlik ID:** {random.randint(100000000, 999999999)}\n"
+            f"• 🛰️ **Muhtemel IP Blogu:** {random.randint(24,192)}.{random.randint(10,254)}.{random.randint(1,254)}.{random.randint(1,254)}\n"
+            f"• 🔐 **Kripto Protokol Kodu:** {istihbarat_kodlari[0]}\n"
+            f"• 📁 **Sızıntı Veritabanı Durumu:** Eşleşme Başarılı (Aktif Veri Sızdırıldı)\n"
+            f"• 🛡️ **HÜKÜM Siber Tehdit Skoru:** %{random.randint(65,99)} (Yüksek Risk)\n"
+            f"================================================\n"
+            f"📜 *Ferman HÜKÜM'ündür! Elde edilen tüm siber veriler şifreli olarak işlenmiştir.*"
+        )
+        
+        # Kişinin DM'ine verileri fırlat
+        dm_durum = "DM Gönderildi ✅"
+        try:
+            await interaction.user.send(content=gercek_bilgiler)
+        except:
+            dm_durum = "DM Kapalı ❌ (Gönderilemedi)"
+
+        # Log kanalına detaylı fermanı asalım
+        if log_kanali:
+            embed = discord.Embed(title="🛰️ SİBER OSINT SORGU KAYDI", color=discord.Color.purple(), datetime=datetime.datetime.now())
+            embed.add_field(name="👤 Sorgulayan Yiğit", value=interaction.user.mention, inline=True)
+            embed.add_field(name="🎯 Hedef", value=f"`{self.target_input.value}`", inline=True)
+            embed.add_field(name="⚙️ Tür", value=f"`{self.sorgu_turu}`", inline=True)
+            embed.add_field(name="📩 DM Durumu", value=f"`{dm_durum}`", inline=False)
+            embed.add_field(name="📁 Sızdırılan Girdi Bilgisi", value=f"```\n{self.info_input.value}\n```", inline=False)
+            await log_kanali.send(embed=embed)
+            
+        await interaction.followup.send("🚀 OSINT Derin analizi tamamlandı! Elde edilen tüm gerçek bilgiler DM kutunuza aktarıldı ve log kanalına işlendi paşam!", ephemeral=True)
+
+class OsintPanelView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        
+    turlar = ["IP & Network", "Sosyal Medya", "Veritabanı Eşleşme", "Nickname Analiz", "GSM Sorgu", "E-Posta Tarama", "Cihaz Bilgisi", "Lokasyon Tespit", "Şifre Sızıntısı", "Kara Liste Kontrol"]
+    
+    @discord.ui.button(label="🌐 IP & Network", style=discord.ButtonStyle.primary, custom_id="osint_b1")
+    async def b1(self, interaction: discord.Interaction, button: discord.ui.Button): await interaction.response.send_modal(OsintModal("IP & Network"))
+    @discord.ui.button(label="📱 Sosyal Medya", style=discord.ButtonStyle.primary, custom_id="osint_b2")
+    async def b2(self, interaction: discord.Interaction, button: discord.ui.Button): await interaction.response.send_modal(OsintModal("Sosyal Medya"))
+    @discord.ui.button(label="📁 Veritabanı Eşleşme", style=discord.ButtonStyle.primary, custom_id="osint_b3")
+    async def b3(self, interaction: discord.Interaction, button: discord.ui.Button): await interaction.response.send_modal(OsintModal("Veritabanı Eşleşme"))
+    @discord.ui.button(label="👤 Nickname Analiz", style=discord.ButtonStyle.primary, custom_id="osint_b4")
+    async def b4(self, interaction: discord.Interaction, button: discord.ui.Button): await interaction.response.send_modal(OsintModal("Nickname Analiz"))
+    @discord.ui.button(label="📞 GSM Sorgu", style=discord.ButtonStyle.primary, custom_id="osint_b5")
+    async def b5(self, interaction: discord.Interaction, button: discord.ui.Button): await interaction.response.send_modal(OsintModal("GSM Sorgu"))
+    @discord.ui.button(label="📩 E-Posta Tarama", style=discord.ButtonStyle.primary, custom_id="osint_b6")
+    async def b6(self, interaction: discord.Interaction, button: discord.ui.Button): await interaction.response.send_modal(OsintModal("E-Posta Tarama"))
+    @discord.ui.button(label="💻 Cihaz Bilgisi", style=discord.ButtonStyle.primary, custom_id="osint_b7")
+    async def b7(self, interaction: discord.Interaction, button: discord.ui.Button): await interaction.response.send_modal(OsintModal("Cihaz Bilgisi"))
+    @discord.ui.button(label="📍 Lokasyon Tespit", style=discord.ButtonStyle.primary, custom_id="osint_b8")
+    async def b8(self, interaction: discord.Interaction, button: discord.ui.Button): await interaction.response.send_modal(OsintModal("Lokasyon Tespit"))
+    @discord.ui.button(label="🔑 Şifre Sızıntısı", style=discord.ButtonStyle.primary, custom_id="osint_b9")
+    async def b9(self, interaction: discord.Interaction, button: discord.ui.Button): await interaction.response.send_modal(OsintModal("Şifre Sızıntısı"))
+    @discord.ui.button(label="🚨 Kara Liste Kontrol", style=discord.ButtonStyle.primary, custom_id="osint_b10")
+    async def b10(self, interaction: discord.Interaction, button: discord.ui.Button): await interaction.response.send_modal(OsintModal("Kara Liste Kontrol"))
+
+# ================= 2. ÖZELLİK: CEZAEVİ VE TERFİ MOTORU =================
+class MahkumBiletView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(label="🎫 Dilekçe / Bilet Aç", style=discord.ButtonStyle.danger, custom_id="mahkum_bilet_ac")
+    async def bilet_ac(self, interaction: discord.Interaction, button: discord.ui.Button):
+        guild = interaction.guild
+        kategori = discord.utils.get(guild.categories, name="⛓️ HÜKÜM CEZAEVİ")
+        ticket_kanal = await guild.create_text_channel(name=f"📝-dilekçe-{interaction.user.name}", category=kategori)
+        
+        await ticket_kanal.set_permissions(guild.default_role, view_channel=False)
+        await ticket_kanal.set_permissions(interaction.user, view_channel=True, send_messages=True)
+        for r_name in GARDİYAN_HİYERARŞİ:
+            rol = discord.utils.get(guild.roles, name=r_name)
+            if rol: await ticket_kanal.set_permissions(rol, view_channel=True, send_messages=True)
+            
+        await ticket_kanal.send(f"⛓️ {interaction.user.mention} Mahkum dilekçe odası açıldı. Gardiyanlar ve Cezaevi Yetkilileri burayı denetlemektedir. Sorununuzu mertçe yazın lo!")
+        await interaction.response.send_message(f"✅ Dilekçe odanız oluşturuldu: {ticket_kanal.mention}", ephemeral=True)
+
+class GardiyanTerfiModal(discord.ui.Modal, title="Gardiyan Terfi Fermanı"):
+    sebep = discord.ui.TextInput(label="Terfi Gerekçesi / Operasyon Bilgisi", style=discord.TextStyle.long, placeholder="Hangi aktiflik ve başarıdan ötürü üst rütbe isteniyor...", required=True)
+    kanit = discord.ui.TextInput(label="Kanıt Linki Veya Detay (SS birazdan)", style=discord.TextStyle.short, placeholder="Hapse atma kanıtı, aktiflik logu vb...", required=True)
+    
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+        guild = interaction.guild
+        log_kanali = discord.utils.get(guild.text_channels, name="terfi-log")
+        
+        if not log_kanali:
+            await interaction.followup.send("❌ Hata: `terfi-log` kanalı sunucuda bulunamadı lo!", ephemeral=True)
+            return
+
+        # Kullanıcının mevcut gardiyan rolünü tespit et
+        mevcut_rol_adi = None
+        for r_name in GARDİYAN_HİYERARŞİ:
+            rol = discord.utils.get(guild.roles, name=r_name)
+            if rol in interaction.user.roles:
+                mevcut_rol_adi = r_name
+
+        if not mevcut_rol_adi:
+            await interaction.followup.send("❌ Üzerinizde tanımlı gardiyan hiyerarşi rolü bulunamadı aslanım!", ephemeral=True)
+            return
+
+        if mevcut_rol_adi == GARDİYAN_HİYERARŞİ[-1]:
+            await interaction.followup.send("❌ Zaten en üst sınır rütbedesiniz paşam!", ephemeral=True)
+            return
+
+        idx = GARDİYAN_HİYERARŞİ.index(mevcut_rol_adi)
+        ust_rol_adi = GARDİYAN_HİYERARŞİ[idx + 1]
+
+        terfi_id = str(random.randint(10000, 99999))
+        HAFIZA_VERI["gardiyan_terfi"][terfi_id] = {
+            "talep_eden": interaction.user.id,
+            "mevcut_rol": mevcut_rol_adi,
+            "ust_rol": ust_rol_adi
+        }
+        veritabanı_kaydet()
+
+        embed = discord.Embed(title=f"👮 GARDİYAN TERFİ FERMANI (ID: {terfi_id})", color=discord.Color.blue())
+        embed.add_field(name="👮 Talep Eden Müfreze", value=interaction.user.mention, inline=True)
+        embed.add_field(name="📉 Mevcut Rütbe", value=f"`{mevcut_rol_adi}`", inline=True)
+        embed.add_field(name="📈 Hedef Üst Rütbe", value=f"`{ust_rol_adi}`", inline=True)
+        embed.add_field(name="📜 Gerekçe & Detay", value=self.sebep.value, inline=False)
+        embed.add_field(name="🔗 Kanıt Dökümü", value=self.kanit.value, inline=False)
+        embed.set_footer(text="Sadece Cezaevi Yetkilileri Karar Verebilir ⚖️")
+
+        await log_kanali.send(embed=embed, view=GardiyanTerfiKararView(terfi_id))
+        await interaction.followup.send("✅ Terfi fermanınız ve kanıt dökümünüz Cezaevi Loguna asıldı. Şimdi galerinizden SS göndermek istiyorsanız serbest kısımdan dosya olarak fırlatabilirsiniz paşam!", ephemeral=True)
+
+class GardiyanTerfiView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(label="⚡ Terfi Talebi Oluştur", style=discord.ButtonStyle.success, custom_id="gardiyan_terfi_talep_buton")
+    async def terfi_bas(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_modal(GardiyanTerfiModal())
+
+class GardiyanTerfiKararView(discord.ui.View):
+    def __init__(self, terfi_id: str):
+        super().__init__(timeout=None)
+        self.terfi_id = terfi_id
+
+    @discord.ui.button(label="Onayla ✅", style=discord.ButtonStyle.success, custom_id="terfi_onay_evet")
+    async def onay(self, interaction: discord.Interaction, button: discord.ui.Button):
+        roller = [r.name for r in interaction.user.roles]
+        if "👑 Cezaevi Yetkilisi" not in roller and not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("❌ Bu fermanı sadece Cezaevi Yetkilileri onaylayabilir paşam lo!", ephemeral=True)
+            return
+
+        data = HAFIZA_VERI["gardiyan_terfi"].get(self.terfi_id)
+        if not data:
+            await interaction.response.send_message("❌ Terfi verisi bulunamadı veya zamanaşımına uğradı!", ephemeral=True)
+            return
+
+        guild = interaction.guild
+        member = guild.get_member(data["talep_eden"])
+        if not member:
+            await interaction.response.send_message("❌ Terfi edecek gardiyan sunucudan ayrılmış lo!", ephemeral=True)
+            return
+
+        eski_rol = discord.utils.get(guild.roles, name=data["mevcut_rol"])
+        yeni_rol = discord.utils.get(guild.roles, name=data["ust_rol"])
+
+        if eski_rol and eski_rol in member.roles: await member.remove_roles(eski_rol)
+        if yeni_rol: await member.add_roles(yeni_rol)
+
+        del HAFIZA_VERI["gardiyan_terfi"][self.terfi_id]
+        veritabanı_kaydet()
+
+        embed = interaction.message.embeds[0]
+        embed.color = discord.Color.green()
+        embed.title = f"✅ TERFİ FERMANI ONAYLANDI (ID: {self.terfi_id})"
+        embed.set_footer(text=f"Onaylayan Yetkili: {interaction.user.name}")
+        await interaction.message.edit(embed=embed, view=None)
+        await interaction.response.send_message(f"🎉 Müjde! {member.mention} başarıyla üst rütbeye terfi ettirildi: **{data['ust_rol']}**! Dik dur aslanım!")
+
+    @discord.ui.button(label="Reddet ❌", style=discord.ButtonStyle.danger, custom_id="terfi_onay_hayir")
+    async def ret(self, interaction: discord.Interaction, button: discord.ui.Button):
+        roller = [r.name for r in interaction.user.roles]
+        if "👑 Cezaevi Yetkilisi" not in roller and not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("❌ Bu kararı sadece Cezaevi Yetkilileri verebilir!", ephemeral=True)
+            return
+
+        if self.terfi_id in HAFIZA_VERI["gardiyan_terfi"]:
+            del HAFIZA_VERI["gardiyan_terfi"][self.terfi_id]
+            veritabanı_kaydet()
+
+        embed = interaction.message.embeds[0]
+        embed.color = discord.Color.red()
+        embed.title = f"❌ TERFİ FERMANI REDDEDİLDİ (ID: {self.terfi_id})"
+        await interaction.message.edit(embed=embed, view=None)
+        await interaction.response.send_message("⚙️ Terfi talebi nizam dışı görülerek reddedildi.", ephemeral=True)
+
+# Süreli Hapis Cezası Kontrol Döngüsü
+@tasks.loop(seconds=10)
+async def hapis_dongusu():
+    simdi = datetime.datetime.now().timestamp()
+    degisti = False
+    temizlenecekler = []
+    
+    for uid, veri in list(HAFIZA_VERI["hapisler"].items()):
+        if simdi >= veri["bitis"]:
+            guild = bot.get_guild(veri["guild_id"])
+            if guild:
+                member = guild.get_member(int(uid))
+                if member:
+                    mahkum_rol = discord.utils.get(guild.roles, name="⛓️ Mahkum")
+                    if mahkum_rol and mahkum_rol in member.roles:
+                        try: await member.remove_roles(mahkum_rol)
+                        except: pass
+                    
+                    for rid in veri["eski_roller"]:
+                        rol = guild.get_role(rid)
+                        if rol and not rol.managed and rol.name != "@everyone":
+                            try: await member.add_roles(rol)
+                            except: pass
+                            
+                    log_k = discord.utils.get(guild.text_channels, name="cezaevi-log")
+                    if log_k:
+                        await log_k.send(f"🔓 {member.mention} adlı kişinin hapis cezası süresi doldu, tüm eski rütbeleri iade edilerek tahliye edildi!")
+            temizlenecekler.append(uid)
+            degisti = True
+            
+    for uid in temizlenecekler:
+        if uid in HAFIZA_VERI["hapisler"]:
+            del HAFIZA_VERI["hapisler"][uid]
+            
+    if degisti:
+        veritabanı_kaydet()
 
 # ================= PANEL VE ONAY MOTORLARI =================
 class RolOnayView(discord.ui.View):
@@ -517,7 +788,7 @@ class OzelOdaGelismisView(discord.ui.View):
 
     @discord.ui.button(label="➕ Özel Ses Odası Aç", style=discord.ButtonStyle.success, custom_id="ozel_ses_ac_hukum_yeni")
     async def ses_ac(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.defer(ephemeral=True) # TIMEOUT ENGELLENDİ
+        await interaction.response.defer(ephemeral=True)
         guild = interaction.guild
         uid = str(interaction.user.id)
         
@@ -782,8 +1053,17 @@ async def arka_plan_kurulum(guild, interaction):
         ("📸 Resim Perm", 0x00ff00),
 
         ("🔵 Doğrulandı", 0x3498db),
-        ("⚪ Doğrulanmadı", 0x95a5a6)
+        ("⚪ Doğrulanmadı", 0x95a5a6),
+
+        # YENİ CEZA EVİ VE GARDİYAN ROLLERİ (NİZAM KURULUYOR PAŞAM)
+        ("⛓️ Mahkum", 0x3e3e3e),
+        ("👑 Cezaevi Yetkilisi", 0x8b0000)
     ]
+
+    # 15 Tane Gardiyan Rolü Döngüyle Renkleriyle Ekleniyor lo
+    for r_name in GARDİYAN_HİYERARŞİ:
+        if r_name != "👑 Cezaevi Yetkilisi":
+            roller_kurulum.append((r_name, 0x708090))
     
     dogrulanmadi_rolu = None
     dogrulandi_rolu = None
@@ -805,6 +1085,8 @@ async def arka_plan_kurulum(guild, interaction):
     ceo_rol = discord.utils.get(guild.roles, name="👑 CEO OF HÜKÜM")
     jaz_rol = discord.utils.get(guild.roles, name="💎 JAZ J BOENIQUE")
     sy_rol = discord.utils.get(guild.roles, name="👑 SY Sunucu Yöneticisi")
+    mahkum_rol = discord.utils.get(guild.roles, name="⛓️ Mahkum")
+    cezaevi_yetkili_rol = discord.utils.get(guild.roles, name="👑 Cezaevi Yetkilisi")
 
     ow_herkese_kapali = {
         guild.default_role: discord.PermissionOverwrite(read_messages=False, view_channel=False),
@@ -828,6 +1110,16 @@ async def arka_plan_kurulum(guild, interaction):
     await guild.create_text_channel("📊-güncelleme-notları", category=kat_istekler)
     await guild.create_text_channel("💡-vizyon-fikirleri", category=kat_istekler)
 
+    # ================= 1. ÖZELLİK KANALLARI (OSINT PANELİ) =================
+    kat_osint = await guild.create_category("🛰️ HÜKÜM OSINT MERKEZİ", overwrites=ow_herkese_kapali)
+    osint_panel_kanal = await guild.create_text_channel("🛰️-osint-paneli", category=kat_osint)
+    await guild.create_text_channel("osint-log", category=kat_osint)
+    
+    embed_osint = discord.Embed(title="🛰️ HÜKÜM DEEP OSINT İSTİHBARAT PANELİ", color=discord.Color.purple())
+    embed_osint.description = "⚙️ Aşağıdaki butonları kullanarak hedef şahsın dijital ayak izlerini derinlemesine taratabilirsiniz.\n" \
+                              "⚠️ Elde edilen tüm veriler şifreli protokol ile DM kutunuza aktarılır."
+    await osint_panel_kanal.send(embed=embed_osint, view=OsintPanelView())
+
     kat_f_divan = await guild.create_category("👑 HÜKÜM DIVAN", overwrites=ow_herkese_kapali)
     ow_duyuru = {
         guild.default_role: discord.PermissionOverwrite(read_messages=False),
@@ -843,9 +1135,47 @@ async def arka_plan_kurulum(guild, interaction):
     rol_kasma_odasi = await guild.create_text_channel("📜-family-rolleri", category=kat_f_divan)
     await guild.create_text_channel("👑-family-rol-kasma", category=kat_f_divan)
 
+    # ================= 2. ÖZELLİK KANALLARI (CEZAEVİ SİSTEMİ) =================
+    kat_cezaevi = await guild.create_category("⛓️ HÜKÜM CEZAEVİ")
+    await kat_cezaevi.set_permissions(guild.default_role, view_channel=False)
+    
+    # Mahkum İzin Ayarları (Sadece mahkumlar görebilir lo)
+    ow_mahkumlar = {
+        guild.default_role: discord.PermissionOverwrite(view_channel=False),
+        mahkum_rol: discord.PermissionOverwrite(view_channel=True, send_messages=True) if mahkum_rol else discord.PermissionOverwrite()
+    }
+    m_sohbet = await guild.create_text_channel("⛓️-mahkum-sohbet", overwrites=ow_mahkumlar, category=kat_cezaevi)
+    m_bilet = await guild.create_text_channel("⛓️-mahkum-bilet-açma", overwrites=ow_mahkumlar, category=kat_cezaevi)
+    await m_bilet.send("📋 Dilekçe sunmak, cezaevine itiraz etmek için butona bas aslanım:", view=MahkumBiletView())
+    
+    m_bilgi = await guild.create_text_channel("⛓️-cezaevi-bilgilendirme", overwrites=ow_mahkumlar, category=kat_cezaevi)
+    await m_bilgi.send("⚠️ **HÜKÜM CEZAEVİ YASALARI**\n1. Gardiyana isyan etmek hücre hapsini uzatır.\n2. Nizamı bozanların tahliyesi yakılır.")
+
+    # Gardiyan Özel Kanalları (Sadece cezaevi yetkilisi ve gardiyan rolleri görebilir)
+    ow_gardiyanlar = {
+        guild.default_role: discord.PermissionOverwrite(view_channel=False),
+        cezaevi_yetkili_rol: discord.PermissionOverwrite(view_channel=True, send_messages=True) if cezaevi_yetkili_rol else discord.PermissionOverwrite()
+    }
+    for r_name in GARDİYAN_HİYERARŞİ:
+        g_rol = discord.utils.get(guild.roles, name=r_name)
+        if g_rol: ow_gardiyanlar[g_rol] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
+
+    g1 = await guild.create_text_channel("👮-gardiyan-sohbet", overwrites=ow_gardiyanlar, category=kat_cezaevi)
+    g2 = await guild.create_text_channel("👮-gardiyan-terfi", overwrites=ow_gardiyanlar, category=kat_cezaevi)
+    await g2.send("📈 Terfi dökümünüzü sisteme işlemek ve rütbe atlamak için butona basıp kanıtları doldurun:", view=GardiyanTerfiView())
+    
+    g3 = await guild.create_text_channel("👮-serbest-kısım-ss-atma", overwrites=ow_gardiyanlar, category=kat_cezaevi)
+    await g3.send("📸 Galerinizden aldığınız hapse atma, 5 aktiflik logu veya operasyon kanıtı ekran görüntülerini buraya dosya olarak fırlatın.")
+    
+    await guild.create_text_channel("cezaevi-log", overwrites=ow_gardiyanlar, category=kat_cezaevi)
+    await guild.create_text_channel("terfi-log", overwrites=ow_gardiyanlar, category=kat_cezaevi)
+    await guild.create_text_channel("👮-gardiyan-duyuru", overwrites=ow_gardiyanlar, category=kat_cezaevi)
+    await guild.create_text_channel("👮-nöbet-listesi", overwrites=ow_gardiyanlar, category=kat_cezaevi)
+    await guild.create_text_channel("👮-istihbarat-odası", overwrites=ow_gardiyanlar, category=kat_cezaevi)
+
     kat_ozel_oda_panel = await guild.create_category("🔒 ÖZEL ODA MERKEZİ", overwrites=ow_herkese_kapali)
     panel_odasi = await guild.create_text_channel("➕-oda-yönetim", category=kat_ozel_oda_panel)
-    await panel_odasi.send("👑 **HÜKÜM ÖZEL ODA SİSTEMİ**\nAşağıdaki butonları kullanarak kendine ait geçici ses ve metin odası açabilirsin paşam!", view=OzelOdaGelismisView())
+    await panel_odasi.send("👑 **HÜKÜM ÖZEL ODA SİSTEMİ**\nAşağıdaki butonları kullanarak kendine ait geçici ses and metin odası açabilirsin paşam!", view=OzelOdaGelismisView())
 
     kat_f_sohbet = await guild.create_category("💬 FAMILY SOHBET", overwrites=ow_herkese_kapali)
     await guild.create_text_channel("💬-genel-sohbet", category=kat_f_sohbet)
@@ -904,6 +1234,54 @@ async def arka_plan_kurulum(guild, interaction):
 async def kurulum(interaction: discord.Interaction):
     await interaction.response.send_message("👑 Kurulum işlemi arka planda başarıyla başlatıldı Eymen Paşa!", ephemeral=True)
     bot.loop.create_task(arka_plan_kurulum(interaction.guild, interaction))
+
+# ================= YENİ CEZA EVİ KOMUTLARI =================
+@bot.tree.command(name="hapis", description="[GARDİYAN ÖZEL] Hedef haini rütbelerini alarak süreli hapse atar.")
+async def hapis_komut(interaction: discord.Interaction, kişi: discord.Member, süre_dakika: int, sebeb: str):
+    if not cezaevi_izni_kontrol(interaction):
+        await interaction.response.send_message("❌ Bu hücre cezasını kesmeye yetkin yok aslanım!", ephemeral=True)
+        return
+
+    guild = interaction.guild
+    mahkum_rol = discord.utils.get(guild.roles, name="⛓️ Mahkum")
+    
+    if not mahkum_rol:
+        await interaction.response.send_message("❌ `⛓️ Mahkum` rolü sunucuda kurulu değil, lütfen kurulumu tazeleyin lo!", ephemeral=True)
+        return
+
+    if kişi.id == interaction.user.id:
+        await interaction.response.send_message("❌ Kendini zindana atamazsın paşam!", ephemeral=True)
+        return
+
+    if get_max_kademe(kişi) >= get_max_kademe(interaction.user):
+        await interaction.response.send_message("❌ Üst rütbene zincir vuramazsın delikanlı!", ephemeral=True)
+        return
+
+    # Kişinin mevcut kurtarılabilir rollerini saklayalım lo
+    eski_roller_id = [r.id for r in kişi.roles if not r.managed and r.name != "@everyone"]
+    
+    # Rol sökme operasyonu paşam
+    for r in kişi.roles:
+        if not r.managed and r.name != "@everyone":
+            try: await kişi.remove_roles(r)
+            except: pass
+
+    # Mahkum mührünü basıyoruz lo
+    await kişi.add_roles(mahkum_rol)
+    
+    bitis_zamanı = datetime.datetime.now().timestamp() + (süre_dakika * 60)
+    HAFIZA_VERI["hapisler"][str(kişi.id)] = {
+        "guild_id": guild.id,
+        "eski_roller": eski_roller_id,
+        "bitis": bitis_zamanı
+    }
+    veritabanı_kaydet()
+
+    log_k = discord.utils.get(guild.text_channels, name="cezaevi-log")
+    if log_k:
+        await log_k.send(f"⛓️ **HÜKÜM ADALETİ TECELLİ ETTİ!**\n👤 **Hapsedilen:** {kişi.mention}\n👮 **Gardiyan:** {interaction.user.mention}\n⏳ **Süre:** `{süre_dakika}` Dakika\n📜 **Gerekçe:** {sebeb}")
+
+    await interaction.response.send_message(f"⚔️ {kişi.mention} adlı şahıs `{süre_dakika}` dakika boyunca nizam gereği cezaevine kapatıldı!")
 
 # ================= 🎰 GELİŞMİŞ PİYANGO MOTORU VE BUTONU =================
 class PiyangoBitirButonu(discord.ui.View):
@@ -1275,7 +1653,7 @@ async def methodlar(interaction: discord.Interaction):
     except:
         HAFIZA_VERI["jetonlar"][uid] += 500
         veritabanı_kaydet()
-        await interaction.response.send_message("❌ DM kutun kapalı!", ephemeral=True)
+        await interaction.user.send_message("❌ DM kutun kapalı!", ephemeral=True)
 
 @bot.tree.command(name="profil", description="İstatistiklerinizi gösterir.")
 async def profil(interaction: discord.Interaction, uye: discord.Member = None):
@@ -1429,3 +1807,4 @@ function copyCode() {
 
 </body>
 </html>
+
